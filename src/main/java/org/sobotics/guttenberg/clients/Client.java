@@ -15,6 +15,9 @@ public class Client {
 		Guttenberg guttenberg = new Guttenberg(null);
 		
 		guttenberg.start();
+		
+		
+		System.out.println("Successfully launched Guttenberg!");
 	}
 
 }

@@ -36,11 +36,11 @@ public class Guttenberg {
 	
 	private void execute() {
 		System.out.println("Executing...");
-		NewAnswersFinder answersFinder = new NewAnswersFinder();
+		//NewAnswersFinder answersFinder = new NewAnswersFinder();
 		
 		//Fetch recent answers / The targets
 		
-		JsonArray recentAnswers = answersFinder.findRecentAnswers();
+		JsonArray recentAnswers = NewAnswersFinder.findRecentAnswers();
 		List<PlagFinder> plagFinders = new ArrayList<PlagFinder>();
 		
 		for (JsonElement answer : recentAnswers) {

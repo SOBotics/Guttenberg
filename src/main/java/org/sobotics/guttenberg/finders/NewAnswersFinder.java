@@ -17,7 +17,7 @@ import com.google.gson.JsonElement;
  * */
 public class NewAnswersFinder {	
 	
-	public JsonArray findRecentAnswers() {
+	public static JsonArray findRecentAnswers() {
 		//long unixTime = (long)System.currentTimeMillis()/1000;
 		Instant time = Instant.now().minusSeconds(59+1);
 		try {
