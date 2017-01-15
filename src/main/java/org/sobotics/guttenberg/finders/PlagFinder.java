@@ -1,7 +1,15 @@
 package org.sobotics.guttenberg.finders;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
+import org.sobotics.guttenberg.utils.ApiUtils;
+import org.sobotics.guttenberg.utils.FilePathUtils;
+
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -26,12 +34,69 @@ public class PlagFinder {
 	}
 	
 	public void collectData() {
-		this.fetchRelatedQuestions();
+		this.relatedAnswers = new ArrayList<JsonObject>();
+		this.fetchRelatedAnswers();
+		System.out.println("RelatedAnswers: "+this.relatedAnswers.size());
 	}
 	
-	private void fetchRelatedQuestions() {
+	private void fetchRelatedAnswers() {
+		int targetId = this.targetAnswer.get("question_id").getAsInt();
+		System.out.println("Target: "+targetId);
+		Properties prop = new Properties();
+
+        try{
+            prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
 		
+		try {
+			JsonObject relatedQuestions = ApiUtils.getRelatedQuestionsById(targetId, "stackoverflow", prop.getProperty("apikey", ""));
+			JsonObject linkedQuestions = ApiUtils.getLinkedQuestionsById(targetId, "stackoverflow", prop.getProperty("apikey", ""));
+			//System.out.println("Answer: "+relatedQuestions);
+			String relatedIds = "";
+
+			for (JsonElement question : relatedQuestions.get("items").getAsJsonArray()) {
+				int id = question.getAsJsonObject().get("question_id").getAsInt();
+				System.out.println("Add: "+id);
+				relatedIds += id+";";
+			}
+			
+			for (JsonElement question : linkedQuestions.get("items").getAsJsonArray()) {
+				int id = question.getAsJsonObject().get("question_id").getAsInt();
+				System.out.println("Add: "+id);
+				relatedIds += id+";";
+			}
+			
+			if (relatedIds.length() > 0) {
+				relatedIds = relatedIds.substring(0, relatedIds.length()-1);
+				
+				
+				System.out.println("Related question IDs: "+relatedIds);
+				System.out.println("Fetching all answers...");
+				
+				JsonObject relatedAnswers = ApiUtils.getAnswersToQuestionsByIdString(relatedIds, "stackoverflow", prop.getProperty("apikey", ""));
+				//System.out.println(relatedAnswers);
+				for (JsonElement answer : relatedAnswers.get("items").getAsJsonArray()) {
+					JsonObject answerObject = answer.getAsJsonObject();
+					this.relatedAnswers.add(answerObject);
+				}
+				
+				
+			} else {
+				System.out.println("No ids found!");
+			}
+			
+		} catch (IOException e) {
+			System.out.println("ERROR");
+			e.printStackTrace();
+		}
 	}
+	
+	
+	
+	
 	
 	public JsonObject getTargetAnswer() {
 		return this.targetAnswer;

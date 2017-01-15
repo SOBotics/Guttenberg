@@ -15,6 +15,21 @@ public class ApiUtils {
     private static final String filter = "!40nvjHa_IL(lxIFT9";
 
 
+    public static JsonObject getRelatedQuestionsById(Integer questionId, String site, String apiKey) throws IOException{
+        String questionIdUrl = "https://api.stackexchange.com/2.2/questions/"+questionId+"/related";
+        return JsonUtils.get(questionIdUrl,"site",site,"key",apiKey);
+    }
+    
+    public static JsonObject getLinkedQuestionsById(Integer questionId, String site, String apiKey) throws IOException{
+        String questionIdUrl = "https://api.stackexchange.com/2.2/questions/"+questionId+"/related";
+        return JsonUtils.get(questionIdUrl,"site",site,"key",apiKey);
+    }
+    
+    public static JsonObject getAnswersToQuestionsByIdString(String questionIds, String site, String apiKey) throws IOException{
+        String questionIdUrl = "https://api.stackexchange.com/2.2/questions/"+questionIds+"/answers";
+        return JsonUtils.get(questionIdUrl,"site",site,"key",apiKey);
+    }
+    
     public static JsonObject getQuestionDetailsByIds(List<Integer> questionIdList, String site, String apiKey) throws IOException {
         String questionIds = questionIdList.stream().map(String::valueOf).collect(Collectors.joining(";"));
         String questionIdUrl = "https://api.stackexchange.com/2.2/questions/"+questionIds;

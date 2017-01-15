@@ -85,5 +85,11 @@ public class Guttenberg {
 			PlagFinder plagFinder = new PlagFinder(answer.getAsJsonObject());
 			plagFinders.add(plagFinder);
 		}
+		
+		
+		//Let PlagFinders collect data
+		for (PlagFinder finder : plagFinders) {
+			finder.collectData();
+		}
 	}
 }
