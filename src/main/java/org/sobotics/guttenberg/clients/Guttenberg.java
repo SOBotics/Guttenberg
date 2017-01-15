@@ -58,7 +58,7 @@ public class Guttenberg {
                 if (prop.getProperty("location").equals("server")) {
                 	chatroom.send("Grias di o/ (SERVER VERSION)" );
                 } else {
-                	chatroom.send("Grias di o/ (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
+                	//chatroom.send("Grias di o/ (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
                 }
             }
 

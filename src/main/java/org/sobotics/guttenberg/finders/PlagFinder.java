@@ -1,10 +1,13 @@
 package org.sobotics.guttenberg.finders;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.sobotics.guttenberg.utils.ApiUtils;
+import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.StringUtils;
 
 import com.google.gson.JsonElement;
@@ -47,17 +50,49 @@ public class PlagFinder {
 	 * */
 	private void fetchSoSearchResults() {
 		String plainBody = StringUtils.plainTextFromHtml(this.targetAnswer.get("body").getAsString());
-		System.out.println("Plain body:\n" + plainBody);
+		List<String> linesToSearch = StringUtils.searchableLinesOfBodyMarkdown(this.targetAnswer.get("body_markdown").getAsString());
+		
+		//System.out.println("Plain body:\n" + linesToSearch);
 		
 		try {
-			JsonObject results = ApiUtils.getSearchExcerpts(plainBody, "stackoverflow", "");
-			System.out.println("Fetched search results:\n"+results);
-			int targetAnswerId = this.targetAnswer.get("answer_id").getAsInt();
+			Properties prop = new Properties();
+
+	        try{
+	            prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
+	        }
+	        catch (IOException e){
+	            e.printStackTrace();
+	        }
+	        
+	        String apiKey = prop.getProperty("apikey", "");
 			
-			for (JsonElement item : results.getAsJsonArray()) {
-				JsonObject object = item.getAsJsonObject();
-				if (object.get("answer_id").getAsInt() != targetAnswerId) {
-					this.relatedAnswers.add(object);
+			for (String line : linesToSearch) {
+				if (line.length() > 9) {
+					System.out.println("Search for: " + line);
+					
+					JsonObject results = ApiUtils.getSearchExcerpts(line, "stackoverflow", apiKey);
+					
+					System.out.println("Search done");
+					
+					if (results.getAsJsonArray().size() == 0) return;
+					
+					System.out.println("Fetched search results:\n"+results.get("items").getAsJsonArray().size());
+					int targetAnswerId = this.targetAnswer.get("answer_id").getAsInt();
+					System.out.println("Target: " + targetAnswerId);
+					
+					for (JsonElement item : results.getAsJsonArray()) {
+						System.out.println("point1");
+						JsonObject object = item.getAsJsonObject();
+						System.out.println("point2");
+						if (object.get("answer_id").getAsInt() != targetAnswerId) {
+							System.out.println("Add: "+ object.get("answer_id").getAsInt());
+							this.relatedAnswers.add(object);
+						} else {
+							System.out.println("Did not add: " + object.get("answer_id").getAsInt());
+						}
+					}
+				} else {
+					System.out.println("Line too short");
 				}
 			}
 			
