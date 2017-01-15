@@ -1,5 +1,16 @@
 package org.sobotics.guttenberg.clients;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import org.sobotics.guttenberg.roomdata.BotRoom;
+import org.sobotics.guttenberg.roomdata.SOBoticsChatRoom;
+import org.sobotics.guttenberg.utils.FilePathUtils;
+
 import fr.tunaki.stackoverflow.chat.StackExchangeClient;
 
 /**
@@ -9,15 +20,31 @@ public class Client {
 
 	public static void main(String[] args) {
 		System.out.println("Hello, World!");
+		System.out.println("Load properties...");
 		
-		//StackExchangeClient seClient = new StackExchangeClient(null, null);
+		Properties prop = new Properties();
+
+        try{
+            prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
 		
-		Guttenberg guttenberg = new Guttenberg(null);
+		System.out.println("Initialize chat...");
+		StackExchangeClient seClient = new StackExchangeClient(prop.getProperty("email"), prop.getProperty("password"));
+		
+		List<BotRoom> rooms = new ArrayList<>();
+        rooms.add(new SOBoticsChatRoom());
+		
+        System.out.println("Launch Guttenberg...");
+        
+		Guttenberg guttenberg = new Guttenberg(seClient, rooms);
 		
 		guttenberg.start();
 		
 		
-		System.out.println("Successfully launched Guttenberg!");
+		System.out.println(Instant.now() + " - Successfully launched Guttenberg!");
 	}
 
 }

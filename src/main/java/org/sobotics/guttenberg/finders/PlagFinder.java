@@ -33,4 +33,8 @@ public class PlagFinder {
 		
 	}
 	
+	public JsonObject getTargetAnswer() {
+		return this.targetAnswer;
+	}
+	
 }
