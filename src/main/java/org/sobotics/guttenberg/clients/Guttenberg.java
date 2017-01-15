@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.sobotics.guttenberg.finders.NewAnswersFinder;
 import org.sobotics.guttenberg.finders.PlagFinder;
+import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
 import org.sobotics.guttenberg.roomdata.BotRoom;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 
@@ -87,9 +88,27 @@ public class Guttenberg {
 		}
 		
 		
-		//Let PlagFinders collect data
+		//Let PlagFinders collect data and print the post
 		for (PlagFinder finder : plagFinders) {
 			finder.collectData();
+			System.out.println("Collected");
+			JsonObject otherAnswer = finder.getMostSimilarAnswer();
+			if (finder.getJaroScore() > 0.6) {
+				System.out.println("Prepare message");
+				for (Room room : this.chatRooms) {
+					System.out.println("Room: "+room);
+					if (room.getRoomId() == 111347) {
+						System.out.println("SOBotics");
+						SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
+						room.send(printer.print(finder));
+						System.out.println("Posted: "+printer.print(finder));
+					} else {
+						System.out.println("Score too low");
+					}
+				}
+			} else {
+				System.out.println("Score "+finder.getJaroScore()+" too low");
+			}
 		}
 	}
 }

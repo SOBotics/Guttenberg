@@ -12,6 +12,8 @@ import org.sobotics.guttenberg.utils.FilePathUtils;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import info.debatty.java.stringsimilarity.JaroWinkler;
+
 /**
  * Checks an answer for plagiarism by collecting similar answers from different sources.
  * */
@@ -25,6 +27,10 @@ public class PlagFinder {
 	 * A list of answers that are somehow related to targetAnswer.
 	 * */
 	private List<JsonObject> relatedAnswers;
+	
+	private double jaroScore = 0;
+	
+	private JsonObject jaroAnswer;
 	
 	/**
 	 * Initializes the PlagFinder with an answer that should be checked for plagiarism
@@ -59,13 +65,13 @@ public class PlagFinder {
 
 			for (JsonElement question : relatedQuestions.get("items").getAsJsonArray()) {
 				int id = question.getAsJsonObject().get("question_id").getAsInt();
-				System.out.println("Add: "+id);
+				//System.out.println("Add: "+id);
 				relatedIds += id+";";
 			}
 			
 			for (JsonElement question : linkedQuestions.get("items").getAsJsonArray()) {
 				int id = question.getAsJsonObject().get("question_id").getAsInt();
-				System.out.println("Add: "+id);
+				//System.out.println("Add: "+id);
 				relatedIds += id+";";
 			}
 			
@@ -95,11 +101,42 @@ public class PlagFinder {
 	}
 	
 	
-	
+	public JsonObject getMostSimilarAnswer() {
+		String targetText = this.targetAnswer.get("body_markdown").getAsString();
+		double highscore = 0;
+		JsonObject closestMatch = this.targetAnswer;
+		closestMatch.addProperty("jaro_winkler", 0);
+				
+		JaroWinkler jw = new JaroWinkler();
+				
+		for (JsonObject answer : this.relatedAnswers) {
+			String answerBody = answer.get("body_markdown").getAsString();
+			double jaroWinklerScore = jw.similarity(targetText, answerBody);
+			if (highscore < jaroWinklerScore) {
+				//new highscore
+				highscore = jaroWinklerScore;
+				answer.addProperty("jaro_winkler", jaroWinklerScore);
+				closestMatch = answer;
+			}
+		}
+		System.out.println("Score: "+highscore);
+		
+		this.jaroScore = highscore;
+		
+		return highscore > 0 ? closestMatch : null;
+	}
 	
 	
 	public JsonObject getTargetAnswer() {
 		return this.targetAnswer;
+	}
+	
+	public double getJaroScore() {
+		return this.jaroScore;
+	}
+	
+	public JsonObject getJaroAnswer() {
+		return this.jaroScore > 0.7 ? this.jaroAnswer : null;
 	}
 	
 }
