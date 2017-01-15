@@ -25,8 +25,8 @@ public class NewAnswersFinder {
 			//fetched answers
 			
 			JsonArray items = apiResult.get("items").getAsJsonArray();
-			System.out.println(items);
-			System.out.println("done");
+			//System.out.println(items);
+			//System.out.println("done");
 			
 			return items;
 			

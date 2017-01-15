@@ -51,4 +51,9 @@ public class ApiUtils {
         String answerIdUrl = "https://api.stackexchange.com/2.2/answers/"+answerId+"/flags/add";
         return JsonUtils.post(answerIdUrl,"option_id",Integer.toString(flagType),"site",site,"key",apiKey,"access_token",token);
     }
+    
+    public static JsonObject getSearchExcerpts(String body, String site, String apiKey) throws IOException {
+		String searchUrl = "https://api.stackexchange.com/2.2/search/excerpts";
+		return JsonUtils.get(searchUrl,"order", "desc", "sort", "activity", "body", body, "site",site,"key",apiKey);
+    }
 }

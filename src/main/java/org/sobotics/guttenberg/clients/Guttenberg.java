@@ -2,6 +2,7 @@ package org.sobotics.guttenberg.clients;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -73,10 +74,10 @@ public class Guttenberg {
 	}
 	
 	private void execute() {
-		System.out.println("Executing...");
+		System.out.println("Executing at - " + Instant.now());
 		//NewAnswersFinder answersFinder = new NewAnswersFinder();
 		
-		//Fetch recent answers / The targets
+		//Fetch recent answers and set them as targets in a PlagFinder
 		
 		JsonArray recentAnswers = NewAnswersFinder.findRecentAnswers();
 		List<PlagFinder> plagFinders = new ArrayList<PlagFinder>();
@@ -85,5 +86,12 @@ public class Guttenberg {
 			PlagFinder plagFinder = new PlagFinder(answer.getAsJsonObject());
 			plagFinders.add(plagFinder);
 		}
+		
+		
+		//Let PlagFinders collect data
+		for (PlagFinder finder : plagFinders) {
+			finder.collectData();
+		}
+		
 	}
 }
