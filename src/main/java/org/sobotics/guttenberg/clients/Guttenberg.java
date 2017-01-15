@@ -62,9 +62,9 @@ public class Guttenberg {
             }
 
             chatRooms.add(chatroom);
-            /*if(room.getMention(chatroom)!=null)
+            if(room.getMention(chatroom)!=null)
                 chatroom.addEventListener(EventType.USER_MENTIONED, room.getMention(chatroom));
-            if(room.getReply(chatroom)!=null)
+            /*if(room.getReply(chatroom)!=null)
                 chatroom.addEventListener(EventType.MESSAGE_REPLY, room.getReply(chatroom));*/
         }
 		

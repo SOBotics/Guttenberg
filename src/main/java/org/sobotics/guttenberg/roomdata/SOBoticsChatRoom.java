@@ -6,6 +6,7 @@ import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
 
 import java.util.function.Consumer;
 
+import org.sobitics.guttenberg.commandlists.SoBoticsCommandsList;
 import org.sobotics.guttenberg.printers.PostPrinter;
 import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
 
@@ -18,12 +19,12 @@ public class SOBoticsChatRoom implements BotRoom{
         return 111347;
     }
 
-    /*@Override
+    @Override
     public Consumer<UserMentionedEvent> getMention(Room room) {
         return event->new SoBoticsCommandsList().mention(room, event, true);
     }
 
-    @Override
+    /*@Override
     public Consumer<MessageReplyEvent> getReply(Room room) {
         return event-> PostUtils.reply(room, event, true);
     }*/

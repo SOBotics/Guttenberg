@@ -14,7 +14,7 @@ import org.sobotics.guttenberg.printers.PostPrinter;
 public interface BotRoom {
 
     public int getRoomId();
-    //public Consumer<UserMentionedEvent> getMention(Room room);
+    public Consumer<UserMentionedEvent> getMention(Room room);
     //public Consumer<MessageReplyEvent> getReply(Room room);
     //public Validator getValidator();
     public PostPrinter getPostPrinter();
