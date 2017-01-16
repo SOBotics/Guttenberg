@@ -28,18 +28,15 @@ public class SoBoticsCommandsList {
         Message message = event.getMessage();
         List<SpecialCommand> commands = new ArrayList<>(Arrays.asList(
             new Alive(message),
+            new Check(message),
             new Say(message)
         ));
 
         commands.add(new Commands(message,commands));
         
-        System.out.println("Looking for the command to execute");
-
         for(SpecialCommand command: commands){
             if(command.validate()){
                 command.execute(room);
-            } else {
-            	System.out.println("It's not " +command.description());
             }
         }
         

@@ -91,18 +91,15 @@ public class Guttenberg {
 		//Let PlagFinders collect data and print the post
 		for (PlagFinder finder : plagFinders) {
 			finder.collectData();
-			System.out.println("Collected");
 			JsonObject otherAnswer = finder.getMostSimilarAnswer();
 			if (finder.getJaroScore() > 0.8) {
-				System.out.println("Prepare message");
 				for (Room room : this.chatRooms) {
-					System.out.println("Room: "+room);
 					if (room.getRoomId() == 111347) {
 						SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
 						room.send(printer.print(finder));
 						System.out.println("Posted: "+printer.print(finder));
 					} else {
-						System.out.println("Score too low");
+						System.out.println("Not SOBotics");
 					}
 				}
 			} else {
