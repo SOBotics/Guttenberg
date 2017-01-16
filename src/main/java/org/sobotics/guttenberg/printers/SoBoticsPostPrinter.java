@@ -18,7 +18,7 @@ public class SoBoticsPostPrinter implements PostPrinter {
     	String link = finder.getJaroAnswer().get("link").getAsString();
     	String targetLink = "https://stackoverflow.com/a/"+finder.getTargetAnswer().get("answer_id").getAsString();
     	
-    	String post = "[Possible plagiarism]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
+    	String post = "[ [Guttenberg](https://git.io/vMrPa) ] [Possible plagiarism]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
     	
         return post;
     }
