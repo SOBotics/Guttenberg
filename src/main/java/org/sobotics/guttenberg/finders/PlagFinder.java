@@ -122,6 +122,7 @@ public class PlagFinder {
 		System.out.println("Score: "+highscore);
 		
 		this.jaroScore = highscore;
+		this.jaroAnswer = closestMatch;
 		
 		return highscore > 0 ? closestMatch : null;
 	}
@@ -136,7 +137,8 @@ public class PlagFinder {
 	}
 	
 	public JsonObject getJaroAnswer() {
-		return this.jaroScore > 0.7 ? this.jaroAnswer : null;
+		return this.jaroAnswer;
+		//return this.jaroScore > 0.7 ? this.jaroAnswer : null;
 	}
 	
 }
