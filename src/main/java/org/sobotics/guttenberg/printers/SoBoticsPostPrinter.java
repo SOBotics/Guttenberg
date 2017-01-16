@@ -13,7 +13,13 @@ public class SoBoticsPostPrinter implements PostPrinter {
 
     @Override
     public String print(PlagFinder finder) {
-
-        return finder.getTargetAnswer().toString();
+    	
+    	double score = Math.round(finder.getJaroScore()*100.0)/100.0;
+    	String link = finder.getJaroAnswer().get("link").getAsString();
+    	String targetLink = "https://stackoverflow.com/a/"+finder.getTargetAnswer().get("answer_id").getAsString();
+    	
+    	String post = "[Possible plagiarism]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
+    	
+        return post;
     }
 }

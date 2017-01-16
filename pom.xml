@@ -40,6 +40,11 @@
             <version>1.7.21</version>
         </dependency>
 
+        <dependency>
+        	<groupId>info.debatty</groupId>
+        	<artifactId>java-string-similarity</artifactId>
+        	<version>0.21</version>
+        </dependency>
     </dependencies>
     <repositories>
         <repository>
