@@ -2,6 +2,7 @@ package org.sobotics.guttenberg.clients;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -75,7 +76,7 @@ public class Guttenberg {
 	}
 	
 	private void execute() {
-		System.out.println("Executing...");
+		System.out.println("Executing at - "+Instant.now());
 		//NewAnswersFinder answersFinder = new NewAnswersFinder();
 		
 		//Fetch recent answers / The targets
@@ -123,7 +124,7 @@ public class Guttenberg {
 		//Let PlagFinders find the best match
 		for (PlagFinder finder : plagFinders) {
 			JsonObject otherAnswer = finder.getMostSimilarAnswer();
-			if (finder.getJaroScore() > 0.8) {
+			if (finder.getJaroScore() > 0.75) {
 				for (Room room : this.chatRooms) {
 					if (room.getRoomId() == 111347) {
 						SoBoticsPostPrinter printer = new SoBoticsPostPrinter();

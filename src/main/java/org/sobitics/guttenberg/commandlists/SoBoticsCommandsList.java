@@ -29,7 +29,8 @@ public class SoBoticsCommandsList {
         List<SpecialCommand> commands = new ArrayList<>(Arrays.asList(
             new Alive(message),
             new Check(message),
-            new Say(message)
+            new Say(message),
+            new Pfiatdi(message)
         ));
 
         commands.add(new Commands(message,commands));
