@@ -26,7 +26,7 @@ public class PlagFinder {
 	/**
 	 * A list of answers that are somehow related to targetAnswer.
 	 * */
-	private List<JsonObject> relatedAnswers;
+	public List<JsonObject> relatedAnswers;
 	
 	private double jaroScore = 0;
 	

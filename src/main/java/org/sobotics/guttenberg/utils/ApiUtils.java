@@ -25,6 +25,16 @@ public class ApiUtils {
         return JsonUtils.get(questionIdUrl,"site",site,"key",apiKey);
     }
     
+    public static JsonObject getRelatedQuestionsByIds(String questionIds, String site, String apiKey) throws IOException{
+        String questionIdUrl = "https://api.stackexchange.com/2.2/questions/"+questionIds+"/related";
+        return JsonUtils.get(questionIdUrl,"site",site,"key",apiKey);
+    }
+    
+    public static JsonObject getLinkedQuestionsByIds(String questionIds, String site, String apiKey) throws IOException{
+        String questionIdUrl = "https://api.stackexchange.com/2.2/questions/"+questionIds+"/related";
+        return JsonUtils.get(questionIdUrl,"site",site,"key",apiKey);
+    }
+    
     public static JsonObject getAnswersToQuestionsByIdString(String questionIds, String site, String apiKey) throws IOException{
         String questionIdUrl = "https://api.stackexchange.com/2.2/questions/"+questionIds+"/answers";
         return JsonUtils.get(questionIdUrl,"site",site,"key",apiKey,"filter","!bGqd96Ed_k-mDe");
