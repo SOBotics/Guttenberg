@@ -59,7 +59,7 @@ public class Guttenberg {
                 if (prop.getProperty("location").equals("server")) {
                 	chatroom.send("Grias di o/ (SERVER VERSION)" );
                 } else {
-                	//chatroom.send("Grias di o/ (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
+                	chatroom.send("Grias di o/ (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
                 }
             }
 
@@ -82,7 +82,6 @@ public class Guttenberg {
 		JsonArray recentAnswers = NewAnswersFinder.findRecentAnswers();
 		
 		//Fetch their question_ids
-		
 		List<Integer> ids = new ArrayList<Integer>();
 		for (JsonElement answer : recentAnswers) {
 			Integer id = answer.getAsJsonObject().get("question_id").getAsInt();
@@ -102,13 +101,27 @@ public class Guttenberg {
 		//fetch all /questions/ids/answers sort them later
 		
 		RelatedAnswersFinder related = new RelatedAnswersFinder(ids);
-		related.fetchRelatedAnswers();
+		List<JsonObject> relatedAnswersUnsorted = related.fetchRelatedAnswers();
 		
-		
-		/*
-		//Let PlagFinders collect data and print the post
+		System.out.println("Add the answers to the PlagFinders...");
+		//add relatedAnswers to the PlagFinders
 		for (PlagFinder finder : plagFinders) {
-			finder.collectData();
+			Integer targetId = finder.getTargetAnswerId();
+			//System.out.println("TargetID: "+targetId);
+			
+			for (JsonObject relatedItem : relatedAnswersUnsorted) {
+				//System.out.println(relatedItem);
+				if (relatedItem.has("answer_id") && relatedItem.get("answer_id").getAsInt() != targetId) {
+					finder.relatedAnswers.add(relatedItem);
+					//System.out.println("Added answer: "+relatedItem);
+				}
+			}
+			
+		}
+		
+		System.out.println("Find the duplicates...");
+		//Let PlagFinders find the best match
+		for (PlagFinder finder : plagFinders) {
 			JsonObject otherAnswer = finder.getMostSimilarAnswer();
 			if (finder.getJaroScore() > 0.8) {
 				for (Room room : this.chatRooms) {
@@ -123,6 +136,6 @@ public class Guttenberg {
 			} else {
 				System.out.println("Score "+finder.getJaroScore()+" too low");
 			}
-		}*/
+		}
 	}
 }

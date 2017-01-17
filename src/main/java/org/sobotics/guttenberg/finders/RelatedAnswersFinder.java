@@ -45,6 +45,7 @@ public class RelatedAnswersFinder {
             e.printStackTrace();
         }
         
+        System.out.println("Fetch the linked/related questions...");
         
         try {
 			JsonObject relatedQuestions = ApiUtils.getRelatedQuestionsByIds(idString, "stackoverflow", prop.getProperty("apikey", ""));
