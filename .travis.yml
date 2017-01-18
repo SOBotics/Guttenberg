@@ -1,3 +1,10 @@
 language: java
 jdk:
  - oraclejdk8
+deploy:
+  provider: releases
+  api_key: "FLKt5pVsysQnhXEk3umg"
+  file: "Guttenberg.jar"
+  skip_cleanup: true
+  on:
+    tags: true

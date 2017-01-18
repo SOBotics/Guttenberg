@@ -2,6 +2,7 @@ package org.sobotics.guttenberg.clients;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -11,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.sobotics.guttenberg.finders.NewAnswersFinder;
 import org.sobotics.guttenberg.finders.PlagFinder;
+import org.sobotics.guttenberg.finders.RelatedAnswersFinder;
 import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
 import org.sobotics.guttenberg.roomdata.BotRoom;
 import org.sobotics.guttenberg.utils.FilePathUtils;
@@ -74,12 +76,22 @@ public class Guttenberg {
 	}
 	
 	private void execute() {
-		System.out.println("Executing...");
+		System.out.println("Executing at - "+Instant.now());
 		//NewAnswersFinder answersFinder = new NewAnswersFinder();
 		
 		//Fetch recent answers / The targets
-		
 		JsonArray recentAnswers = NewAnswersFinder.findRecentAnswers();
+		
+		//Fetch their question_ids
+		List<Integer> ids = new ArrayList<Integer>();
+		for (JsonElement answer : recentAnswers) {
+			Integer id = answer.getAsJsonObject().get("question_id").getAsInt();
+			if (!ids.contains(id))
+				ids.add(id);
+		}
+		
+		
+		//Initialize the PlagFinders
 		List<PlagFinder> plagFinders = new ArrayList<PlagFinder>();
 		
 		for (JsonElement answer : recentAnswers) {
@@ -87,12 +99,32 @@ public class Guttenberg {
 			plagFinders.add(plagFinder);
 		}
 		
+		//fetch all /questions/ids/answers sort them later
 		
-		//Let PlagFinders collect data and print the post
+		RelatedAnswersFinder related = new RelatedAnswersFinder(ids);
+		List<JsonObject> relatedAnswersUnsorted = related.fetchRelatedAnswers();
+		
+		System.out.println("Add the answers to the PlagFinders...");
+		//add relatedAnswers to the PlagFinders
 		for (PlagFinder finder : plagFinders) {
-			finder.collectData();
+			Integer targetId = finder.getTargetAnswerId();
+			//System.out.println("TargetID: "+targetId);
+			
+			for (JsonObject relatedItem : relatedAnswersUnsorted) {
+				//System.out.println(relatedItem);
+				if (relatedItem.has("answer_id") && relatedItem.get("answer_id").getAsInt() != targetId) {
+					finder.relatedAnswers.add(relatedItem);
+					//System.out.println("Added answer: "+relatedItem);
+				}
+			}
+			
+		}
+		
+		System.out.println("Find the duplicates...");
+		//Let PlagFinders find the best match
+		for (PlagFinder finder : plagFinders) {
 			JsonObject otherAnswer = finder.getMostSimilarAnswer();
-			if (finder.getJaroScore() > 0.8) {
+			if (finder.getJaroScore() > 0.77) {
 				for (Room room : this.chatRooms) {
 					if (room.getRoomId() == 111347) {
 						SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
@@ -106,5 +138,7 @@ public class Guttenberg {
 				System.out.println("Score "+finder.getJaroScore()+" too low");
 			}
 		}
+		
+		System.out.println("Finished at - "+Instant.now());
 	}
 }

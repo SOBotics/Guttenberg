@@ -26,7 +26,7 @@ public class PlagFinder {
 	/**
 	 * A list of answers that are somehow related to targetAnswer.
 	 * */
-	private List<JsonObject> relatedAnswers;
+	public List<JsonObject> relatedAnswers;
 	
 	private double jaroScore = 0;
 	
@@ -37,6 +37,12 @@ public class PlagFinder {
 	 * */
 	public PlagFinder(JsonObject jsonObject) {
 		this.targetAnswer = jsonObject;
+		this.relatedAnswers = new ArrayList<JsonObject>();
+	}
+	
+	public PlagFinder(JsonObject target, List<JsonObject> related) {
+		this.targetAnswer = target;
+		this.relatedAnswers = related;
 	}
 	
 	public void collectData() {
@@ -130,6 +136,10 @@ public class PlagFinder {
 	
 	public JsonObject getTargetAnswer() {
 		return this.targetAnswer;
+	}
+	
+	public Integer getTargetAnswerId() {
+		return this.targetAnswer.get("answer_id").getAsInt();
 	}
 	
 	public double getJaroScore() {
