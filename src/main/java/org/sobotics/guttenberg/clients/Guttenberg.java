@@ -124,7 +124,7 @@ public class Guttenberg {
 		//Let PlagFinders find the best match
 		for (PlagFinder finder : plagFinders) {
 			JsonObject otherAnswer = finder.getMostSimilarAnswer();
-			if (finder.getJaroScore() > 0.75) {
+			if (finder.getJaroScore() > 0.77) {
 				for (Room room : this.chatRooms) {
 					if (room.getRoomId() == 111347) {
 						SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
@@ -138,5 +138,7 @@ public class Guttenberg {
 				System.out.println("Score "+finder.getJaroScore()+" too low");
 			}
 		}
+		
+		System.out.println("Finished at - "+Instant.now());
 	}
 }
