@@ -31,7 +31,21 @@ import fr.tunaki.stackoverflow.chat.event.EventType;
  * */
 public class Guttenberg {	
 	
+	//Global Statistics
+	/**
+	 * The time when the last check was finished
+	 * */
 	public static Instant lastExecutionFinished = null;
+	
+	/**
+	 * The number of new answers that have been checked
+	 * */
+	public static int numberOfCheckedTargets = 0;
+	
+	/**
+	 * The number of posts that were reported in chat as possible plagiarism
+	 * */
+	public static int numberOfReportedPosts = 0;
 	
 	private StackExchangeClient client;
     private List<BotRoom> rooms;
@@ -120,7 +134,6 @@ public class Guttenberg {
 					//System.out.println("Added answer: "+relatedItem);
 				}
 			}
-			
 		}
 		
 		System.out.println("Find the duplicates...");
@@ -133,6 +146,7 @@ public class Guttenberg {
 						SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
 						room.send(printer.print(finder));
 						System.out.println("Posted: "+printer.print(finder));
+						Guttenberg.numberOfReportedPosts++;
 					} else {
 						System.out.println("Not SOBotics");
 					}
@@ -140,6 +154,9 @@ public class Guttenberg {
 			} else {
 				System.out.println("Score "+finder.getJaroScore()+" too low");
 			}
+			
+			Guttenberg.numberOfCheckedTargets++;
+			
 		}
 		Guttenberg.lastExecutionFinished = Instant.now();
 		System.out.println("Finished at - "+Guttenberg.lastExecutionFinished);

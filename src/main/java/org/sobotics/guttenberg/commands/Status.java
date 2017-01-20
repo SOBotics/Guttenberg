@@ -50,6 +50,8 @@ public class Status implements SpecialCommand {
 		String version = prop2.getProperty("version", "undefined");
 		status += "\nVersion: "+version;
 		
+		status += "\nChecked "+Guttenberg.numberOfCheckedTargets+" targets and reported "+Guttenberg.numberOfReportedPosts;
+		
 		
 		room.replyTo(message.getId(), status);
 	}
