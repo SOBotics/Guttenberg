@@ -2,6 +2,7 @@ package org.sobotics.guttenberg.commands;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.jar.JarFile;
 
@@ -31,10 +32,13 @@ public class Status implements SpecialCommand {
 	public void execute(Room room) {
 		Properties prop = new Properties();
 		Properties prop2 = new Properties();
-
+		
         try{
             prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
-            prop2.load(new FileInputStream("src/main/resources/guttenberg.properties"));
+            //prop2.load(new FileInputStream("src/main/resources/guttenberg.properties"));
+            try (InputStream is = Status.class.getResourceAsStream("/guttenberg.properties")) {
+            	prop2.load(is);
+            }
         }
         catch (IOException e){
             e.printStackTrace();
