@@ -3,9 +3,11 @@ package org.sobotics.guttenberg.commands;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.jar.JarFile;
 
 import org.sobotics.guttenberg.clients.Client;
 import org.sobotics.guttenberg.clients.Guttenberg;
+import org.sobotics.guttenberg.utils.ApiUtils;
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 
@@ -38,15 +40,14 @@ public class Status implements SpecialCommand {
 		
 		
 		String status = "Running since: "+Client.startupDate;
-		status += "Last execution finished: "+Guttenberg.lastExecutionFinished;
+		status += "\nLast execution finished: "+Guttenberg.lastExecutionFinished;
 		status += "\nLocation: "+prop.getProperty("location", "undefined");
 		
 		//Get version
-		String version = this.getClass().getPackage().getSpecificationVersion();
+		ApiUtils utils = new ApiUtils();
+		String version = utils.getClass().getPackage().getImplementationVersion();
 		status += "\nVersion: "+version;
 		
-		
-		//JarFile file = new JarFile("./Guttenberg.jar");
 		
 		room.replyTo(message.getId(), status);
 	}
