@@ -30,9 +30,11 @@ public class Status implements SpecialCommand {
 	@Override
 	public void execute(Room room) {
 		Properties prop = new Properties();
+		Properties prop2 = new Properties();
 
         try{
             prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
+            prop2.load(new FileInputStream("src/main/resources/guttenberg.properties"));
         }
         catch (IOException e){
             e.printStackTrace();
@@ -45,7 +47,7 @@ public class Status implements SpecialCommand {
 		
 		//Get version
 		ApiUtils utils = new ApiUtils();
-		String version = utils.getClass().getPackage().getImplementationVersion();
+		String version = prop2.getProperty("version", "undefined");
 		status += "\nVersion: "+version;
 		
 		
