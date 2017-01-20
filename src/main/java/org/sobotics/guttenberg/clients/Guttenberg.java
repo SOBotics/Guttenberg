@@ -30,6 +30,9 @@ import fr.tunaki.stackoverflow.chat.event.EventType;
  * Fetches and analyzes the data from the API
  * */
 public class Guttenberg {	
+	
+	public static Instant lastExecutionFinished = null;
+	
 	private StackExchangeClient client;
     private List<BotRoom> rooms;
     private List<Room> chatRooms;
@@ -138,7 +141,7 @@ public class Guttenberg {
 				System.out.println("Score "+finder.getJaroScore()+" too low");
 			}
 		}
-		
-		System.out.println("Finished at - "+Instant.now());
+		Guttenberg.lastExecutionFinished = Instant.now();
+		System.out.println("Finished at - "+Guttenberg.lastExecutionFinished);
 	}
 }

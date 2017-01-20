@@ -13,10 +13,13 @@ import org.sobotics.guttenberg.utils.FilePathUtils;
 
 import fr.tunaki.stackoverflow.chat.StackExchangeClient;
 
+
 /**
  * The main class
  * */
 public class Client {
+	
+	public static Instant startupDate = null;
 
 	public static void main(String[] args) {
 		System.out.println("Hello, World!");
@@ -43,8 +46,8 @@ public class Client {
 		
 		guttenberg.start();
 		
-		
-		System.out.println(Instant.now() + " - Successfully launched Guttenberg!");
+		Client.startupDate = Instant.now();
+		System.out.println(Client.startupDate + " - Successfully launched Guttenberg!");
 	}
 
 }
