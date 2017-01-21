@@ -16,6 +16,7 @@ import org.sobotics.guttenberg.finders.RelatedAnswersFinder;
 import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
 import org.sobotics.guttenberg.roomdata.BotRoom;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.StatusUtils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -30,22 +31,6 @@ import fr.tunaki.stackoverflow.chat.event.EventType;
  * Fetches and analyzes the data from the API
  * */
 public class Guttenberg {	
-	
-	//Global Statistics
-	/**
-	 * The time when the last check was finished
-	 * */
-	public static Instant lastExecutionFinished = null;
-	
-	/**
-	 * The number of new answers that have been checked
-	 * */
-	public static int numberOfCheckedTargets = 0;
-	
-	/**
-	 * The number of posts that were reported in chat as possible plagiarism
-	 * */
-	public static int numberOfReportedPosts = 0;
 	
 	private StackExchangeClient client;
     private List<BotRoom> rooms;
@@ -146,7 +131,7 @@ public class Guttenberg {
 						SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
 						room.send(printer.print(finder));
 						System.out.println("Posted: "+printer.print(finder));
-						Guttenberg.numberOfReportedPosts++;
+						StatusUtils.numberOfReportedPosts++;
 					} else {
 						System.out.println("Not SOBotics");
 					}
@@ -155,10 +140,10 @@ public class Guttenberg {
 				System.out.println("Score "+finder.getJaroScore()+" too low");
 			}
 			
-			Guttenberg.numberOfCheckedTargets++;
+			StatusUtils.numberOfCheckedTargets++;
 			
 		}
-		Guttenberg.lastExecutionFinished = Instant.now();
-		System.out.println("Finished at - "+Guttenberg.lastExecutionFinished);
+		StatusUtils.lastExecutionFinished = Instant.now();
+		System.out.println("Finished at - "+StatusUtils.lastExecutionFinished);
 	}
 }

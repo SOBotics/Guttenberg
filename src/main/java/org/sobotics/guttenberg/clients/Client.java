@@ -10,6 +10,7 @@ import java.util.Properties;
 import org.sobotics.guttenberg.roomdata.BotRoom;
 import org.sobotics.guttenberg.roomdata.SOBoticsChatRoom;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.StatusUtils;
 
 import fr.tunaki.stackoverflow.chat.StackExchangeClient;
 
@@ -18,8 +19,6 @@ import fr.tunaki.stackoverflow.chat.StackExchangeClient;
  * The main class
  * */
 public class Client {
-	
-	public static Instant startupDate = null;
 
 	public static void main(String[] args) {
 		System.out.println("Hello, World!");
@@ -48,8 +47,8 @@ public class Client {
 		
 		guttenberg.start();
 		
-		Client.startupDate = Instant.now();
-		System.out.println(Client.startupDate + " - Successfully launched Guttenberg!");
+		StatusUtils.startupDate = Instant.now();
+		System.out.println(StatusUtils.startupDate + " - Successfully launched Guttenberg!");
 	}
 
 }

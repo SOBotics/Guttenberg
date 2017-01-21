@@ -11,6 +11,7 @@ import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.utils.ApiUtils;
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.StatusUtils;
 
 import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
@@ -30,6 +31,7 @@ public class Status implements SpecialCommand {
 
 	@Override
 	public void execute(Room room) {
+		System.out.println("Checking status...");
 		Properties prop = new Properties();
 		Properties prop2 = new Properties();
 		
@@ -41,21 +43,22 @@ public class Status implements SpecialCommand {
             }
         }
         catch (IOException e){
+        	System.out.println("Could not load properties");
             e.printStackTrace();
         }
 		
 		
         StringBuilder status = new StringBuilder();
-        status.append("Running since: "+Client.startupDate);
+        status.append("Running since: "+StatusUtils.startupDate);
         
         if (room.getRoomId() == 111347) {
-        	status.append("\nLast execution finished: "+Guttenberg.lastExecutionFinished);
+        	status.append("\nLast execution finished: "+StatusUtils.lastExecutionFinished);
         	status.append("\nLocation: "+prop.getProperty("location", "undefined"));
         }
         
         String version = prop2.getProperty("version", "undefined");
         status.append("\nVersion: "+version);
-        status.append("\nChecked "+Guttenberg.numberOfCheckedTargets+" targets and reported "+Guttenberg.numberOfReportedPosts);
+        status.append("\nChecked "+StatusUtils.numberOfCheckedTargets+" targets and reported "+StatusUtils.numberOfReportedPosts);
         
 		
 		room.replyTo(message.getId(), status.toString());
