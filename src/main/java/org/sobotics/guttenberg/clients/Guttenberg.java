@@ -16,6 +16,7 @@ import org.sobotics.guttenberg.finders.RelatedAnswersFinder;
 import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
 import org.sobotics.guttenberg.roomdata.BotRoom;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.StatusUtils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -30,6 +31,7 @@ import fr.tunaki.stackoverflow.chat.event.EventType;
  * Fetches and analyzes the data from the API
  * */
 public class Guttenberg {	
+	
 	private StackExchangeClient client;
     private List<BotRoom> rooms;
     private List<Room> chatRooms;
@@ -117,7 +119,6 @@ public class Guttenberg {
 					//System.out.println("Added answer: "+relatedItem);
 				}
 			}
-			
 		}
 		
 		System.out.println("Find the duplicates...");
@@ -130,6 +131,7 @@ public class Guttenberg {
 						SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
 						room.send(printer.print(finder));
 						System.out.println("Posted: "+printer.print(finder));
+						StatusUtils.numberOfReportedPosts.incrementAndGet();
 					} else {
 						System.out.println("Not SOBotics");
 					}
@@ -137,8 +139,11 @@ public class Guttenberg {
 			} else {
 				System.out.println("Score "+finder.getJaroScore()+" too low");
 			}
+			
+			StatusUtils.numberOfCheckedTargets.incrementAndGet();
+			
 		}
-		
-		System.out.println("Finished at - "+Instant.now());
+		StatusUtils.lastExecutionFinished = Instant.now();
+		System.out.println("Finished at - "+StatusUtils.lastExecutionFinished);
 	}
 }

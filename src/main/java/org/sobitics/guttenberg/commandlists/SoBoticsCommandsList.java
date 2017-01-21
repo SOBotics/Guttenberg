@@ -30,6 +30,7 @@ public class SoBoticsCommandsList {
             new Alive(message),
             new Check(message),
             new Say(message),
+            new Status(message),
             new Pfiatdi(message)
         ));
 

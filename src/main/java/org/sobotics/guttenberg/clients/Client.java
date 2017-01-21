@@ -10,8 +10,10 @@ import java.util.Properties;
 import org.sobotics.guttenberg.roomdata.BotRoom;
 import org.sobotics.guttenberg.roomdata.SOBoticsChatRoom;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.StatusUtils;
 
 import fr.tunaki.stackoverflow.chat.StackExchangeClient;
+
 
 /**
  * The main class
@@ -28,7 +30,9 @@ public class Client {
             prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
         }
         catch (IOException e){
-            e.printStackTrace();
+        	e.printStackTrace();
+        	System.out.println("Could not load login.properties! Shutting down...");
+        	return;
         }
 		
 		System.out.println("Initialize chat...");
@@ -43,8 +47,8 @@ public class Client {
 		
 		guttenberg.start();
 		
-		
-		System.out.println(Instant.now() + " - Successfully launched Guttenberg!");
+		StatusUtils.startupDate = Instant.now();
+		System.out.println(StatusUtils.startupDate + " - Successfully launched Guttenberg!");
 	}
 
 }
