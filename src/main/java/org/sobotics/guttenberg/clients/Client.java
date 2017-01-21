@@ -31,7 +31,9 @@ public class Client {
             prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
         }
         catch (IOException e){
-            e.printStackTrace();
+        	e.printStackTrace();
+        	System.out.println("Could not load login.properties! Shutting down...");
+        	return;
         }
 		
 		System.out.println("Initialize chat...");
