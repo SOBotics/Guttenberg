@@ -45,19 +45,20 @@ public class Status implements SpecialCommand {
         }
 		
 		
-		String status = "Running since: "+Client.startupDate;
-		status += "\nLast execution finished: "+Guttenberg.lastExecutionFinished;
-		status += "\nLocation: "+prop.getProperty("location", "undefined");
+        StringBuilder status = new StringBuilder();
+        status.append("Running since: "+Client.startupDate);
+        
+        if (room.getRoomId() == 111347) {
+        	status.append("\nLast execution finished: "+Guttenberg.lastExecutionFinished);
+        	status.append("\nLocation: "+prop.getProperty("location", "undefined"));
+        }
+        
+        String version = prop2.getProperty("version", "undefined");
+        status.append("\nVersion: "+version);
+        status.append("\nChecked "+Guttenberg.numberOfCheckedTargets+" targets and reported "+Guttenberg.numberOfReportedPosts);
+        
 		
-		//Get version
-		ApiUtils utils = new ApiUtils();
-		String version = prop2.getProperty("version", "undefined");
-		status += "\nVersion: "+version;
-		
-		status += "\nChecked "+Guttenberg.numberOfCheckedTargets+" targets and reported "+Guttenberg.numberOfReportedPosts;
-		
-		
-		room.replyTo(message.getId(), status);
+		room.replyTo(message.getId(), status.toString());
 	}
 
 	@Override
