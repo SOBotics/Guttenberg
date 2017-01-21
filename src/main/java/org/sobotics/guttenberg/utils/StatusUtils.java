@@ -1,6 +1,7 @@
 package org.sobotics.guttenberg.utils;
 
 import java.time.Instant;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Provides statistics about the current status since launch
@@ -16,10 +17,10 @@ public class StatusUtils {
 	/**
 	 * The number of new answers that have been checked
 	 * */
-	public static int numberOfCheckedTargets = 0;
+	public static AtomicInteger numberOfCheckedTargets = new AtomicInteger(0);
 	
 	/**
 	 * The number of posts that were reported in chat as possible plagiarism
 	 * */
-	public static int numberOfReportedPosts = 0;
+	public static AtomicInteger numberOfReportedPosts = new AtomicInteger(0);
 }

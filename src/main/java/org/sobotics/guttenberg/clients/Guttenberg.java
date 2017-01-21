@@ -131,7 +131,7 @@ public class Guttenberg {
 						SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
 						room.send(printer.print(finder));
 						System.out.println("Posted: "+printer.print(finder));
-						StatusUtils.numberOfReportedPosts++;
+						StatusUtils.numberOfReportedPosts.incrementAndGet();
 					} else {
 						System.out.println("Not SOBotics");
 					}
@@ -140,7 +140,7 @@ public class Guttenberg {
 				System.out.println("Score "+finder.getJaroScore()+" too low");
 			}
 			
-			StatusUtils.numberOfCheckedTargets++;
+			StatusUtils.numberOfCheckedTargets.incrementAndGet();
 			
 		}
 		StatusUtils.lastExecutionFinished = Instant.now();
