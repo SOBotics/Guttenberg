@@ -78,7 +78,8 @@ public class Guttenberg {
 	}
 	
 	private void execute() {
-		System.out.println("Executing at - "+Instant.now());
+		Instant startTime = Instant.now();
+		System.out.println("Executing at - "+startTime);
 		//NewAnswersFinder answersFinder = new NewAnswersFinder();
 		
 		//Fetch recent answers / The targets
@@ -105,6 +106,11 @@ public class Guttenberg {
 		
 		RelatedAnswersFinder related = new RelatedAnswersFinder(ids);
 		List<JsonObject> relatedAnswersUnsorted = related.fetchRelatedAnswers();
+		
+		if (relatedAnswersUnsorted == null || relatedAnswersUnsorted.size() == 0) {
+			System.out.println("No related answers could be fetched. Skipping this execution...");
+			return;
+		}
 		
 		System.out.println("Add the answers to the PlagFinders...");
 		//add relatedAnswers to the PlagFinders
@@ -143,6 +149,8 @@ public class Guttenberg {
 			StatusUtils.numberOfCheckedTargets.incrementAndGet();
 			
 		}
+		
+		StatusUtils.lastSucceededExecutionStarted = startTime;
 		StatusUtils.lastExecutionFinished = Instant.now();
 		System.out.println("Finished at - "+StatusUtils.lastExecutionFinished);
 	}

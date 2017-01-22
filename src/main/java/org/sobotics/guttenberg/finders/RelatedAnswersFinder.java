@@ -49,7 +49,9 @@ public class RelatedAnswersFinder {
         
         try {
 			JsonObject relatedQuestions = ApiUtils.getRelatedQuestionsByIds(idString, "stackoverflow", prop.getProperty("apikey", ""));
+			System.out.println("Related done");
 			JsonObject linkedQuestions = ApiUtils.getLinkedQuestionsByIds(idString, "stackoverflow", prop.getProperty("apikey", ""));
+			System.out.println("linked done");
 			
 			String relatedIds = "";
 
@@ -85,7 +87,7 @@ public class RelatedAnswersFinder {
 			
 			
         } catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.out.println("Error in RelatedAnswersFinder");
 			e.printStackTrace();
 			return null;
 		}
