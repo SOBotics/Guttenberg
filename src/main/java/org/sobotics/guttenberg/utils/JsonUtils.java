@@ -6,6 +6,7 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jsoup.parser.Parser;
 import org.slf4j.Logger;
@@ -22,6 +23,10 @@ public class JsonUtils {
             throw new IOException("HTTP " + response.statusCode() + " fetching URL " + (url) + ". Body is: " + response.body());
         }
         JsonObject root = new JsonParser().parse(json).getAsJsonObject();
+        
+        if (root.has("quota_remaining"))
+        	StatusUtils.remainingQuota = new AtomicInteger(root.get("quota_remaining").getAsInt());
+        
         return root;
     }
     public static JsonObject post(String url, String... data) throws IOException {
@@ -31,6 +36,10 @@ public class JsonUtils {
             throw new IOException("HTTP " + response.statusCode() + " fetching URL " + (url) + ". Body is: " + response.body());
         }
         JsonObject root = new JsonParser().parse(json).getAsJsonObject();
+        
+        if (root.has("quota_remaining"))
+        	StatusUtils.remainingQuota = new AtomicInteger(root.get("quota_remaining").getAsInt());
+        
         return root;
     }
     public static void handleBackoff(Logger LOGGER, JsonObject root) {
