@@ -89,12 +89,12 @@ public class RelatedAnswersFinder {
         } catch (IOException e) {
 			System.out.println("Error in RelatedAnswersFinder");
 			e.printStackTrace();
-			return null;
+			return new ArrayList<JsonObject>();
 		}
 		
 		
 		
-		return null;
+		return new ArrayList<JsonObject>();
 	}
 	
 	

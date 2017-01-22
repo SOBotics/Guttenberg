@@ -37,7 +37,7 @@ public class NewAnswersFinder {
         }
         catch (IOException e){
             e.printStackTrace();
-            return null;
+            return new JsonArray();
         }
 		
 		try {
@@ -54,7 +54,7 @@ public class NewAnswersFinder {
 		} catch (IOException e) {
 			System.out.println("Could not load recent answers");
 			e.printStackTrace();
-			return null;
+			return new JsonArray();
 		}
 	}
 	

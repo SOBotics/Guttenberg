@@ -107,7 +107,7 @@ public class Guttenberg {
 		RelatedAnswersFinder related = new RelatedAnswersFinder(ids);
 		List<JsonObject> relatedAnswersUnsorted = related.fetchRelatedAnswers();
 		
-		if (relatedAnswersUnsorted == null || relatedAnswersUnsorted.size() == 0) {
+		if (relatedAnswersUnsorted.isEmpty()) {
 			System.out.println("No related answers could be fetched. Skipping this execution...");
 			return;
 		}
