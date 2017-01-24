@@ -62,6 +62,7 @@ public class PlagFinder {
         }
         catch (IOException e){
             e.printStackTrace();
+            return;
         }
 		
 		try {
@@ -108,6 +109,7 @@ public class PlagFinder {
 		} catch (IOException e) {
 			System.out.println("ERROR");
 			e.printStackTrace();
+			return;
 		}
 	}
 	
