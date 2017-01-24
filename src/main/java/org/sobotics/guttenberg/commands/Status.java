@@ -58,7 +58,7 @@ public class Status implements SpecialCommand {
         String version = prop2.getProperty("version", "undefined");
         status.append("\nVersion: "+version);
         status.append("\nChecked "+StatusUtils.numberOfCheckedTargets+" targets and reported "+StatusUtils.numberOfReportedPosts);
-        
+        status.append("\nRemaining quota: "+StatusUtils.remainingQuota);
 		
 		room.replyTo(message.getId(), status.toString());
 	}

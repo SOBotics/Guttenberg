@@ -28,4 +28,9 @@ public class StatusUtils {
 	 * The number of posts that were reported in chat as possible plagiarism
 	 * */
 	public static AtomicInteger numberOfReportedPosts = new AtomicInteger(0);
+	
+	/**
+	 * The remaining api quota
+	 * */
+	public static AtomicInteger remainingQuota = new AtomicInteger(-1);
 }
