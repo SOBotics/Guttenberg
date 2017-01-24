@@ -3,6 +3,8 @@ package org.sobotics.guttenberg.clients;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -75,6 +77,7 @@ public class Guttenberg {
 		
 		
 		executorService.scheduleAtFixedRate(()->execute(), 0, 59, TimeUnit.SECONDS);
+		executorService.scheduleAtFixedRate(()->checkLastExecution(), 30, 5, TimeUnit.MINUTES);
 	}
 	
 	private void execute() {
@@ -153,5 +156,30 @@ public class Guttenberg {
 		StatusUtils.lastSucceededExecutionStarted = startTime;
 		StatusUtils.lastExecutionFinished = Instant.now();
 		System.out.println("Finished at - "+StatusUtils.lastExecutionFinished);
+	}
+	
+	/**
+	 * Checks when the last execution was successful. After a certain amount of time without succeeded executions, FelixSFD will be pinged.
+	 * */
+	private void checkLastExecution() {
+		if (StatusUtils.askedForHelp)
+			return;
+		
+		Instant now = Instant.now();
+		Instant lastSuccess = StatusUtils.lastSucceededExecutionStarted;
+		
+		//long difference = lastSuccess.getEpochSecond() - now.getEpochSecond();
+		
+		Instant criticalDate = now.minus(20, ChronoUnit.MINUTES);
+		
+		if (criticalDate.isBefore(lastSuccess)) {
+			for (Room room : this.chatRooms) {
+				if (room.getRoomId() == 111347) {
+					room.send("@FelixSFD I didn't work correctly for the last 20 minutes! Please help me!");
+					StatusUtils.askedForHelp = true;
+				}
+			}
+		}
+		
 	}
 }

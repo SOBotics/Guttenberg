@@ -33,4 +33,9 @@ public class StatusUtils {
 	 * The remaining api quota
 	 * */
 	public static AtomicInteger remainingQuota = new AtomicInteger(-1);
+	
+	/**
+	 * Stores if Guttenberg asked for help after several failed executions.
+	 * */
+	public static boolean askedForHelp = false;
 }
