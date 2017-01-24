@@ -170,12 +170,12 @@ public class Guttenberg {
 		
 		//long difference = lastSuccess.getEpochSecond() - now.getEpochSecond();
 		
-		Instant criticalDate = now.minus(20, ChronoUnit.MINUTES);
+		Instant criticalDate = now.minus(15, ChronoUnit.MINUTES);
 		
 		if (criticalDate.isBefore(lastSuccess)) {
 			for (Room room : this.chatRooms) {
 				if (room.getRoomId() == 111347) {
-					room.send("@FelixSFD I didn't work correctly for the last 20 minutes! Please help me!");
+					room.send("@FelixSFD I didn't work correctly for the last 15 minutes! Please help me!");
 					StatusUtils.askedForHelp = true;
 				}
 			}
