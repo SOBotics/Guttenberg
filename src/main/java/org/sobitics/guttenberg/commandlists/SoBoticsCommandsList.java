@@ -29,6 +29,7 @@ public class SoBoticsCommandsList {
         List<SpecialCommand> commands = new ArrayList<>(Arrays.asList(
             new Alive(message),
             new Check(message),
+            new ClearHelp(message),
             new Quota(message),
             new Say(message),
             new Status(message),
