@@ -30,9 +30,10 @@ public class Pfiatdi implements SpecialCommand {
     @Override
     public void execute(Room room) {
     	List<String> array = new ArrayList<String>();
-    	array.add("[Pfiat di!](http://german.stackexchange.com/q/254)  o/");
-    	array.add("[Pfiats eich!](http://german.stackexchange.com/q/254)");
-    	array.add("[Pfüad di Gott](http://german.stackexchange.com/q/254) o/");
+    	array.add("[Pfiat di!](http://www.dictionary-german-english.com/en/dictionary-german-english/pfiat+di)");
+    	//array.add("[Pfiat di!](http://german.stackexchange.com/q/254)  o/");
+    	//array.add("[Pfiats eich!](http://german.stackexchange.com/q/254)");
+    	//array.add("[Pfüad di Gott](http://german.stackexchange.com/q/254) o/");
     	
     	int rnd = new Random().nextInt(array.size());
     	
@@ -41,7 +42,7 @@ public class Pfiatdi implements SpecialCommand {
 
     @Override
     public String description() {
-        return "Psscht. Hier derfsch it naluaga!";
+        return "Psscht. Hier derfsch it naluaga! // Shhht. Don't look at this!";
     }
 
     @Override

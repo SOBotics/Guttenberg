@@ -15,6 +15,11 @@ public class StatusUtils {
 	public static Instant lastExecutionFinished = null;
 	
 	/**
+	 * The time when the last successful check was started
+	 * */
+	public static Instant lastSucceededExecutionStarted = null;
+	
+	/**
 	 * The number of new answers that have been checked
 	 * */
 	public static AtomicInteger numberOfCheckedTargets = new AtomicInteger(0);

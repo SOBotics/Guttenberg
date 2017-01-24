@@ -11,6 +11,7 @@ import javax.json.JsonObject;
 
 import org.sobotics.guttenberg.utils.ApiUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.StatusUtils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -24,6 +25,11 @@ public class NewAnswersFinder {
 		//long unixTime = (long)System.currentTimeMillis()/1000;
 		Instant time = Instant.now().minusSeconds(59+1);
 		
+		//Use time of last execution-start to really get ALL answers
+		if (StatusUtils.lastSucceededExecutionStarted != null)
+			time = StatusUtils.lastSucceededExecutionStarted;
+		
+		
 		Properties prop = new Properties();
 
         try{
@@ -31,6 +37,7 @@ public class NewAnswersFinder {
         }
         catch (IOException e){
             e.printStackTrace();
+            return new JsonArray();
         }
 		
 		try {
@@ -45,11 +52,10 @@ public class NewAnswersFinder {
 			
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.out.println("Could not load recent answers");
 			e.printStackTrace();
+			return new JsonArray();
 		}
-		
-		return null;
 	}
 	
 }
