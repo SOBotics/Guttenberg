@@ -53,6 +53,7 @@ public class PlagFinder {
 	
 	private void fetchRelatedAnswers() {
 		int targetId = this.targetAnswer.get("question_id").getAsInt();
+		int targetAnswerId = this.targetAnswer.get("answer_id").getAsInt();
 		System.out.println("Target: "+targetId);
 		Properties prop = new Properties();
 
@@ -61,13 +62,14 @@ public class PlagFinder {
         }
         catch (IOException e){
             e.printStackTrace();
+            return;
         }
 		
 		try {
 			JsonObject relatedQuestions = ApiUtils.getRelatedQuestionsById(targetId, "stackoverflow", prop.getProperty("apikey", ""));
 			JsonObject linkedQuestions = ApiUtils.getLinkedQuestionsById(targetId, "stackoverflow", prop.getProperty("apikey", ""));
 			//System.out.println("Answer: "+relatedQuestions);
-			String relatedIds = "";
+			String relatedIds = targetId+";";
 
 			for (JsonElement question : relatedQuestions.get("items").getAsJsonArray()) {
 				int id = question.getAsJsonObject().get("question_id").getAsInt();
@@ -92,7 +94,11 @@ public class PlagFinder {
 				//System.out.println(relatedAnswers);
 				for (JsonElement answer : relatedAnswers.get("items").getAsJsonArray()) {
 					JsonObject answerObject = answer.getAsJsonObject();
-					this.relatedAnswers.add(answerObject);
+					
+					int answerId = answerObject.get("answer_id").getAsInt();
+					
+					if (answerId != targetAnswerId)
+						this.relatedAnswers.add(answerObject);
 				}
 				
 				
@@ -103,6 +109,7 @@ public class PlagFinder {
 		} catch (IOException e) {
 			System.out.println("ERROR");
 			e.printStackTrace();
+			return;
 		}
 	}
 	

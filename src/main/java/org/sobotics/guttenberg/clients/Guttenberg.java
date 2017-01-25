@@ -3,6 +3,8 @@ package org.sobotics.guttenberg.clients;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -16,6 +18,7 @@ import org.sobotics.guttenberg.finders.RelatedAnswersFinder;
 import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
 import org.sobotics.guttenberg.roomdata.BotRoom;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.StatusUtils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -30,6 +33,7 @@ import fr.tunaki.stackoverflow.chat.event.EventType;
  * Fetches and analyzes the data from the API
  * */
 public class Guttenberg {	
+	
 	private StackExchangeClient client;
     private List<BotRoom> rooms;
     private List<Room> chatRooms;
@@ -73,10 +77,12 @@ public class Guttenberg {
 		
 		
 		executorService.scheduleAtFixedRate(()->execute(), 0, 59, TimeUnit.SECONDS);
+		executorService.scheduleAtFixedRate(()->checkLastExecution(), 30, 5, TimeUnit.MINUTES);
 	}
 	
 	private void execute() {
-		System.out.println("Executing at - "+Instant.now());
+		Instant startTime = Instant.now();
+		System.out.println("Executing at - "+startTime);
 		//NewAnswersFinder answersFinder = new NewAnswersFinder();
 		
 		//Fetch recent answers / The targets
@@ -104,6 +110,11 @@ public class Guttenberg {
 		RelatedAnswersFinder related = new RelatedAnswersFinder(ids);
 		List<JsonObject> relatedAnswersUnsorted = related.fetchRelatedAnswers();
 		
+		if (relatedAnswersUnsorted.isEmpty()) {
+			System.out.println("No related answers could be fetched. Skipping this execution...");
+			return;
+		}
+		
 		System.out.println("Add the answers to the PlagFinders...");
 		//add relatedAnswers to the PlagFinders
 		for (PlagFinder finder : plagFinders) {
@@ -117,7 +128,6 @@ public class Guttenberg {
 					//System.out.println("Added answer: "+relatedItem);
 				}
 			}
-			
 		}
 		
 		System.out.println("Find the duplicates...");
@@ -130,6 +140,7 @@ public class Guttenberg {
 						SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
 						room.send(printer.print(finder));
 						System.out.println("Posted: "+printer.print(finder));
+						StatusUtils.numberOfReportedPosts.incrementAndGet();
 					} else {
 						System.out.println("Not SOBotics");
 					}
@@ -137,8 +148,38 @@ public class Guttenberg {
 			} else {
 				System.out.println("Score "+finder.getJaroScore()+" too low");
 			}
+			
+			StatusUtils.numberOfCheckedTargets.incrementAndGet();
+			
 		}
 		
-		System.out.println("Finished at - "+Instant.now());
+		StatusUtils.lastSucceededExecutionStarted = startTime;
+		StatusUtils.lastExecutionFinished = Instant.now();
+		System.out.println("Finished at - "+StatusUtils.lastExecutionFinished);
+	}
+	
+	/**
+	 * Checks when the last execution was successful. After a certain amount of time without succeeded executions, FelixSFD will be pinged.
+	 * */
+	private void checkLastExecution() {
+		if (StatusUtils.askedForHelp)
+			return;
+		
+		Instant now = Instant.now();
+		Instant lastSuccess = StatusUtils.lastSucceededExecutionStarted;
+		
+		//long difference = lastSuccess.getEpochSecond() - now.getEpochSecond();
+		
+		Instant criticalDate = now.minus(15, ChronoUnit.MINUTES);
+		
+		if (criticalDate.isBefore(lastSuccess)) {
+			for (Room room : this.chatRooms) {
+				if (room.getRoomId() == 111347) {
+					room.send("@FelixSFD I didn't work correctly for the last 15 minutes! Please help me!");
+					StatusUtils.askedForHelp = true;
+				}
+			}
+		}
+		
 	}
 }

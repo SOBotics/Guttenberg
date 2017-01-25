@@ -21,15 +21,18 @@ public class SoBoticsCommandsList {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SoBoticsCommandsList.class);
 
     public void mention(Room room, PingMessageEvent event, boolean isReply){
-    	System.out.println("Someone mentioned me");
         /*if(CheckUtils.checkIfUserIsBlacklisted(event.getUserId()))
             return;*/
 
         Message message = event.getMessage();
+        System.out.println("Mention:"+message);
         List<SpecialCommand> commands = new ArrayList<>(Arrays.asList(
             new Alive(message),
             new Check(message),
+            new ClearHelp(message),
+            new Quota(message),
             new Say(message),
+            new Status(message),
             new Pfiatdi(message)
         ));
 
