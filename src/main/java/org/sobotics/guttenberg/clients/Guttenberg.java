@@ -77,7 +77,7 @@ public class Guttenberg {
 		
 		
 		executorService.scheduleAtFixedRate(()->execute(), 0, 59, TimeUnit.SECONDS);
-		executorService.scheduleAtFixedRate(()->checkLastExecution(), 30, 5, TimeUnit.MINUTES);
+		executorService.scheduleAtFixedRate(()->checkLastExecution(), 3, 5, TimeUnit.MINUTES);
 	}
 	
 	private void execute() {
@@ -168,11 +168,11 @@ public class Guttenberg {
 		Instant now = Instant.now();
 		Instant lastSuccess = StatusUtils.lastExecutionFinished;
 		
-		//long difference = lastSuccess.getEpochSecond() - now.getEpochSecond();
+		long difference = now.getEpochSecond() - lastSuccess.getEpochSecond();
 		
-		Instant criticalDate = now.minus(15, ChronoUnit.MINUTES);
+		//Instant criticalDate = now.minus(15, ChronoUnit.MINUTES);
 		
-		if (criticalDate.isBefore(lastSuccess)) {
+		if (difference > 15*60) {
 			for (Room room : this.chatRooms) {
 				if (room.getRoomId() == 111347) {
 					room.send("@FelixSFD Please help me! The last successful execution finished at "+StatusUtils.lastExecutionFinished);
