@@ -166,7 +166,7 @@ public class Guttenberg {
 			return;
 		
 		Instant now = Instant.now();
-		Instant lastSuccess = StatusUtils.lastSucceededExecutionStarted;
+		Instant lastSuccess = StatusUtils.lastExecutionFinished;
 		
 		//long difference = lastSuccess.getEpochSecond() - now.getEpochSecond();
 		
@@ -175,7 +175,7 @@ public class Guttenberg {
 		if (criticalDate.isBefore(lastSuccess)) {
 			for (Room room : this.chatRooms) {
 				if (room.getRoomId() == 111347) {
-					room.send("@FelixSFD I didn't work correctly for the last 15 minutes! Please help me!");
+					room.send("@FelixSFD Please help me! The last successful execution finished at "+StatusUtils.lastExecutionFinished);
 					StatusUtils.askedForHelp = true;
 				}
 			}
