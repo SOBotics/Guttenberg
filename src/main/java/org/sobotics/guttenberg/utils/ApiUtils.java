@@ -37,7 +37,7 @@ public class ApiUtils {
     
     public static JsonObject getAnswersToQuestionsByIdString(String questionIds, String site, String apiKey) throws IOException{
         String questionIdUrl = "https://api.stackexchange.com/2.2/questions/"+questionIds+"/answers";
-        return JsonUtils.get(questionIdUrl,"site",site,"key",apiKey,"filter","!)Q2B_A497ZOCB0LesG.E7Adi","pagesize","100");
+        return JsonUtils.get(questionIdUrl,"site",site,"key",apiKey,"filter","!FcbKgRXe3SxM6OrjzzwQxC1ib5","pagesize","100");
     }
     
     public static JsonObject getQuestionDetailsByIds(List<Integer> questionIdList, String site, String apiKey) throws IOException {
