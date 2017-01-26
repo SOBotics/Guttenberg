@@ -64,7 +64,7 @@ public class Guttenberg {
                 if (prop.getProperty("location").equals("server")) {
                 	chatroom.send("Grias di o/ (SERVER VERSION)" );
                 } else {
-                	chatroom.send("Grias di o/ (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
+                	//chatroom.send("Grias di o/ (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
                 }
             }
 
@@ -76,8 +76,9 @@ public class Guttenberg {
         }
 		
 		
-		executorService.scheduleAtFixedRate(()->execute(), 0, 59, TimeUnit.SECONDS);
+		executorService.scheduleAtFixedRate(()->execute(), 90, 59, TimeUnit.SECONDS);
 		executorService.scheduleAtFixedRate(()->checkLastExecution(), 3, 5, TimeUnit.MINUTES);
+		executorService.scheduleAtFixedRate(()->update(), 0, 30, TimeUnit.MINUTES);
 	}
 	
 	private void execute() {
@@ -181,5 +182,15 @@ public class Guttenberg {
 			}
 		}
 		
+	}
+	
+	/**
+	 * Checks for updates
+	 * */
+	private void update() {
+		System.out.println("Load updater...");
+		Updater updater = new Updater();
+		System.out.println("Check for updates...");
+		updater.updateIfAvailable();
 	}
 }
