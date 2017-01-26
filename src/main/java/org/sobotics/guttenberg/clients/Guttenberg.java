@@ -222,6 +222,11 @@ public class Guttenberg {
 				}
 				room.leave();
 			}
+			try {
+				wait(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			System.exit(0);
 		}
 		
