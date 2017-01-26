@@ -83,13 +83,28 @@ public class Updater {
 	
 	/**
 	 * Checks if a new version is available and updates
+	 * 
+	 * @returns -1 if update failed; 0 if no update required; 1 if update successful
 	 * */
-	public void updateIfAvailable() {
+	public int updateIfAvailable() {
 		if (this.currentVersion.compareTo(this.newVersion) == -1) {
 			System.out.println("New version available: "+this.newVersion.get());
+			try {
+				Runtime.getRuntime().exec("nohup java -cp guttenberg-"+this.newVersion.get()+".jar org.sobotics.guttenberg.clients.Client");
+				return 1;
+			} catch (IOException e) {
+				e.printStackTrace();
+				return -1;
+			}
 		} else {
 			System.out.println("No update required");
+			return 0;
 		}
+	}
+	
+	
+	public Version getNewVersion() {
+		return this.newVersion;
 	}
 	
 }

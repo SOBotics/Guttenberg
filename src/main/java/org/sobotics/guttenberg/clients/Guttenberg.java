@@ -1,11 +1,19 @@
 package org.sobotics.guttenberg.clients;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalField;
 import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executors;
@@ -44,6 +52,8 @@ public class Guttenberg {
 		this.rooms = rooms;
 		this.executorService = Executors.newSingleThreadScheduledExecutor();
 		chatRooms = new ArrayList<>();
+		
+		this.setLogfile();
 	}
 	
 	public void start() {
@@ -64,7 +74,7 @@ public class Guttenberg {
                 if (prop.getProperty("location").equals("server")) {
                 	chatroom.send("Grias di o/ (SERVER VERSION)" );
                 } else {
-                	//chatroom.send("Grias di o/ (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
+                	chatroom.send("Grias di o/ (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
                 }
             }
 
@@ -82,6 +92,7 @@ public class Guttenberg {
 	}
 	
 	private void execute() {
+		this.setLogfile();
 		Instant startTime = Instant.now();
 		System.out.println("Executing at - "+startTime);
 		//NewAnswersFinder answersFinder = new NewAnswersFinder();
@@ -191,6 +202,40 @@ public class Guttenberg {
 		System.out.println("Load updater...");
 		Updater updater = new Updater();
 		System.out.println("Check for updates...");
-		updater.updateIfAvailable();
+		
+		int update = updater.updateIfAvailable(); 
+		
+		if (update == -1) {
+			for (Room room : this.chatRooms) {
+				if (room.getRoomId() == 111347) {
+					room.send("Automatic update failed!");
+				}
+			}
+		} else if (update == 1) {
+			for (Room room : this.chatRooms) {
+				if (room.getRoomId() == 111347) {
+					room.send("Rebooting for update to version "+updater.getNewVersion().get());
+				}
+			}
+			System.exit(0);
+		}
+		
 	}
+	
+	
+	
+	private void setLogfile() {
+		Date now = Date.from(Instant.now());
+		String dateString = new SimpleDateFormat("yyyy-MM-dd-HH").format(now);
+		
+		try {
+			PrintStream stream = new PrintStream(new FileOutputStream("./logs/guttenberg_"+dateString+".txt"));
+			System.setOut(stream);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			System.out.println("Could not change logfile");
+			return;
+		}
+	}
+	
 }
