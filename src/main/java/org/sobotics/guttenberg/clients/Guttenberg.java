@@ -46,11 +46,15 @@ public class Guttenberg {
     private List<BotRoom> rooms;
     private List<Room> chatRooms;
     private ScheduledExecutorService executorService;
+    private ScheduledExecutorService executorServiceCheck;
+    private ScheduledExecutorService executorServiceUpdate;
 	
 	public Guttenberg(StackExchangeClient client, List<BotRoom> rooms) {
 		this.client = client;
 		this.rooms = rooms;
 		this.executorService = Executors.newSingleThreadScheduledExecutor();
+		this.executorServiceCheck = Executors.newSingleThreadScheduledExecutor();
+		this.executorServiceUpdate = Executors.newSingleThreadScheduledExecutor();
 		chatRooms = new ArrayList<>();
 		
 		this.setLogfile();
@@ -87,8 +91,8 @@ public class Guttenberg {
 		
 		
 		executorService.scheduleAtFixedRate(()->execute(), 15, 59, TimeUnit.SECONDS);
-		executorService.scheduleAtFixedRate(()->checkLastExecution(), 3, 5, TimeUnit.MINUTES);
-		executorService.scheduleAtFixedRate(()->update(), 0, 30, TimeUnit.MINUTES);
+		executorServiceCheck.scheduleAtFixedRate(()->checkLastExecution(), 3, 5, TimeUnit.MINUTES);
+		executorServiceUpdate.scheduleAtFixedRate(()->update(), 0, 30, TimeUnit.MINUTES);
 	}
 	
 	private void execute() {
