@@ -86,7 +86,7 @@ public class Guttenberg {
         }
 		
 		
-		executorService.scheduleAtFixedRate(()->execute(), 90, 59, TimeUnit.SECONDS);
+		executorService.scheduleAtFixedRate(()->execute(), 15, 59, TimeUnit.SECONDS);
 		executorService.scheduleAtFixedRate(()->checkLastExecution(), 3, 5, TimeUnit.MINUTES);
 		executorService.scheduleAtFixedRate(()->update(), 0, 30, TimeUnit.MINUTES);
 	}
@@ -216,6 +216,7 @@ public class Guttenberg {
 				if (room.getRoomId() == 111347) {
 					room.send("Rebooting for update to version "+updater.getNewVersion().get());
 				}
+				room.leave();
 			}
 			System.exit(0);
 		}
