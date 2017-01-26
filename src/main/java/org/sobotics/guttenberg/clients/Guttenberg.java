@@ -1,11 +1,19 @@
 package org.sobotics.guttenberg.clients;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalField;
 import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executors;
@@ -44,6 +52,8 @@ public class Guttenberg {
 		this.rooms = rooms;
 		this.executorService = Executors.newSingleThreadScheduledExecutor();
 		chatRooms = new ArrayList<>();
+		
+		this.setLogfile();
 	}
 	
 	public void start() {
@@ -76,11 +86,13 @@ public class Guttenberg {
         }
 		
 		
-		executorService.scheduleAtFixedRate(()->execute(), 0, 59, TimeUnit.SECONDS);
+		executorService.scheduleAtFixedRate(()->execute(), 90, 59, TimeUnit.SECONDS);
 		executorService.scheduleAtFixedRate(()->checkLastExecution(), 3, 5, TimeUnit.MINUTES);
+		executorService.scheduleAtFixedRate(()->update(), 0, 30, TimeUnit.MINUTES);
 	}
 	
 	private void execute() {
+		this.setLogfile();
 		Instant startTime = Instant.now();
 		System.out.println("Executing at - "+startTime);
 		//NewAnswersFinder answersFinder = new NewAnswersFinder();
@@ -182,4 +194,48 @@ public class Guttenberg {
 		}
 		
 	}
+	
+	/**
+	 * Checks for updates
+	 * */
+	private void update() {
+		System.out.println("Load updater...");
+		Updater updater = new Updater();
+		System.out.println("Check for updates...");
+		
+		int update = updater.updateIfAvailable(); 
+		
+		if (update == -1) {
+			for (Room room : this.chatRooms) {
+				if (room.getRoomId() == 111347) {
+					room.send("Automatic update failed!");
+				}
+			}
+		} else if (update == 1) {
+			for (Room room : this.chatRooms) {
+				if (room.getRoomId() == 111347) {
+					room.send("Rebooting for update to version "+updater.getNewVersion().get());
+				}
+			}
+			System.exit(0);
+		}
+		
+	}
+	
+	
+	
+	private void setLogfile() {
+		Date now = Date.from(Instant.now());
+		String dateString = new SimpleDateFormat("yyyy-MM-dd-HH").format(now);
+		
+		try {
+			PrintStream stream = new PrintStream(new FileOutputStream("./logs/guttenberg_"+dateString+".txt"));
+			System.setOut(stream);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			System.out.println("Could not change logfile");
+			return;
+		}
+	}
+	
 }
