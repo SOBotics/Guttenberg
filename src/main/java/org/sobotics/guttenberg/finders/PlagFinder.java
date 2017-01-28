@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.utils.ApiUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 
@@ -18,6 +20,9 @@ import info.debatty.java.stringsimilarity.JaroWinkler;
  * Checks an answer for plagiarism by collecting similar answers from different sources.
  * */
 public class PlagFinder {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(PlagFinder.class);
+	
 	/**
 	 * The answer to check
 	 * */
@@ -48,20 +53,20 @@ public class PlagFinder {
 	public void collectData() {
 		this.relatedAnswers = new ArrayList<JsonObject>();
 		this.fetchRelatedAnswers();
-		System.out.println("RelatedAnswers: "+this.relatedAnswers.size());
+		LOGGER.info("RelatedAnswers: "+this.relatedAnswers.size());
 	}
 	
 	private void fetchRelatedAnswers() {
 		int targetId = this.targetAnswer.get("question_id").getAsInt();
 		int targetAnswerId = this.targetAnswer.get("answer_id").getAsInt();
-		System.out.println("Target: "+targetId);
+		LOGGER.info("Target: "+targetId);
 		Properties prop = new Properties();
 
         try{
             prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
         }
         catch (IOException e){
-            e.printStackTrace();
+            LOGGER.error("Could not load login.properties", e);
             return;
         }
 		
@@ -87,8 +92,8 @@ public class PlagFinder {
 				relatedIds = relatedIds.substring(0, relatedIds.length()-1);
 				
 				
-				System.out.println("Related question IDs: "+relatedIds);
-				System.out.println("Fetching all answers...");
+				LOGGER.info("Related question IDs: "+relatedIds);
+				LOGGER.info("Fetching all answers...");
 				
 				JsonObject relatedAnswers = ApiUtils.getAnswersToQuestionsByIdString(relatedIds, "stackoverflow", prop.getProperty("apikey", ""));
 				//System.out.println(relatedAnswers);
@@ -103,12 +108,11 @@ public class PlagFinder {
 				
 				
 			} else {
-				System.out.println("No ids found!");
+				LOGGER.warn("No ids found!");
 			}
 			
 		} catch (IOException e) {
-			System.out.println("ERROR");
-			e.printStackTrace();
+			LOGGER.error("ERROR", e);
 			return;
 		}
 	}
