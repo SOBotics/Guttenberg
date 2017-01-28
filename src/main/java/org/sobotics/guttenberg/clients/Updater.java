@@ -84,27 +84,33 @@ public class Updater {
 	/**
 	 * Checks if a new version is available and updates
 	 * 
-	 * @returns -1 if update failed; 0 if no update required; 1 if update successful
+	 * @returns false if no update required; true if update successful
+	 * 
+	 * @throws Exception when update failed
 	 * */
-	public int updateIfAvailable() {
+	public boolean updateIfAvailable() throws Exception {
 		if (this.currentVersion.compareTo(this.newVersion) == -1) {
 			System.out.println("New version available: "+this.newVersion.get());
 			try {
 				Runtime.getRuntime().exec("nohup java -cp guttenberg-"+this.newVersion.get()+".jar org.sobotics.guttenberg.clients.Client");
-				return 1;
+				return true;
 			} catch (IOException e) {
 				e.printStackTrace();
-				return -1;
+				throw new Exception("Update failed!");
 			}
 		} else {
 			System.out.println("No update required");
-			return 0;
+			return false;
 		}
 	}
 	
 	
 	public Version getNewVersion() {
 		return this.newVersion;
+	}
+	
+	public Version getCurrentVersion() {
+		return this.currentVersion;
 	}
 	
 }
