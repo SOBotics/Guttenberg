@@ -100,7 +100,6 @@ public class Guttenberg {
 	}
 	
 	private void execute() {
-		this.setLogfile();
 		Instant startTime = Instant.now();
 		LOGGER.info("Executing at - "+startTime);
 		//NewAnswersFinder answersFinder = new NewAnswersFinder();
@@ -227,21 +226,6 @@ public class Guttenberg {
 			System.exit(0);
 		}
 		
-	}
-	
-	
-	
-	private void setLogfile() {
-		Date now = Date.from(Instant.now());
-		String dateString = new SimpleDateFormat("yyyy-MM-dd-HH").format(now);
-		
-		try {
-			PrintStream stream = new PrintStream(new FileOutputStream("./logs/guttenberg_"+dateString+".txt"));
-			System.setOut(stream);
-		} catch (FileNotFoundException e) {
-			LOGGER.error("Could not change logfile", e);
-			return;
-		}
 	}
 	
 }
