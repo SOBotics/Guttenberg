@@ -20,6 +20,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.finders.NewAnswersFinder;
 import org.sobotics.guttenberg.finders.PlagFinder;
 import org.sobotics.guttenberg.finders.RelatedAnswersFinder;
@@ -42,6 +44,8 @@ import fr.tunaki.stackoverflow.chat.event.EventType;
  * */
 public class Guttenberg {	
 	
+	private static final Logger LOGGER = LoggerFactory.getLogger(Guttenberg.class);
+	
 	private StackExchangeClient client;
     private List<BotRoom> rooms;
     private List<Room> chatRooms;
@@ -57,7 +61,7 @@ public class Guttenberg {
 		this.executorServiceUpdate = Executors.newSingleThreadScheduledExecutor();
 		chatRooms = new ArrayList<>();
 		
-		this.setLogfile();
+		//this.setLogfile();
 	}
 	
 	public void start() {
@@ -72,7 +76,7 @@ public class Guttenberg {
                     prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
                 }
                 catch (IOException e){
-                    e.printStackTrace();
+                	LOGGER.error("login.properties could not be loaded!", e);
                 }
             	
                 if (prop.getProperty("location").equals("server")) {
@@ -96,9 +100,8 @@ public class Guttenberg {
 	}
 	
 	private void execute() {
-		this.setLogfile();
 		Instant startTime = Instant.now();
-		System.out.println("Executing at - "+startTime);
+		LOGGER.info("Executing at - "+startTime);
 		//NewAnswersFinder answersFinder = new NewAnswersFinder();
 		
 		//Fetch recent answers / The targets
@@ -127,11 +130,11 @@ public class Guttenberg {
 		List<JsonObject> relatedAnswersUnsorted = related.fetchRelatedAnswers();
 		
 		if (relatedAnswersUnsorted.isEmpty()) {
-			System.out.println("No related answers could be fetched. Skipping this execution...");
+			LOGGER.warn("No related answers could be fetched. Skipping this execution...");
 			return;
 		}
 		
-		System.out.println("Add the answers to the PlagFinders...");
+		LOGGER.info("Add the answers to the PlagFinders...");
 		//add relatedAnswers to the PlagFinders
 		for (PlagFinder finder : plagFinders) {
 			Integer targetId = finder.getTargetAnswerId();
@@ -146,7 +149,7 @@ public class Guttenberg {
 			}
 		}
 		
-		System.out.println("Find the duplicates...");
+		LOGGER.info("Find the duplicates...");
 		//Let PlagFinders find the best match
 		for (PlagFinder finder : plagFinders) {
 			JsonObject otherAnswer = finder.getMostSimilarAnswer();
@@ -155,14 +158,12 @@ public class Guttenberg {
 					if (room.getRoomId() == 111347) {
 						SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
 						room.send(printer.print(finder));
-						System.out.println("Posted: "+printer.print(finder));
+						//LOGGER.info("Posted: "+printer.print(finder));
 						StatusUtils.numberOfReportedPosts.incrementAndGet();
-					} else {
-						System.out.println("Not SOBotics");
 					}
 				}
 			} else {
-				System.out.println("Score "+finder.getJaroScore()+" too low");
+				//LOGGER.info("Score "+finder.getJaroScore()+" too low");
 			}
 			
 			StatusUtils.numberOfCheckedTargets.incrementAndGet();
@@ -171,7 +172,7 @@ public class Guttenberg {
 		
 		StatusUtils.lastSucceededExecutionStarted = startTime;
 		StatusUtils.lastExecutionFinished = Instant.now();
-		System.out.println("Finished at - "+StatusUtils.lastExecutionFinished);
+		LOGGER.info("Finished at - "+StatusUtils.lastExecutionFinished);
 	}
 	
 	/**
@@ -203,14 +204,14 @@ public class Guttenberg {
 	 * Checks for updates
 	 * */
 	private void update() {
-		System.out.println("Load updater...");
+		LOGGER.info("Load updater...");
 		Updater updater = new Updater();
-		System.out.println("Check for updates...");
+		LOGGER.info("Check for updates...");
 		boolean update = false;
 		try {
 			update = updater.updateIfAvailable(); 
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.error("Could not update", e);
 			for (Room room : this.chatRooms) {
 				if (room.getRoomId() == 111347) {
 					room.send("Automatic update failed!");
@@ -218,7 +219,7 @@ public class Guttenberg {
 			}
 		}
 		
-		if (update == true) {
+		if (update) {
 			for (Room room : this.chatRooms) {
 				if (room.getRoomId() == 111347) {
 					room.send("Rebooting for update to version "+updater.getNewVersion().get());
@@ -233,22 +234,6 @@ public class Guttenberg {
 			System.exit(0);
 		}
 		
-	}
-	
-	
-	
-	private void setLogfile() {
-		Date now = Date.from(Instant.now());
-		String dateString = new SimpleDateFormat("yyyy-MM-dd-HH").format(now);
-		
-		try {
-			PrintStream stream = new PrintStream(new FileOutputStream("./logs/guttenberg_"+dateString+".txt"));
-			System.setOut(stream);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			System.out.println("Could not change logfile");
-			return;
-		}
 	}
 	
 }

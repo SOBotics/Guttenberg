@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.jar.JarFile;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.clients.Client;
 import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.utils.ApiUtils;
@@ -17,6 +19,8 @@ import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
 
 public class Status implements SpecialCommand {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(Status.class);
 	
 	private Message message;
 
@@ -31,7 +35,7 @@ public class Status implements SpecialCommand {
 
 	@Override
 	public void execute(Room room) {
-		System.out.println("Checking status...");
+		LOGGER.info("Checking status...");
 		Properties prop = new Properties();
 		Properties prop2 = new Properties();
 		
@@ -42,8 +46,7 @@ public class Status implements SpecialCommand {
            	prop2.load(is);
         }
         catch (IOException e){
-        	System.out.println("Could not load properties");
-            e.printStackTrace();
+        	LOGGER.error("Could not load properties", e);
         }
 		
 		

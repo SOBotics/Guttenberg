@@ -4,6 +4,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.finders.PlagFinder;
 import org.sobotics.guttenberg.utils.ApiUtils;
 import org.sobotics.guttenberg.utils.CommandUtils;
@@ -16,6 +18,8 @@ import fr.tunaki.stackoverflow.chat.Room;
 
 public class Check implements SpecialCommand {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(Check.class);
+	
 	private Message message;
 
     public Check(Message message) {
@@ -56,7 +60,7 @@ public class Check implements SpecialCommand {
             prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
         }
         catch (IOException e){
-            e.printStackTrace();
+            LOGGER.error("Could not read login.properties", e);
         }
         
         
@@ -77,8 +81,7 @@ public class Check implements SpecialCommand {
 			}
 			
         } catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error("ERROR", e);
 		}
         
         
