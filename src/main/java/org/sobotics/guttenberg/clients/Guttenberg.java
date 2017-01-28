@@ -207,21 +207,29 @@ public class Guttenberg {
 		LOGGER.info("Load updater...");
 		Updater updater = new Updater();
 		LOGGER.info("Check for updates...");
-		
-		int update = updater.updateIfAvailable(); 
-		
-		if (update == -1) {
+		boolean update = false;
+		try {
+			update = updater.updateIfAvailable(); 
+		} catch (Exception e) {
+			LOGGER.error("Could not update", e);
 			for (Room room : this.chatRooms) {
 				if (room.getRoomId() == 111347) {
 					room.send("Automatic update failed!");
 				}
 			}
-		} else if (update == 1) {
+		}
+		
+		if (update) {
 			for (Room room : this.chatRooms) {
 				if (room.getRoomId() == 111347) {
 					room.send("Rebooting for update to version "+updater.getNewVersion().get());
 				}
 				room.leave();
+			}
+			try {
+				wait(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 			System.exit(0);
 		}
