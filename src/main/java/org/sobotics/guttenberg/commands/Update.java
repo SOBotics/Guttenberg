@@ -25,20 +25,27 @@ public class Update implements SpecialCommand {
 		Updater updater = new Updater();
 		System.out.println("Check for updates...");
 		
-		int update = updater.updateIfAvailable(); 
-		
-		if (update == -1) {
-			room.send("Automatic update failed!");
-		} else if (update == 1) {
-			room.send("Rebooting for update to version "+updater.getNewVersion().get());
-			room.leave();
-			try {
-				wait(10);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			System.exit(0);
+		boolean update = false;
+		try {
+			update = updater.updateIfAvailable(); 
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			room.replyTo(message.getId(), "Update failed!");
 		}
+		
+		if (update == true) {
+			room.replyTo(message.getId(), "Rebooting for update to version "+updater.getNewVersion().get());
+			room.leave();
+		} else {
+			room.replyTo(message.getId(), updater.getCurrentVersion().get()+" is the current release.");
+		}
+		
+		try {
+			wait(10);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.exit(0);
 	}
 
 	@Override
