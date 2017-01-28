@@ -9,6 +9,8 @@ import java.util.Properties;
 
 import javax.json.JsonObject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.utils.ApiUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
@@ -20,6 +22,8 @@ import com.google.gson.JsonElement;
  * Fetches the most recent answers
  * */
 public class NewAnswersFinder {	
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(NewAnswersFinder.class);
 	
 	public static JsonArray findRecentAnswers() {
 		//long unixTime = (long)System.currentTimeMillis()/1000;
@@ -36,7 +40,7 @@ public class NewAnswersFinder {
             prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
         }
         catch (IOException e){
-            e.printStackTrace();
+            LOGGER.error("Could not load login.properties", e);
             return new JsonArray();
         }
 		
@@ -46,14 +50,13 @@ public class NewAnswersFinder {
 			
 			JsonArray items = apiResult.get("items").getAsJsonArray();
 			//System.out.println(items);
-			System.out.println("findRecentAnswers() done with "+items.size()+" items");
+			LOGGER.info("findRecentAnswers() done with "+items.size()+" items");
 			
 			return items;
 			
 			
 		} catch (IOException e) {
-			System.out.println("Could not load recent answers");
-			e.printStackTrace();
+			LOGGER.error("Could not load recent answers", e);
 			return new JsonArray();
 		}
 	}

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.utils.ApiUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 
@@ -16,6 +18,9 @@ import com.google.gson.JsonObject;
  * Collects all related answers in less API calls
  * */
 public class RelatedAnswersFinder {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(RelatedAnswersFinder.class);
+	
 	/**
 	 * The question_ids of the targeted answers
 	 * */
@@ -42,16 +47,16 @@ public class RelatedAnswersFinder {
             prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
         }
         catch (IOException e){
-            e.printStackTrace();
+        	LOGGER.error("Could not load login.properties", e);
         }
         
-        System.out.println("Fetch the linked/related questions...");
+        LOGGER.info("Fetch the linked/related questions...");
         
         try {
 			JsonObject relatedQuestions = ApiUtils.getRelatedQuestionsByIds(idString, "stackoverflow", prop.getProperty("apikey", ""));
-			System.out.println("Related done");
+			LOGGER.info("Related done");
 			JsonObject linkedQuestions = ApiUtils.getLinkedQuestionsByIds(idString, "stackoverflow", prop.getProperty("apikey", ""));
-			System.out.println("linked done");
+			LOGGER.info("linked done");
 			
 			String relatedIds = "";
 
@@ -79,16 +84,15 @@ public class RelatedAnswersFinder {
 					relatedFinal.add(answerObject);
 				}
 				
-				System.out.println("Collected "+relatedFinal.size()+" answers");
+				LOGGER.info("Collected "+relatedFinal.size()+" answers");
 				return relatedFinal;
 			} else {
-				System.out.println("No ids found!");
+				LOGGER.warn("No ids found!");
 			}
 			
 			
         } catch (IOException e) {
-			System.out.println("Error in RelatedAnswersFinder");
-			e.printStackTrace();
+			LOGGER.error("Error in RelatedAnswersFinder", e);
 			return new ArrayList<JsonObject>();
 		}
 		

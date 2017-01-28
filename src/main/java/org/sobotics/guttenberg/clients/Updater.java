@@ -8,6 +8,8 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.commands.Status;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.Version;
@@ -17,6 +19,8 @@ import org.sobotics.guttenberg.utils.Version;
  * */
 public class Updater {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(Updater.class);
+	
 	private Version currentVersion;
 	private Version newVersion = new Version("0.0.0");
 	
@@ -29,16 +33,15 @@ public class Updater {
             guttenbergProperties.load(is);
         }
         catch (IOException e){
-        	System.out.println("Could not load properties");
-            e.printStackTrace();
+        	LOGGER.error("Could not load properties", e);
         }
 		
-		System.out.println("Loaded properties");
+		LOGGER.info("Loaded properties");
 		
 		String versionString = guttenbergProperties.getProperty("version", "0.0.0");
 		this.currentVersion = new Version(versionString);
 		
-		System.out.println("Current version: "+this.currentVersion.get());
+		LOGGER.info("Current version: "+this.currentVersion.get());
 		
 		//get all files in the folder
 		String regex = "guttenberg-([0-9.]*)\\.jar";
@@ -48,21 +51,20 @@ public class Updater {
 		for (File file : files) {
 		    if (file.isFile()) {
 		    	String name = file.getName();
-		    	System.out.println("File: "+name);
+		    	LOGGER.info("File: "+name);
 		    	Matcher matcher = pattern.matcher(name);
 		    	matcher.find();
-		    	System.out.println("Init matcher");
+		    	LOGGER.info("Init matcher");
 		    	String v = "";
 		    	
 		    	try {
 		    		v = matcher.group(1);
 		    	} catch (Exception e) {
-		    		e.printStackTrace();
-		    		System.out.println("ERROR");
+		    		LOGGER.error("ERROR", e);
 		    	}
 		    	
 		    	
-		    	System.out.println("Matched");
+		    	LOGGER.info("Matched");
 		    	if (v != null && v.length() > 0) {
 
 			    	Version version = new Version(v);
@@ -88,7 +90,7 @@ public class Updater {
 	 * */
 	public int updateIfAvailable() {
 		if (this.currentVersion.compareTo(this.newVersion) == -1) {
-			System.out.println("New version available: "+this.newVersion.get());
+			LOGGER.info("New version available: "+this.newVersion.get());
 			try {
 				Runtime.getRuntime().exec("nohup java -cp guttenberg-"+this.newVersion.get()+".jar org.sobotics.guttenberg.clients.Client");
 				return 1;
@@ -97,7 +99,7 @@ public class Updater {
 				return -1;
 			}
 		} else {
-			System.out.println("No update required");
+			LOGGER.info("No update required");
 			return 0;
 		}
 	}
