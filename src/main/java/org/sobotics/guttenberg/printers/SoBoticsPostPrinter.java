@@ -29,7 +29,8 @@ public class SoBoticsPostPrinter implements PostPrinter {
     	} else {
     		//duplicated answer; same user
     		String user = finder.getTargetAnswer().get("owner").getAsJsonObject().get("display_name").getAsString();
-    		post = "[ [Guttenberg](https://git.io/vMrPa) ] User ["+user+"](http://stackoverflow.com/users/"+userTwo+") posted [this answer]("+targetLink+") after his [original answer]("+link+"). Score: **"+ score +"**";
+    		post = "[ [Guttenberg](https://git.io/vMrPa) ] [Possible repost]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
+    		//post = "[ [Guttenberg](https://git.io/vMrPa) ] User ["+user+"](http://stackoverflow.com/users/"+userTwo+") posted [this answer]("+targetLink+") after his [original answer]("+link+"). Score: **"+ score +"**";
     	}
     	    	
         return post;
