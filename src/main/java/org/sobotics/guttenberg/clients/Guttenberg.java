@@ -99,6 +99,11 @@ public class Guttenberg {
 		executorServiceUpdate.scheduleAtFixedRate(()->update(), 0, 30, TimeUnit.MINUTES);
 	}
 	
+	/**
+	 * Executes `excecute()` and catches all the errors
+	 * 
+	 * @see http://stackoverflow.com/a/24902026/4687348
+	 * */
 	private void secureExecute() {
 		try {
 			execute();
