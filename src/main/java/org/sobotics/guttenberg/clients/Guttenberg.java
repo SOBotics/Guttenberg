@@ -1,24 +1,15 @@
 package org.sobotics.guttenberg.clients;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
-import java.time.temporal.TemporalField;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,57 +29,61 @@ import fr.tunaki.stackoverflow.chat.ChatHost;
 import fr.tunaki.stackoverflow.chat.Room;
 import fr.tunaki.stackoverflow.chat.StackExchangeClient;
 import fr.tunaki.stackoverflow.chat.event.EventType;
+import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
 
 /**
  * Fetches and analyzes the data from the API
  * */
-public class Guttenberg {	
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(Guttenberg.class);
-	
-	private StackExchangeClient client;
-    private List<BotRoom> rooms;
-    private List<Room> chatRooms;
+public class Guttenberg {    
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(Guttenberg.class);
+    
+    private final StackExchangeClient client;
+    private final List<BotRoom> rooms;
+    private final List<Room> chatRooms;
     private ScheduledExecutorService executorService;
     private ScheduledExecutorService executorServiceCheck;
     private ScheduledExecutorService executorServiceUpdate;
-	
-	public Guttenberg(StackExchangeClient client, List<BotRoom> rooms) {
-		this.client = client;
-		this.rooms = rooms;
-		this.executorService = Executors.newSingleThreadScheduledExecutor();
-		this.executorServiceCheck = Executors.newSingleThreadScheduledExecutor();
-		this.executorServiceUpdate = Executors.newSingleThreadScheduledExecutor();
-		chatRooms = new ArrayList<>();
-		
-		//this.setLogfile();
-	}
-	
-	public void start() {
-		for(BotRoom room:rooms){
+    
+    public Guttenberg(StackExchangeClient client, List<BotRoom> rooms) {
+        this.client = client;
+        this.rooms = rooms;
+        this.executorService = Executors.newSingleThreadScheduledExecutor();
+        this.executorServiceCheck = Executors.newSingleThreadScheduledExecutor();
+        this.executorServiceUpdate = Executors.newSingleThreadScheduledExecutor();
+        chatRooms = new ArrayList<>();
+        
+        //this.setLogfile();
+    }
+    
+    public void start() {
+        for(BotRoom room:rooms){
             Room chatroom = client.joinRoom(ChatHost.STACK_OVERFLOW ,room.getRoomId());
 
             if(room.getRoomId()==111347){
-            	//check if Guttenberg is running on the server
-            	Properties prop = new Properties();
+                //check if Guttenberg is running on the server
+                Properties prop = new Properties();
 
                 try{
                     prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
                 }
                 catch (IOException e){
-                	LOGGER.error("login.properties could not be loaded!", e);
+                    LOGGER.error("login.properties could not be loaded!", e);
                 }
-            	
+                
                 if (prop.getProperty("location").equals("server")) {
-                	chatroom.send("Grias di o/ (SERVER VERSION)" );
+                    chatroom.send("Grias di o/ (SERVER VERSION)" );
                 } else {
-                	chatroom.send("Grias di o/ (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
+                    chatroom.send("Grias di o/ (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
                 }
             }
 
             chatRooms.add(chatroom);
-            if(room.getMention(chatroom)!=null)
-                chatroom.addEventListener(EventType.USER_MENTIONED, room.getMention(chatroom));
+            
+            Consumer<UserMentionedEvent> mention = room.getMention(chatroom, this);
+            if(mention != null) {
+                chatroom.addEventListener(EventType.USER_MENTIONED, mention);
+            }
             /*if(room.getReply(chatroom)!=null)
                 chatroom.addEventListener(EventType.MESSAGE_REPLY, room.getReply(chatroom));*/
         }
@@ -248,5 +243,19 @@ public class Guttenberg {
 		}
 		
 	}
-	
+    
+    public void resetExecutors() {
+        executorService.shutdownNow();
+        executorServiceCheck.shutdownNow();
+        executorServiceUpdate.shutdownNow();
+        
+        executorService = Executors.newSingleThreadScheduledExecutor();
+        executorServiceCheck = Executors.newSingleThreadScheduledExecutor();
+        executorServiceUpdate = Executors.newSingleThreadScheduledExecutor();
+        
+        executorService.scheduleAtFixedRate(()->secureExecute(), 15, 59, TimeUnit.SECONDS);
+        executorServiceCheck.scheduleAtFixedRate(()->checkLastExecution(), 3, 5, TimeUnit.MINUTES);
+        executorServiceUpdate.scheduleAtFixedRate(()->update(), 0, 30, TimeUnit.MINUTES);
+    }
+    
 }

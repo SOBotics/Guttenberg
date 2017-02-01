@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.PrintUtils;
+import org.sobotics.guttenberg.clients.Guttenberg;
 
 import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
@@ -13,8 +14,8 @@ import fr.tunaki.stackoverflow.chat.Room;
  */
 public class Commands implements SpecialCommand {
 
-    private Message message;
-    private List<SpecialCommand> commands;
+    private final Message message;
+    private final List<SpecialCommand> commands;
 
     public Commands(Message message, List<SpecialCommand> commands) {
         this.message = message;
@@ -27,11 +28,11 @@ public class Commands implements SpecialCommand {
     }
 
     @Override
-    public void execute(Room room) {
+    public void execute(Room room, Guttenberg instance) {
         room.replyTo(message.getId(), PrintUtils.printCommandHeader());
         String printstr = "";
         for (SpecialCommand command: commands){
-            printstr+="    "+padRight(command.name(),15)+" - "+command.description()+"\n";
+            printstr += "    " + padRight(command.name(),15) + " - " + command.description() + "\n";
         }
 
         room.send(printstr);

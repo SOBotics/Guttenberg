@@ -41,9 +41,9 @@
         </dependency>
 
         <dependency>
-        	<groupId>info.debatty</groupId>
-        	<artifactId>java-string-similarity</artifactId>
-        	<version>0.21</version>
+            <groupId>info.debatty</groupId>
+            <artifactId>java-string-similarity</artifactId>
+            <version>0.21</version>
         </dependency>
     </dependencies>
     <repositories>

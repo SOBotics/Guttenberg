@@ -13,12 +13,12 @@ import org.slf4j.LoggerFactory;
  */
 public class CommandUtils {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(CommandUtils.class);
-	
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommandUtils.class);
+    
     public static boolean checkForCommand(String message, String command){
-    	String username = "";
-    	
-    	Properties prop = new Properties();
+        String username = "";
+        
+        Properties prop = new Properties();
 
         try{
             prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
@@ -28,7 +28,7 @@ public class CommandUtils {
             LOGGER.error("Could not load login.properties", e);
             username = "gut";
         }
-    	
+        
         return message.split(" ")[0].toLowerCase().startsWith("@"+username) && message.split(" ")[1].toLowerCase().equals(command);
     }
     public static String extractData(String message){

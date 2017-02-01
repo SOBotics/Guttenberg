@@ -1,6 +1,7 @@
 package org.sobotics.guttenberg.commands;
 
 import org.sobotics.guttenberg.utils.CommandUtils;
+import org.sobotics.guttenberg.clients.Guttenberg;
 
 import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
@@ -10,7 +11,7 @@ import fr.tunaki.stackoverflow.chat.Room;
  */
 public class Say implements SpecialCommand {
 
-    private Message message;
+    private final Message message;
 
     public Say(Message message) {
         this.message = message;
@@ -22,7 +23,7 @@ public class Say implements SpecialCommand {
     }
 
     @Override
-    public void execute(Room room) {
+    public void execute(Room room, Guttenberg instance) {
         room.send(CommandUtils.extractData(message.getPlainContent()));
     }
 
