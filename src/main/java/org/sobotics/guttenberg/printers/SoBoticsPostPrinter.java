@@ -25,12 +25,11 @@ public class SoBoticsPostPrinter implements PostPrinter {
     	
     	if (userOne != userTwo) {
     		//plagiarism; different users
-    		post = "[ [Guttenberg](https://git.io/vMrPa) ] [Possible plagiarism]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
+    		post = "[ [Guttenberg](http://stackapps.com/q/7197/43403) ] [Possible plagiarism]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
     	} else {
     		//duplicated answer; same user
     		String user = finder.getTargetAnswer().get("owner").getAsJsonObject().get("display_name").getAsString();
-    		post = "[ [Guttenberg](https://git.io/vMrPa) ] [Possible repost]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
-    		//post = "[ [Guttenberg](https://git.io/vMrPa) ] User ["+user+"](http://stackoverflow.com/users/"+userTwo+") posted [this answer]("+targetLink+") after his [original answer]("+link+"). Score: **"+ score +"**";
+    		post = "[ [Guttenberg](http://stackapps.com/q/7197/43403) ] [Possible repost]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
     	}
     	    	
         return post;
