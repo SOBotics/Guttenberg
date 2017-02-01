@@ -5,25 +5,30 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Created by bhargav.h on 30-Sep-16.
  */
 public class CommandUtils {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommandUtils.class);
+    
     public static boolean checkForCommand(String message, String command){
-    	String username = "";
-    	
-    	Properties prop = new Properties();
+        String username = "";
+        
+        Properties prop = new Properties();
 
         try{
             prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
             username = prop.getProperty("username").substring(0,3).toLowerCase();
         }
         catch (IOException e){
-            e.printStackTrace();
+            LOGGER.error("Could not load login.properties", e);
             username = "gut";
         }
-    	
+        
         return message.split(" ")[0].toLowerCase().startsWith("@"+username) && message.split(" ")[1].toLowerCase().equals(command);
     }
     public static String extractData(String message){
@@ -41,7 +46,7 @@ public class CommandUtils {
             }
         }
         catch (IOException e){
-            e.printStackTrace();
+            LOGGER.error("ERROR", e);
             return ("Failed");
         }
 

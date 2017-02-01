@@ -1,25 +1,18 @@
 package org.sobotics.guttenberg.clients;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
-import java.time.temporal.TemporalField;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.finders.NewAnswersFinder;
 import org.sobotics.guttenberg.finders.PlagFinder;
 import org.sobotics.guttenberg.finders.RelatedAnswersFinder;
@@ -36,69 +29,87 @@ import fr.tunaki.stackoverflow.chat.ChatHost;
 import fr.tunaki.stackoverflow.chat.Room;
 import fr.tunaki.stackoverflow.chat.StackExchangeClient;
 import fr.tunaki.stackoverflow.chat.event.EventType;
+import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
 
 /**
  * Fetches and analyzes the data from the API
  * */
-public class Guttenberg {	
-	
-	private StackExchangeClient client;
-    private List<BotRoom> rooms;
-    private List<Room> chatRooms;
+public class Guttenberg {    
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(Guttenberg.class);
+    
+    private final StackExchangeClient client;
+    private final List<BotRoom> rooms;
+    private final List<Room> chatRooms;
     private ScheduledExecutorService executorService;
     private ScheduledExecutorService executorServiceCheck;
     private ScheduledExecutorService executorServiceUpdate;
-	
-	public Guttenberg(StackExchangeClient client, List<BotRoom> rooms) {
-		this.client = client;
-		this.rooms = rooms;
-		this.executorService = Executors.newSingleThreadScheduledExecutor();
-		this.executorServiceCheck = Executors.newSingleThreadScheduledExecutor();
-		this.executorServiceUpdate = Executors.newSingleThreadScheduledExecutor();
-		chatRooms = new ArrayList<>();
-		
-		this.setLogfile();
-	}
-	
-	public void start() {
-		for(BotRoom room:rooms){
+    
+    public Guttenberg(StackExchangeClient client, List<BotRoom> rooms) {
+        this.client = client;
+        this.rooms = rooms;
+        this.executorService = Executors.newSingleThreadScheduledExecutor();
+        this.executorServiceCheck = Executors.newSingleThreadScheduledExecutor();
+        this.executorServiceUpdate = Executors.newSingleThreadScheduledExecutor();
+        chatRooms = new ArrayList<>();
+        
+        //this.setLogfile();
+    }
+    
+    public void start() {
+        for(BotRoom room:rooms){
             Room chatroom = client.joinRoom(ChatHost.STACK_OVERFLOW ,room.getRoomId());
 
             if(room.getRoomId()==111347){
-            	//check if Guttenberg is running on the server
-            	Properties prop = new Properties();
+                //check if Guttenberg is running on the server
+                Properties prop = new Properties();
 
                 try{
                     prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
                 }
                 catch (IOException e){
-                    e.printStackTrace();
+                    LOGGER.error("login.properties could not be loaded!", e);
                 }
-            	
+                
                 if (prop.getProperty("location").equals("server")) {
-                	chatroom.send("Grias di o/ (SERVER VERSION)" );
+                    chatroom.send("Grias di o/ (SERVER VERSION)" );
                 } else {
-                	chatroom.send("Grias di o/ (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
+                    chatroom.send("Grias di o/ (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
                 }
             }
 
             chatRooms.add(chatroom);
-            if(room.getMention(chatroom)!=null)
-                chatroom.addEventListener(EventType.USER_MENTIONED, room.getMention(chatroom));
+            
+            Consumer<UserMentionedEvent> mention = room.getMention(chatroom, this);
+            if(mention != null) {
+                chatroom.addEventListener(EventType.USER_MENTIONED, mention);
+            }
             /*if(room.getReply(chatroom)!=null)
                 chatroom.addEventListener(EventType.MESSAGE_REPLY, room.getReply(chatroom));*/
         }
 		
 		
-		executorService.scheduleAtFixedRate(()->execute(), 15, 59, TimeUnit.SECONDS);
+		executorService.scheduleAtFixedRate(()->secureExecute(), 15, 59, TimeUnit.SECONDS);
 		executorServiceCheck.scheduleAtFixedRate(()->checkLastExecution(), 3, 5, TimeUnit.MINUTES);
 		executorServiceUpdate.scheduleAtFixedRate(()->update(), 0, 30, TimeUnit.MINUTES);
 	}
 	
-	private void execute() {
-		this.setLogfile();
+	/**
+	 * Executes `excecute()` and catches all the errors
+	 * 
+	 * @see http://stackoverflow.com/a/24902026/4687348
+	 * */
+	private void secureExecute() {
+		try {
+			execute();
+		} catch (Throwable e) {
+			LOGGER.error("Error throws in execute()", e);
+		}
+	}
+	
+	private void execute() throws Throwable {
 		Instant startTime = Instant.now();
-		System.out.println("Executing at - "+startTime);
+		LOGGER.info("Executing at - "+startTime);
 		//NewAnswersFinder answersFinder = new NewAnswersFinder();
 		
 		//Fetch recent answers / The targets
@@ -127,11 +138,11 @@ public class Guttenberg {
 		List<JsonObject> relatedAnswersUnsorted = related.fetchRelatedAnswers();
 		
 		if (relatedAnswersUnsorted.isEmpty()) {
-			System.out.println("No related answers could be fetched. Skipping this execution...");
+			LOGGER.warn("No related answers could be fetched. Skipping this execution...");
 			return;
 		}
 		
-		System.out.println("Add the answers to the PlagFinders...");
+		LOGGER.info("Add the answers to the PlagFinders...");
 		//add relatedAnswers to the PlagFinders
 		for (PlagFinder finder : plagFinders) {
 			Integer targetId = finder.getTargetAnswerId();
@@ -146,7 +157,7 @@ public class Guttenberg {
 			}
 		}
 		
-		System.out.println("Find the duplicates...");
+		LOGGER.info("Find the duplicates...");
 		//Let PlagFinders find the best match
 		for (PlagFinder finder : plagFinders) {
 			JsonObject otherAnswer = finder.getMostSimilarAnswer();
@@ -155,14 +166,12 @@ public class Guttenberg {
 					if (room.getRoomId() == 111347) {
 						SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
 						room.send(printer.print(finder));
-						System.out.println("Posted: "+printer.print(finder));
+						//LOGGER.info("Posted: "+printer.print(finder));
 						StatusUtils.numberOfReportedPosts.incrementAndGet();
-					} else {
-						System.out.println("Not SOBotics");
 					}
 				}
 			} else {
-				System.out.println("Score "+finder.getJaroScore()+" too low");
+				//LOGGER.info("Score "+finder.getJaroScore()+" too low");
 			}
 			
 			StatusUtils.numberOfCheckedTargets.incrementAndGet();
@@ -171,7 +180,7 @@ public class Guttenberg {
 		
 		StatusUtils.lastSucceededExecutionStarted = startTime;
 		StatusUtils.lastExecutionFinished = Instant.now();
-		System.out.println("Finished at - "+StatusUtils.lastExecutionFinished);
+		LOGGER.info("Finished at - "+StatusUtils.lastExecutionFinished);
 	}
 	
 	/**
@@ -203,44 +212,50 @@ public class Guttenberg {
 	 * Checks for updates
 	 * */
 	private void update() {
-		System.out.println("Load updater...");
+		LOGGER.info("Load updater...");
 		Updater updater = new Updater();
-		System.out.println("Check for updates...");
-		
-		int update = updater.updateIfAvailable(); 
-		
-		if (update == -1) {
+		LOGGER.info("Check for updates...");
+		boolean update = false;
+		try {
+			update = updater.updateIfAvailable(); 
+		} catch (Exception e) {
+			LOGGER.error("Could not update", e);
 			for (Room room : this.chatRooms) {
 				if (room.getRoomId() == 111347) {
 					room.send("Automatic update failed!");
 				}
 			}
-		} else if (update == 1) {
+		}
+		
+		if (update) {
 			for (Room room : this.chatRooms) {
 				if (room.getRoomId() == 111347) {
 					room.send("Rebooting for update to version "+updater.getNewVersion().get());
 				}
 				room.leave();
 			}
+			try {
+				wait(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			System.exit(0);
 		}
 		
 	}
-	
-	
-	
-	private void setLogfile() {
-		Date now = Date.from(Instant.now());
-		String dateString = new SimpleDateFormat("yyyy-MM-dd-HH").format(now);
-		
-		try {
-			PrintStream stream = new PrintStream(new FileOutputStream("./logs/guttenberg_"+dateString+".txt"));
-			System.setOut(stream);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			System.out.println("Could not change logfile");
-			return;
-		}
-	}
-	
+    
+    public void resetExecutors() {
+        executorService.shutdownNow();
+        executorServiceCheck.shutdownNow();
+        executorServiceUpdate.shutdownNow();
+        
+        executorService = Executors.newSingleThreadScheduledExecutor();
+        executorServiceCheck = Executors.newSingleThreadScheduledExecutor();
+        executorServiceUpdate = Executors.newSingleThreadScheduledExecutor();
+        
+        executorService.scheduleAtFixedRate(()->secureExecute(), 15, 59, TimeUnit.SECONDS);
+        executorServiceCheck.scheduleAtFixedRate(()->checkLastExecution(), 3, 5, TimeUnit.MINUTES);
+        executorServiceUpdate.scheduleAtFixedRate(()->update(), 0, 30, TimeUnit.MINUTES);
+    }
+    
 }
