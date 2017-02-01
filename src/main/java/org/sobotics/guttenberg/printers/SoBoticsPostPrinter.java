@@ -1,7 +1,5 @@
 package org.sobotics.guttenberg.printers;
 
-import java.util.List;
-
 import org.sobotics.guttenberg.finders.PlagFinder;
 
 /**
@@ -30,8 +28,7 @@ public class SoBoticsPostPrinter implements PostPrinter {
     		//duplicated answer; same user
     		String user = finder.getTargetAnswer().get("owner").getAsJsonObject().get("display_name").getAsString();
     		post = "[ [Guttenberg](http://stackapps.com/q/7197/43403) ] [Possible repost]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
-    	}
-    	    	
+      }
         return post;
     }
 }
