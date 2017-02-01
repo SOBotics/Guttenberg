@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
+import org.sobotics.guttenberg.clients.Guttenberg;
 
 import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
@@ -30,7 +31,7 @@ public class Status implements SpecialCommand {
     }
 
     @Override
-    public void execute(Room room) {
+    public void execute(Room room, Guttenberg instance) {
         LOGGER.info("Checking status...");
         Properties prop = new Properties();
         Properties prop2 = new Properties();

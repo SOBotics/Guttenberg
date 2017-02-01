@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.sobotics.guttenberg.utils.CommandUtils;
+import org.sobotics.guttenberg.clients.Guttenberg;
 
 import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
@@ -28,7 +29,7 @@ public class Pfiatdi implements SpecialCommand {
     }
 
     @Override
-    public void execute(Room room) {
+    public void execute(Room room, Guttenberg instance) {
         List<String> array = new ArrayList<>();
         array.add("[Pfiat di!](http://www.dictionary-german-english.com/en/dictionary-german-english/pfiat+di)");
         //array.add("[Pfiat di!](http://german.stackexchange.com/q/254)  o/");

@@ -9,6 +9,7 @@ import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ import fr.tunaki.stackoverflow.chat.ChatHost;
 import fr.tunaki.stackoverflow.chat.Room;
 import fr.tunaki.stackoverflow.chat.StackExchangeClient;
 import fr.tunaki.stackoverflow.chat.event.EventType;
+import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
 
 /**
  * Fetches and analyzes the data from the API
@@ -39,9 +41,9 @@ public class Guttenberg {
     private final StackExchangeClient client;
     private final List<BotRoom> rooms;
     private final List<Room> chatRooms;
-    private final ScheduledExecutorService executorService;
-    private final ScheduledExecutorService executorServiceCheck;
-    private final ScheduledExecutorService executorServiceUpdate;
+    private ScheduledExecutorService executorService;
+    private ScheduledExecutorService executorServiceCheck;
+    private ScheduledExecutorService executorServiceUpdate;
     
     public Guttenberg(StackExchangeClient client, List<BotRoom> rooms) {
         this.client = client;
@@ -77,12 +79,29 @@ public class Guttenberg {
             }
 
             chatRooms.add(chatroom);
-            if(room.getMention(chatroom)!=null)
-                chatroom.addEventListener(EventType.USER_MENTIONED, room.getMention(chatroom));
+            
+            Consumer<UserMentionedEvent> mention = room.getMention(chatroom, this);
+            if(mention != null) {
+                chatroom.addEventListener(EventType.USER_MENTIONED, mention);
+            }
             /*if(room.getReply(chatroom)!=null)
                 chatroom.addEventListener(EventType.MESSAGE_REPLY, room.getReply(chatroom));*/
         }
         
+        
+        executorService.scheduleAtFixedRate(()->secureExecute(), 15, 59, TimeUnit.SECONDS);
+        executorServiceCheck.scheduleAtFixedRate(()->checkLastExecution(), 3, 5, TimeUnit.MINUTES);
+        executorServiceUpdate.scheduleAtFixedRate(()->update(), 0, 30, TimeUnit.MINUTES);
+    }
+    
+    public void resetExecutors() {
+        executorService.shutdownNow();
+        executorServiceCheck.shutdownNow();
+        executorServiceUpdate.shutdownNow();
+        
+        executorService = Executors.newSingleThreadScheduledExecutor();
+        executorServiceCheck = Executors.newSingleThreadScheduledExecutor();
+        executorServiceUpdate = Executors.newSingleThreadScheduledExecutor();
         
         executorService.scheduleAtFixedRate(()->secureExecute(), 15, 59, TimeUnit.SECONDS);
         executorServiceCheck.scheduleAtFixedRate(()->checkLastExecution(), 3, 5, TimeUnit.MINUTES);
