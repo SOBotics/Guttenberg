@@ -1,7 +1,6 @@
 package org.sobotics.guttenberg.roomdata;
 
 import fr.tunaki.stackoverflow.chat.Room;
-import fr.tunaki.stackoverflow.chat.event.MessageReplyEvent;
 import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
 
 import java.util.function.Consumer;

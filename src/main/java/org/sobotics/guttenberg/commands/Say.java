@@ -10,7 +10,7 @@ import fr.tunaki.stackoverflow.chat.Room;
  */
 public class Say implements SpecialCommand {
 
-    private Message message;
+    private final Message message;
 
     public Say(Message message) {
         this.message = message;

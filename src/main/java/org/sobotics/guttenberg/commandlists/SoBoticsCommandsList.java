@@ -1,4 +1,4 @@
-package org.sobitics.guttenberg.commandlists;
+package org.sobotics.guttenberg.commandlists;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +18,7 @@ import fr.tunaki.stackoverflow.chat.event.PingMessageEvent;
  */
 public class SoBoticsCommandsList {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SoBoticsCommandsList.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SoBoticsCommandsList.class);
 
     public void mention(Room room, PingMessageEvent event, boolean isReply){
         /*if(CheckUtils.checkIfUserIsBlacklisted(event.getUserId()))

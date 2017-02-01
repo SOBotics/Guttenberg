@@ -25,7 +25,7 @@ public class JsonUtils {
         JsonObject root = new JsonParser().parse(json).getAsJsonObject();
         
         if (root.has("quota_remaining"))
-        	StatusUtils.remainingQuota = new AtomicInteger(root.get("quota_remaining").getAsInt());
+            StatusUtils.remainingQuota = new AtomicInteger(root.get("quota_remaining").getAsInt());
         
         return root;
     }
@@ -38,7 +38,7 @@ public class JsonUtils {
         JsonObject root = new JsonParser().parse(json).getAsJsonObject();
         
         if (root.has("quota_remaining"))
-        	StatusUtils.remainingQuota = new AtomicInteger(root.get("quota_remaining").getAsInt());
+            StatusUtils.remainingQuota = new AtomicInteger(root.get("quota_remaining").getAsInt());
         
         return root;
     }
