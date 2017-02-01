@@ -2,6 +2,7 @@ package org.sobotics.guttenberg.commands;
 
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
+import org.sobotics.guttenberg.clients.Guttenberg;
 
 import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
@@ -20,7 +21,7 @@ public class Quota implements SpecialCommand {
     }
 
     @Override
-    public void execute(Room room) {
+    public void execute(Room room, Guttenberg instance) {
         room.replyTo(this.message.getId(), "The remaining quota is: "+StatusUtils.remainingQuota);
     }
 
