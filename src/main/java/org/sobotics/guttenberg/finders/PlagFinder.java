@@ -136,7 +136,7 @@ public class PlagFinder {
 				closestMatch = answer;
 			}
 		}
-		System.out.println("Score: "+highscore);
+		LOGGER.info("Score: "+highscore);
 		
 		this.jaroScore = highscore;
 		this.jaroAnswer = closestMatch;
