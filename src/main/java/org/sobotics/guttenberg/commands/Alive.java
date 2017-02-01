@@ -11,7 +11,7 @@ import fr.tunaki.stackoverflow.chat.Room;
 public class Alive implements SpecialCommand {
 
 
-    private Message message;
+    private final Message message;
 
     public Alive(Message message) {
         this.message = message;

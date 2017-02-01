@@ -13,8 +13,8 @@ import fr.tunaki.stackoverflow.chat.Room;
  */
 public class Commands implements SpecialCommand {
 
-    private Message message;
-    private List<SpecialCommand> commands;
+    private final Message message;
+    private final List<SpecialCommand> commands;
 
     public Commands(Message message, List<SpecialCommand> commands) {
         this.message = message;
@@ -31,7 +31,7 @@ public class Commands implements SpecialCommand {
         room.replyTo(message.getId(), PrintUtils.printCommandHeader());
         String printstr = "";
         for (SpecialCommand command: commands){
-            printstr+="    "+padRight(command.name(),15)+" - "+command.description()+"\n";
+            printstr += "    " + padRight(command.name(),15) + " - " + command.description() + "\n";
         }
 
         room.send(printstr);

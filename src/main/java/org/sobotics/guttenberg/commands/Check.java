@@ -18,24 +18,24 @@ import fr.tunaki.stackoverflow.chat.Room;
 
 public class Check implements SpecialCommand {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Check.class);
-	
-	private Message message;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Check.class);
+
+    private final Message message;
 
     public Check(Message message) {
         this.message = message;
     }
-	
-	@Override
+    
+    @Override
     public boolean validate() {
         return CommandUtils.checkForCommand(message.getPlainContent(),"check");
     }
 
-	@Override
-	public void execute(Room room) {
-		String word = CommandUtils.extractData(message.getPlainContent()).trim();
+    @Override
+    public void execute(Room room) {
+        String word = CommandUtils.extractData(message.getPlainContent()).trim();
         Integer returnValue = 0;
-        
+
         if(word.contains(" ")){
             String parts[] = word.split(" ");
             /*if(parts[0].toLowerCase().equals("value")){
@@ -48,12 +48,12 @@ public class Check implements SpecialCommand {
             }*/
         }
         if(word.contains("/"))
-        {            	
-        	word = CommandUtils.getAnswerId(word);
+        {                
+            word = CommandUtils.getAnswerId(word);
         }
-		
+
         Integer answerId = new Integer(word);
-        
+
         Properties prop = new Properties();
 
         try{
@@ -62,39 +62,36 @@ public class Check implements SpecialCommand {
         catch (IOException e){
             LOGGER.error("Could not read login.properties", e);
         }
-        
-        
+
+
         try {
-			JsonObject answer = ApiUtils.getAnswerDetailsById(answerId, "stackoverflow", prop.getProperty("apikey", ""));
-			JsonObject target = answer.get("items").getAsJsonArray().get(0).getAsJsonObject();
-			PlagFinder finder = new PlagFinder(target);
-			finder.collectData();
-			finder.getMostSimilarAnswer();
-			double score = Math.round(finder.getJaroScore()*100.0)/100.0;
-			String link = finder.getJaroAnswer().get("link").getAsString();
-			
-			if (score > 0) {
-				String reply = "The closest match with a score of **"+score+"** is [this post]("+link+").";
-				room.replyTo(message.getId(), reply);
-			} else {
-				room.replyTo(message.getId(), "There are no similar posts.");
-			}
-			
+            JsonObject answer = ApiUtils.getAnswerDetailsById(answerId, "stackoverflow", prop.getProperty("apikey", ""));
+            JsonObject target = answer.get("items").getAsJsonArray().get(0).getAsJsonObject();
+            PlagFinder finder = new PlagFinder(target);
+            finder.collectData();
+            finder.getMostSimilarAnswer();
+            double score = Math.round(finder.getJaroScore()*100.0)/100.0;
+            String link = finder.getJaroAnswer().get("link").getAsString();
+
+            if (score > 0) {
+                String reply = "The closest match with a score of **"+score+"** is [this post]("+link+").";
+                room.replyTo(message.getId(), reply);
+            } else {
+                room.replyTo(message.getId(), "There are no similar posts.");
+            }  
         } catch (IOException e) {
-			LOGGER.error("ERROR", e);
-		}
-        
-        
-	}
+            LOGGER.error("ERROR", e);
+        }
+    }
 
-	@Override
-	public String description() {
-		return "Checks a post for plagiarism: check <answer url>";
-	}
+    @Override
+    public String description() {
+        return "Checks a post for plagiarism: check <answer url>";
+    }
 
-	@Override
-	public String name() {
-		return "check";
-	}
+    @Override
+    public String name() {
+        return "check";
+    }
 
 }
