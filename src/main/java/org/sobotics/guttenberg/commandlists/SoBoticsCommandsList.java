@@ -1,4 +1,4 @@
-package org.sobitics.guttenberg.commandlists;
+package org.sobotics.guttenberg.commandlists;
 
 import java.util.ArrayList;
 import java.util.Arrays;

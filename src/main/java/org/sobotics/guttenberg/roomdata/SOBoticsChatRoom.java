@@ -6,7 +6,7 @@ import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
 
 import java.util.function.Consumer;
 
-import org.sobitics.guttenberg.commandlists.SoBoticsCommandsList;
+import org.sobotics.guttenberg.commandlists.SoBoticsCommandsList;
 import org.sobotics.guttenberg.printers.PostPrinter;
 import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
 
