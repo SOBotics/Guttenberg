@@ -77,13 +77,27 @@ public class RelatedAnswersFinder {
                 
                 List<JsonObject> relatedFinal = new ArrayList<JsonObject>();
                 
-                JsonObject relatedAnswers = ApiUtils.getAnswersToQuestionsByIdString(relatedIds, "stackoverflow", prop.getProperty("apikey", ""));
-                //System.out.println(relatedAnswers);
-                for (JsonElement answer : relatedAnswers.get("items").getAsJsonArray()) {
-                    JsonObject answerObject = answer.getAsJsonObject();
-                    relatedFinal.add(answerObject);
-                }
+                boolean hasMore = true;
+                int i = 1;
                 
+                while (i <= 3) {
+                	LOGGER.info("Fetch page "+i);
+                	JsonObject relatedAnswers = ApiUtils.getAnswersToQuestionsByIdString(relatedIds, "stackoverflow", prop.getProperty("apikey", ""));
+                    //System.out.println(relatedAnswers);
+                    
+                    for (JsonElement answer : relatedAnswers.get("items").getAsJsonArray()) {
+                        JsonObject answerObject = answer.getAsJsonObject();
+                        relatedFinal.add(answerObject);
+                    }
+                    
+                    JsonElement hasMoreElement = relatedAnswers.get("has_more");
+                    
+                    if (hasMoreElement != null && hasMoreElement.getAsBoolean() == false)
+                    	break;
+                    
+                    i++;
+                }
+                                
                 LOGGER.info("Collected "+relatedFinal.size()+" answers");
                 return relatedFinal;
             } else {
