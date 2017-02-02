@@ -120,6 +120,7 @@ public class PlagFinder {
     
     public JsonObject getMostSimilarAnswer() {
         String targetText = this.targetAnswer.get("body_markdown").getAsString();
+        int targetDate = this.targetAnswer.get("creation_date").getAsInt();
         double highscore = 0;
         JsonObject closestMatch = this.targetAnswer;
         closestMatch.addProperty("jaro_winkler", 0);
@@ -128,8 +129,9 @@ public class PlagFinder {
                 
         for (JsonObject answer : this.relatedAnswers) {
             String answerBody = answer.get("body_markdown").getAsString();
+            int answerDate = answer.get("last_activity_date").getAsInt();
             double jaroWinklerScore = jw.similarity(targetText, answerBody);
-            if (highscore < jaroWinklerScore) {
+            if (highscore < jaroWinklerScore && targetDate > answerDate) {
                 //new highscore
                 highscore = jaroWinklerScore;
                 answer.addProperty("jaro_winkler", jaroWinklerScore);
