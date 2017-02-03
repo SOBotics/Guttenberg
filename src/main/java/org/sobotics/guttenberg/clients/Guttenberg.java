@@ -1,9 +1,13 @@
 package org.sobotics.guttenberg.clients;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executors;
@@ -11,6 +15,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang.time.DateUtils;
+import org.apache.cxf.helpers.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.finders.NewAnswersFinder;
@@ -44,6 +50,7 @@ public class Guttenberg {
     private ScheduledExecutorService executorService;
     private ScheduledExecutorService executorServiceCheck;
     private ScheduledExecutorService executorServiceUpdate;
+    private ScheduledExecutorService executorServiceLogCleaner;
     
     public Guttenberg(StackExchangeClient client, List<BotRoom> rooms) {
         this.client = client;
@@ -92,6 +99,7 @@ public class Guttenberg {
 		executorService.scheduleAtFixedRate(()->secureExecute(), 15, 59, TimeUnit.SECONDS);
 		executorServiceCheck.scheduleAtFixedRate(()->checkLastExecution(), 3, 5, TimeUnit.MINUTES);
 		executorServiceUpdate.scheduleAtFixedRate(()->update(), 0, 30, TimeUnit.MINUTES);
+		executorServiceLogCleaner.scheduleAtFixedRate(()->cleanLogs(), 0, 4, TimeUnit.HOURS);
 	}
 	
 	/**
@@ -243,19 +251,44 @@ public class Guttenberg {
 		}
 		
 	}
+	
+	/**
+	 * Removed old logfiles
+	 * 
+	 * @see http://stackoverflow.com/a/15042885/4687348
+	 * */
+	private void cleanLogs() {
+		int keepLogsForDays = 3;
+        File logsDir = new File("./logs");
+        
+        for (File file : logsDir.listFiles()) {
+        	long diff = new Date().getTime() - file.lastModified();
+
+        	if (diff > keepLogsForDays * 24 * 60 * 60 * 1000) {
+        		try {
+        			file.delete();
+        		} catch (SecurityException e) {
+        			LOGGER.error("Could not delete file", e);
+        		}
+        	}
+        }
+	}
     
     public void resetExecutors() {
         executorService.shutdownNow();
         executorServiceCheck.shutdownNow();
         executorServiceUpdate.shutdownNow();
+        executorServiceLogCleaner.shutdownNow();
         
         executorService = Executors.newSingleThreadScheduledExecutor();
         executorServiceCheck = Executors.newSingleThreadScheduledExecutor();
         executorServiceUpdate = Executors.newSingleThreadScheduledExecutor();
+        executorServiceLogCleaner = Executors.newSingleThreadScheduledExecutor();
         
         executorService.scheduleAtFixedRate(()->secureExecute(), 15, 59, TimeUnit.SECONDS);
         executorServiceCheck.scheduleAtFixedRate(()->checkLastExecution(), 3, 5, TimeUnit.MINUTES);
         executorServiceUpdate.scheduleAtFixedRate(()->update(), 0, 30, TimeUnit.MINUTES);
+        executorServiceLogCleaner.scheduleAtFixedRate(()->cleanLogs(), 0, 4, TimeUnit.HOURS);
     }
     
 }
