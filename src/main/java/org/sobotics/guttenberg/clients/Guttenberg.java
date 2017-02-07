@@ -20,12 +20,14 @@ import org.apache.cxf.helpers.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.finders.NewAnswersFinder;
+import org.sobotics.guttenberg.entities.OptedInUser;
 import org.sobotics.guttenberg.finders.PlagFinder;
 import org.sobotics.guttenberg.finders.RelatedAnswersFinder;
 import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
 import org.sobotics.guttenberg.roomdata.BotRoom;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
+import org.sobotics.guttenberg.utils.UserUtils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -169,11 +171,26 @@ public class Guttenberg {
 		//Let PlagFinders find the best match
 		for (PlagFinder finder : plagFinders) {
 			JsonObject otherAnswer = finder.getMostSimilarAnswer();
-			if (finder.getJaroScore() > 0.77) {
+			double score = finder.getJaroScore();
+			if (score > 0.77) {
 				for (Room room : this.chatRooms) {
+					List<OptedInUser> pingUsersList = UserUtils.pingUserIfApplicable(score, room.getRoomId());
 					if (room.getRoomId() == 111347) {
 						SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
-						room.send(printer.print(finder));
+						String report = printer.print(finder);
+						String pings = "(";
+						for (OptedInUser user : pingUsersList) {
+                            if (!user.isWhenInRoom() || (user.isWhenInRoom() && UserUtils.checkIfUserInRoom(room, user.getUser().getUserId()))) {
+                                pings+=(" @"+user.getUser().getUsername().replace(" ",""));
+                            }
+                        }
+						
+						if (pings.length() > 1) {
+							report += pings + " )";
+						}
+						
+						room.send(report);
+						//room.send(printer.print(finder));
 						//LOGGER.info("Posted: "+printer.print(finder));
 						StatusUtils.numberOfReportedPosts.incrementAndGet();
 					}
