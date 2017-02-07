@@ -56,7 +56,7 @@ public class OptIn implements SpecialCommand {
         	minScore = Math.round(minScore*100.0)/100.0;
         	
         	try {
-				if (FileUtils.checkIfInFile(filename, optMessage)) {
+				if (FileUtils.checkIfLineInFileStartsWith(filename, optMessage)) {
 					room.replyTo(message.getId(), "You've already been added");
 				} else {
 					optMessage += ","+minScore;
