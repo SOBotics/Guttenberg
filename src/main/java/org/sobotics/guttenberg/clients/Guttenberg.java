@@ -125,11 +125,10 @@ public class Guttenberg {
 		
 		//Fetch recent answers / The targets
 		List<Post> recentAnswers = NewAnswersFinder.findRecentAnswers();
-		
 		//Fetch their question_ids
 		List<Integer> ids = new ArrayList<Integer>();
 		for (Post answer : recentAnswers) {
-			Integer id = answer.getAnswerID();
+			Integer id = answer.getQuestionID();
 			if (!ids.contains(id))
 				ids.add(id);
 		}
@@ -144,7 +143,6 @@ public class Guttenberg {
 		}
 		
 		//fetch all /questions/ids/answers sort them later
-		
 		RelatedAnswersFinder related = new RelatedAnswersFinder(ids);
 		List<Post> relatedAnswersUnsorted = related.fetchRelatedAnswers();
 		
@@ -173,7 +171,7 @@ public class Guttenberg {
 		for (PlagFinder finder : plagFinders) {
 			Post otherAnswer = finder.getMostSimilarAnswer();
 			double score = finder.getJaroScore();
-			if (score > 0.73) {
+			if (score > 0.75) {
 				for (Room room : this.chatRooms) {
 					List<OptedInUser> pingUsersList = UserUtils.pingUserIfApplicable(score, room.getRoomId());
 					if (room.getRoomId() == 111347) {
