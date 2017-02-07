@@ -154,9 +154,9 @@ public class PlagFinder {
             		* (jwCodeOnly > 0 ? jwCodeOnly : 1)*1.0 
             		* (jwPlaintext > 0 ? jwPlaintext : 1)*0.95;
             */
-            double jaroWinklerScore = ((jwBodyMarkdown > 0 ? jwBodyMarkdown : 1)*0.7 
+            double jaroWinklerScore = ((jwBodyMarkdown > 0 ? jwBodyMarkdown : 1)*0.6 
             		+ (jwCodeOnly > 0 ? jwCodeOnly : 1)*1.0 
-            		+ (jwPlaintext > 0 ? jwPlaintext : 1)*0.8) / 3;
+            		+ (jwPlaintext > 0 ? jwPlaintext : 1)*0.75) / 3;
             
             if (jwBodyMarkdown > 0.9)
             	jaroWinklerScore = jwBodyMarkdown;
