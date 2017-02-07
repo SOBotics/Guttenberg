@@ -34,11 +34,11 @@ public class OptedInUser {
     }
     
     public double getMinScore() {
-    	return this.minScore;
+        return this.minScore;
     }
     
     public void setMinScore(double score) {
-    	this.minScore = score;
+        this.minScore = score;
     }
 
     @Override
