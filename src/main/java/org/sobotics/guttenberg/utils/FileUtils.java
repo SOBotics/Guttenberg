@@ -25,6 +25,17 @@ public class FileUtils {
         }
         return false;
     }
+    
+    public static boolean checkIfLineInFileStartsWith(String filename, String message) throws IOException{
+        List<String> lines = readFile(filename);
+        for (String line:lines){
+            if(line.trim().toLowerCase().startsWith(message.trim().toLowerCase())){
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public static List<String> readFile(String filename) throws IOException{
         return Files.readAllLines(Paths.get(filename));
     }
