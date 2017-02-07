@@ -148,9 +148,19 @@ public class PlagFinder {
             double jwCodeOnly = jw.similarity(targetCodeOnly, answerCodeOnly);
             double jwPlaintext = jw.similarity(answerPlaintext, targetPlaintext);
             
-            LOGGER.info("bodyMarkdown: "+jwBodyMarkdown+"; codeOnly: "+jwCodeOnly+"; plaintext: "+jwPlaintext);
+            //LOGGER.info("bodyMarkdown: "+jwBodyMarkdown+"; codeOnly: "+jwCodeOnly+"; plaintext: "+jwPlaintext);
             
-            double jaroWinklerScore = jwBodyMarkdown*0.6 + jwCodeOnly*1.0 + jwPlaintext*0.7;
+            /*double jaroWinklerScore = (jwBodyMarkdown > 0 ? jwBodyMarkdown : 1)*0.92 
+            		* (jwCodeOnly > 0 ? jwCodeOnly : 1)*1.0 
+            		* (jwPlaintext > 0 ? jwPlaintext : 1)*0.95;
+            */
+            double jaroWinklerScore = ((jwBodyMarkdown > 0 ? jwBodyMarkdown : 1)*0.7 
+            		+ (jwCodeOnly > 0 ? jwCodeOnly : 1)*1.0 
+            		+ (jwPlaintext > 0 ? jwPlaintext : 1)*0.8) / 3;
+            
+            if (jwBodyMarkdown > 0.9)
+            	jaroWinklerScore = jwBodyMarkdown;
+            
             if (highscore < jaroWinklerScore && targetDate.isAfter(answerDate)) {
                 //new highscore
                 highscore = jaroWinklerScore;
