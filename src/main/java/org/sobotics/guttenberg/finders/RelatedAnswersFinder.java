@@ -81,8 +81,8 @@ public class RelatedAnswersFinder {
                 int i = 1;
                 
                 while (i <= 3) {
-                	LOGGER.info("Fetch page "+i);
-                	JsonObject relatedAnswers = ApiUtils.getAnswersToQuestionsByIdString(relatedIds, "stackoverflow", prop.getProperty("apikey", ""));
+                    LOGGER.info("Fetch page "+i);
+                    JsonObject relatedAnswers = ApiUtils.getAnswersToQuestionsByIdString(relatedIds, "stackoverflow", prop.getProperty("apikey", ""));
                     //System.out.println(relatedAnswers);
                     
                     for (JsonElement answer : relatedAnswers.get("items").getAsJsonArray()) {
@@ -93,7 +93,7 @@ public class RelatedAnswersFinder {
                     JsonElement hasMoreElement = relatedAnswers.get("has_more");
                     
                     if (hasMoreElement != null && hasMoreElement.getAsBoolean() == false)
-                    	break;
+                        break;
                     
                     i++;
                 }
