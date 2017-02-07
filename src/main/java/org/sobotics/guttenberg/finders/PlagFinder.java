@@ -15,6 +15,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import info.debatty.java.stringsimilarity.JaroWinkler;
+import org.sobotics.guttenberg.utils.PostUtils;
 
 /**
  * Checks an answer for plagiarism by collecting similar answers from different sources.
@@ -119,7 +120,11 @@ public class PlagFinder {
     
     
     public JsonObject getMostSimilarAnswer() {
-        String targetText = this.targetAnswer.get("body_markdown").getAsString();
+        PostUtils.separateBodyParts(this.targetAnswer);
+        String targetPlain = this.targetAnswer.get("body_plain").getAsString();
+        String targetCode = this.targetAnswer.get("body_code").getAsString();
+        String targetQuote = this.targetAnswer.get("body_quote").getAsString();
+        
         int targetDate = this.targetAnswer.get("creation_date").getAsInt();
         double highscore = 0;
         JsonObject closestMatch = this.targetAnswer;
@@ -128,9 +133,19 @@ public class PlagFinder {
         JaroWinkler jw = new JaroWinkler();
                 
         for (JsonObject answer : this.relatedAnswers) {
-            String answerBody = answer.get("body_markdown").getAsString();
+            PostUtils.separateBodyParts(answer);
+            String answerPlain = answer.get("body_plain").getAsString();
+            String answerCode = answer.get("body_code").getAsString();
+            String answerQuote = answer.get("body_quote").getAsString();
+            
             int answerDate = answer.get("last_activity_date").getAsInt();
-            double jaroWinklerScore = jw.similarity(targetText, answerBody);
+            
+            double plainSimilarity = jw.similarity(targetPlain, answerPlain);
+            double codeSimilarity = jw.similarity(targetCode, answerCode);
+            double quoteSimilarity = jw.similarity(targetQuote, answerQuote);
+            
+            double jaroWinklerScore = (plainSimilarity * 0.7) + (quoteSimilarity * 0.5) + codeSimilarity;
+            
             if (highscore < jaroWinklerScore && targetDate > answerDate) {
                 //new highscore
                 highscore = jaroWinklerScore;
