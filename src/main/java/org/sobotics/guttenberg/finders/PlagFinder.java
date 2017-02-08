@@ -154,9 +154,12 @@ public class PlagFinder {
             		* (jwCodeOnly > 0 ? jwCodeOnly : 1)*1.0 
             		* (jwPlaintext > 0 ? jwPlaintext : 1)*0.95;
             */
-            double jaroWinklerScore = ((jwBodyMarkdown > 0 ? jwBodyMarkdown : 1)*0.6 
-            		+ (jwCodeOnly > 0 ? jwCodeOnly : 1)*1.0 
-            		+ (jwPlaintext > 0 ? jwPlaintext : 1)*0.75) / 3;
+            double usedScores = (jwBodyMarkdown > 0 ? 1 : 0)
+            		+ (jwCodeOnly > 0 ? 1 : 0)
+            		+ (jwPlaintext > 0 ? 1 : 0);
+            double jaroWinklerScore = ((jwBodyMarkdown > 0 ? jwBodyMarkdown : 0)*0.9 
+            		+ (jwCodeOnly > 0 ? jwCodeOnly : 0)*1.0 
+            		+ (jwPlaintext > 0 ? jwPlaintext : 0)*0.95) / usedScores;
             
             if (jwBodyMarkdown > 0.9)
             	jaroWinklerScore = jwBodyMarkdown;
