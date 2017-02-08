@@ -120,8 +120,16 @@ public class Guttenberg {
 	
 	private void execute() throws Throwable {
 		Instant startTime = Instant.now();
+		Properties props = new Properties();
 		LOGGER.info("Executing at - "+startTime);
 		//NewAnswersFinder answersFinder = new NewAnswersFinder();
+		
+		try {
+			props.load(new FileInputStream(FilePathUtils.generalPropertiesFile));
+		} catch (IOException e) {
+			LOGGER.warn("Could not load general properties", e);
+		}
+		
 		
 		//Fetch recent answers / The targets
 		List<Post> recentAnswers = NewAnswersFinder.findRecentAnswers();
@@ -171,7 +179,18 @@ public class Guttenberg {
 		for (PlagFinder finder : plagFinders) {
 			Post otherAnswer = finder.getMostSimilarAnswer();
 			double score = finder.getJaroScore();
-			if (score > 0.78) {
+			double minimumScore = 0.78;
+			
+			try {
+				double s = new Double(props.getProperty("minimumScore", "0.78"));
+				if (s > 0) {
+					minimumScore = s;
+				}
+			} catch (Throwable e) {
+				LOGGER.warn("Could not convert score from properties-file to double. Using hardcoded", e);
+			}
+			
+			if (score > minimumScore) {
 				for (Room room : this.chatRooms) {
 					List<OptedInUser> pingUsersList = UserUtils.pingUserIfApplicable(score, room.getRoomId());
 					if (room.getRoomId() == 111347) {
