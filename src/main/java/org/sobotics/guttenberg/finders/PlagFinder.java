@@ -145,7 +145,7 @@ public class PlagFinder {
             //double jaroWinklerScore = jw.similarity(targetText, answerBody);
             
             double jwBodyMarkdown = jw.similarity(targetBodyMarkdown, answerBodyMarkdown) * 1;
-            double jwCodeOnly = jw.similarity(targetCodeOnly, answerCodeOnly) * 5;
+            double jwCodeOnly = jw.similarity(targetCodeOnly, answerCodeOnly) * 3;
             double jwPlaintext = jw.similarity(answerPlaintext, targetPlaintext) * 1;
             
             //LOGGER.info("bodyMarkdown: "+jwBodyMarkdown+"; codeOnly: "+jwCodeOnly+"; plaintext: "+jwPlaintext);
@@ -155,7 +155,7 @@ public class PlagFinder {
             		* (jwPlaintext > 0 ? jwPlaintext : 1)*0.95;
             */
             double usedScores = (jwBodyMarkdown > 0 ? 1 : 0)
-            		+ (jwCodeOnly > 0 ? 4 : 0)
+            		+ (jwCodeOnly > 0 ? 3 : 0)
             		+ (jwPlaintext > 0 ? 1 : 0);
             double jaroWinklerScore = ((jwBodyMarkdown > 0 ? jwBodyMarkdown : 0)*0.9 
             		+ (jwCodeOnly > 0 ? jwCodeOnly : 0)*1.0 

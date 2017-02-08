@@ -171,7 +171,7 @@ public class Guttenberg {
 		for (PlagFinder finder : plagFinders) {
 			Post otherAnswer = finder.getMostSimilarAnswer();
 			double score = finder.getJaroScore();
-			if (score > 0.75) {
+			if (score > 0.78) {
 				for (Room room : this.chatRooms) {
 					List<OptedInUser> pingUsersList = UserUtils.pingUserIfApplicable(score, room.getRoomId());
 					if (room.getRoomId() == 111347) {
