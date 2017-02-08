@@ -144,9 +144,9 @@ public class PlagFinder {
             Instant answerDate = answer.getAnswerCreationDate();
             //double jaroWinklerScore = jw.similarity(targetText, answerBody);
             
-            double jwBodyMarkdown = jw.similarity(targetBodyMarkdown, answerBodyMarkdown);
-            double jwCodeOnly = jw.similarity(targetCodeOnly, answerCodeOnly);
-            double jwPlaintext = jw.similarity(answerPlaintext, targetPlaintext);
+            double jwBodyMarkdown = jw.similarity(targetBodyMarkdown, answerBodyMarkdown) * 1;
+            double jwCodeOnly = jw.similarity(targetCodeOnly, answerCodeOnly) * 5;
+            double jwPlaintext = jw.similarity(answerPlaintext, targetPlaintext) * 1;
             
             //LOGGER.info("bodyMarkdown: "+jwBodyMarkdown+"; codeOnly: "+jwCodeOnly+"; plaintext: "+jwPlaintext);
             
@@ -155,11 +155,14 @@ public class PlagFinder {
             		* (jwPlaintext > 0 ? jwPlaintext : 1)*0.95;
             */
             double usedScores = (jwBodyMarkdown > 0 ? 1 : 0)
-            		+ (jwCodeOnly > 0 ? 1 : 0)
+            		+ (jwCodeOnly > 0 ? 4 : 0)
             		+ (jwPlaintext > 0 ? 1 : 0);
             double jaroWinklerScore = ((jwBodyMarkdown > 0 ? jwBodyMarkdown : 0)*0.9 
             		+ (jwCodeOnly > 0 ? jwCodeOnly : 0)*1.0 
             		+ (jwPlaintext > 0 ? jwPlaintext : 0)*0.95) / usedScores;
+            
+            
+            //LOGGER.info("Score: "+jaroWinklerScore+"\nUsed scores: "+usedScores+"\nbodyMarkdown: "+jwBodyMarkdown+"\ncodeOnly: "+jwCodeOnly+"\nplaintext: "+jwPlaintext);
             
             if (jwBodyMarkdown > 0.9)
             	jaroWinklerScore = jwBodyMarkdown;

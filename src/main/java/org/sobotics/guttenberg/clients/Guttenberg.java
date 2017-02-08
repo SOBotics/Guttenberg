@@ -99,9 +99,9 @@ public class Guttenberg {
         }
 		
 		
-		executorService.scheduleAtFixedRate(()->secureExecute(), 15, 59, TimeUnit.SECONDS);
+		executorService.scheduleAtFixedRate(()->secureExecute(), 10, 59, TimeUnit.SECONDS);
 		executorServiceCheck.scheduleAtFixedRate(()->checkLastExecution(), 3, 5, TimeUnit.MINUTES);
-		executorServiceUpdate.scheduleAtFixedRate(()->update(), 0, 30, TimeUnit.MINUTES);
+		executorServiceUpdate.scheduleAtFixedRate(()->update(), 1, 30, TimeUnit.MINUTES);
 		executorServiceLogCleaner.scheduleAtFixedRate(()->cleanLogs(), 0, 4, TimeUnit.HOURS);
 	}
 	
