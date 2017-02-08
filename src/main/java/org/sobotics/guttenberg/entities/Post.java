@@ -6,6 +6,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.sobotics.guttenberg.utils.PostUtils;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -21,6 +22,11 @@ public class Post {
     private String body;
     private String bodyMarkdown;
     private SOUser answerer;
+    
+    private String codeOnly;
+    private String plaintext;
+    private String quotes;
+    
     private double score = 0;
 
     public String getTitle() {
@@ -101,7 +107,8 @@ public class Post {
     }
     
     public String getCodeOnly() {
-    	String codeOnly = "";
+    	return this.codeOnly != null ? this.codeOnly : "";
+    	/*String codeOnly = "";
     	
     	Document doc = Jsoup.parse(body);
     	Elements pres = doc.getElementsByTag("pre");
@@ -119,18 +126,23 @@ public class Post {
     		codeOnly += code.html();
     	}
     	
-		return codeOnly;
+		return codeOnly;*/
     }
     
     public String getPlaintext() {
-    	Document doc = Jsoup.parse(body);
+    	return this.plaintext != null ? this.plaintext : "";
+    	/*Document doc = Jsoup.parse(body);
     	Elements pres = doc.getElementsByClass("prettyprint");
     	for (Element pre: pres) {
     		pre.remove();
     	}
     	
     	
-    	return doc.text();
+    	return doc.text();*/
+    }
+    
+    public String getQuotes() {
+    	return this.quotes != null ? this.quotes : "";
     }
     
     public void setScore(double newScore) {
@@ -139,5 +151,13 @@ public class Post {
     
     public double getScore() {
     	return this.score;
+    }
+    
+    public void parsePost() {
+    	JsonObject parts = PostUtils.separateBodyParts(this);
+    	
+    	this.codeOnly = parts.get("body_code").getAsString();
+    	this.plaintext = parts.get("body_plain").getAsString();
+    	this.quotes = parts.get("body_quote").getAsString();
     }
 }

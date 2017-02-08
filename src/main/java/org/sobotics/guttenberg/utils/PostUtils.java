@@ -40,4 +40,34 @@ public class PostUtils {
         return np;
 
     }
+	
+	/**
+	 * Splits a post into code, plaintext and quotes
+	 * 
+	 * @author ArtOfCode
+	 * */
+	public static JsonObject separateBodyParts(Post post) {
+		JsonObject result = new JsonObject();
+        String markdown = post.getBodyMarkdown();
+        String[] paragraphs = markdown.split("\\n{2,}");
+        
+        String plain = "", code = "", quote = "";
+        for (String paragraph : paragraphs) {
+            if (paragraph.trim().charAt(0) == '>') {
+                quote += paragraph + "\n";
+            }
+            else if (paragraph.startsWith("    ")) {
+                code += paragraph + "\n";
+            }
+            else {
+                plain += paragraph + "\n";
+            }
+        }
+        
+        result.addProperty("body_plain", plain);
+        result.addProperty("body_code", code);
+        result.addProperty("body_quote", quote);
+        
+        return result;
+    }
 }

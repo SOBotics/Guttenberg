@@ -131,6 +131,7 @@ public class PlagFinder {
         String targetBodyMarkdown = this.targetAnswer.getBodyMarkdown();
         String targetCodeOnly = this.targetAnswer.getCodeOnly();
         String targetPlaintext = this.targetAnswer.getPlaintext();
+        String targetQuotes = this.targetAnswer.getQuotes();
         Instant targetDate = this.targetAnswer.getAnswerCreationDate();
         double highscore = 0;
         Post closestMatch = this.targetAnswer;
@@ -144,11 +145,13 @@ public class PlagFinder {
         double quantifierBodyMarkdown = 1;
         double quantifierCodeOnly = 1;
         double quantifierPlaintext = 1;
+        double quantifierQuotes = 1;
         
         try {
         	quantifierBodyMarkdown = new Double(quantifiers.getProperty("quantifierBodyMarkdown", "1"));
         	quantifierCodeOnly = new Double(quantifiers.getProperty("quantifierCodeOnly", "1"));
         	quantifierPlaintext = new Double(quantifiers.getProperty("quantifierPlaintext", "1"));
+        	quantifierQuotes = new Double(quantifiers.getProperty("quantifierQuotes", "1"));
         } catch (Throwable e) {
         	LOGGER.warn("Using hardcoded value", e);
         }
@@ -159,15 +162,18 @@ public class PlagFinder {
             String answerBodyMarkdown = answer.getBodyMarkdown();
             String answerCodeOnly = answer.getCodeOnly();
             String answerPlaintext = answer.getPlaintext();
+            String answerQuotes = answer.getQuotes();
             Instant answerDate = answer.getAnswerCreationDate();
             //double jaroWinklerScore = jw.similarity(targetText, answerBody);
             
             double jwBodyMarkdown = jw.similarity(targetBodyMarkdown, answerBodyMarkdown)
             		* quantifierBodyMarkdown;
-            double jwCodeOnly = jw.similarity(targetCodeOnly, answerCodeOnly)
-            		* quantifierCodeOnly;
-            double jwPlaintext = jw.similarity(answerPlaintext, targetPlaintext)
-            		* quantifierPlaintext;
+            double jwCodeOnly = answerCodeOnly != null ? ( jw.similarity(targetCodeOnly, answerCodeOnly)
+            		* quantifierCodeOnly) : 0;
+            double jwPlaintext = answerPlaintext != null ? ( jw.similarity(answerPlaintext, targetPlaintext)
+            		* quantifierPlaintext) : 0;
+            double jwQuotes = answerQuotes != null ? ( jw.similarity(answerQuotes, targetQuotes)
+            		* quantifierQuotes) : 0;
             
             //LOGGER.info("bodyMarkdown: "+jwBodyMarkdown+"; codeOnly: "+jwCodeOnly+"; plaintext: "+jwPlaintext);
             
@@ -177,10 +183,12 @@ public class PlagFinder {
             */
             double usedScores = (jwBodyMarkdown > 0 ? quantifierBodyMarkdown : 0)
             		+ (jwCodeOnly > 0 ? quantifierCodeOnly : 0)
-            		+ (jwPlaintext > 0 ? quantifierPlaintext : 0);
+            		+ (jwPlaintext > 0 ? quantifierPlaintext : 0)
+            		+ (jwQuotes > 0 ? quantifierQuotes : 0);
             double jaroWinklerScore = ((jwBodyMarkdown > 0 ? jwBodyMarkdown : 0) 
             		+ (jwCodeOnly > 0 ? jwCodeOnly : 0)
-            		+ (jwPlaintext > 0 ? jwPlaintext : 0)) / usedScores;
+            		+ (jwPlaintext > 0 ? jwPlaintext : 0)
+            		+ (jwQuotes > 0 ? jwQuotes : 0)) / usedScores;
             
             
             //LOGGER.info("Score: "+jaroWinklerScore+"\nUsed scores: "+usedScores+"\nbodyMarkdown: "+jwBodyMarkdown+"\ncodeOnly: "+jwCodeOnly+"\nplaintext: "+jwPlaintext);
