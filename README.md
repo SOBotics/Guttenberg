@@ -7,7 +7,7 @@ Guttenberg is a bot that searches for plagiarism or duplicated answers on Stack 
 
 ## Implementation
 
-Every 60 seconds, Guttenberg fetches the most recent answers (the "targets") on Stack Overflow. For each of these answers, possibly related posts (for example answers to related questions) are collected. Each related post will be compared with the "target" and the [Jaro-Winkler distance](https://en.wikipedia.org/wiki/Jaro–Winkler_distance) will be calculated. If one of the comparison reaches a certain score (0.75), a message like this will be posted in chat:
+Every 60 seconds, Guttenberg fetches the most recent answers (the "targets") on Stack Overflow. For each of these answers, possibly related posts (for example answers to related questions) are collected. Each related post will be split into the full markdown, code-blocks, plaintext paragraphs and blockquotes. These parts are compared with the "target" and the [Jaro-Winkler distance](https://en.wikipedia.org/wiki/Jaro–Winkler_distance) will be calculated. If one of the comparison reaches a certain score (which is defined in `general.properties`), a message like this will be posted in chat:
 
 ![](https://i.imgur.com/HhwCWJr.png)
 
@@ -22,10 +22,6 @@ At the moment, we are testing a very early version of the bot. That's why we get
 ### Feedback
 
 We have no statistics about the amount of tps and fps yet. In a future release, we want to allow users replying to a report to give feedback.
-
-### Better score-calculation
-
-The score is currently the Jaro-Winkler distance of the body of two posts. By splitting all the posts into code, plaintext and quote and compare those separately, we could calculate a more accurate score.
 
 
   [1]: http://chat.stackoverflow.com/rooms/111347/sobotics

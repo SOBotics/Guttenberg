@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.finders.NewAnswersFinder;
 import org.sobotics.guttenberg.entities.OptedInUser;
+import org.sobotics.guttenberg.entities.Post;
 import org.sobotics.guttenberg.finders.PlagFinder;
 import org.sobotics.guttenberg.finders.RelatedAnswersFinder;
 import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
@@ -98,9 +99,9 @@ public class Guttenberg {
         }
 		
 		
-		executorService.scheduleAtFixedRate(()->secureExecute(), 15, 59, TimeUnit.SECONDS);
+		executorService.scheduleAtFixedRate(()->secureExecute(), 10, 59, TimeUnit.SECONDS);
 		executorServiceCheck.scheduleAtFixedRate(()->checkLastExecution(), 3, 5, TimeUnit.MINUTES);
-		executorServiceUpdate.scheduleAtFixedRate(()->update(), 0, 30, TimeUnit.MINUTES);
+		executorServiceUpdate.scheduleAtFixedRate(()->update(), 1, 30, TimeUnit.MINUTES);
 		executorServiceLogCleaner.scheduleAtFixedRate(()->cleanLogs(), 0, 4, TimeUnit.HOURS);
 	}
 	
@@ -119,16 +120,23 @@ public class Guttenberg {
 	
 	private void execute() throws Throwable {
 		Instant startTime = Instant.now();
+		Properties props = new Properties();
 		LOGGER.info("Executing at - "+startTime);
 		//NewAnswersFinder answersFinder = new NewAnswersFinder();
 		
-		//Fetch recent answers / The targets
-		JsonArray recentAnswers = NewAnswersFinder.findRecentAnswers();
+		try {
+			props.load(new FileInputStream(FilePathUtils.generalPropertiesFile));
+		} catch (IOException e) {
+			LOGGER.warn("Could not load general properties", e);
+		}
 		
+		
+		//Fetch recent answers / The targets
+		List<Post> recentAnswers = NewAnswersFinder.findRecentAnswers();
 		//Fetch their question_ids
 		List<Integer> ids = new ArrayList<Integer>();
-		for (JsonElement answer : recentAnswers) {
-			Integer id = answer.getAsJsonObject().get("question_id").getAsInt();
+		for (Post answer : recentAnswers) {
+			Integer id = answer.getQuestionID();
 			if (!ids.contains(id))
 				ids.add(id);
 		}
@@ -137,15 +145,14 @@ public class Guttenberg {
 		//Initialize the PlagFinders
 		List<PlagFinder> plagFinders = new ArrayList<PlagFinder>();
 		
-		for (JsonElement answer : recentAnswers) {
-			PlagFinder plagFinder = new PlagFinder(answer.getAsJsonObject());
+		for (Post answer : recentAnswers) {
+			PlagFinder plagFinder = new PlagFinder(answer);
 			plagFinders.add(plagFinder);
 		}
 		
 		//fetch all /questions/ids/answers sort them later
-		
 		RelatedAnswersFinder related = new RelatedAnswersFinder(ids);
-		List<JsonObject> relatedAnswersUnsorted = related.fetchRelatedAnswers();
+		List<Post> relatedAnswersUnsorted = related.fetchRelatedAnswers();
 		
 		if (relatedAnswersUnsorted.isEmpty()) {
 			LOGGER.warn("No related answers could be fetched. Skipping this execution...");
@@ -158,9 +165,9 @@ public class Guttenberg {
 			Integer targetId = finder.getTargetAnswerId();
 			//System.out.println("TargetID: "+targetId);
 			
-			for (JsonObject relatedItem : relatedAnswersUnsorted) {
+			for (Post relatedItem : relatedAnswersUnsorted) {
 				//System.out.println(relatedItem);
-				if (relatedItem.has("answer_id") && relatedItem.get("answer_id").getAsInt() != targetId) {
+				if (relatedItem.getAnswerID() != null && relatedItem.getAnswerID() != targetId) {
 					finder.relatedAnswers.add(relatedItem);
 					//System.out.println("Added answer: "+relatedItem);
 				}
@@ -170,9 +177,20 @@ public class Guttenberg {
 		LOGGER.info("Find the duplicates...");
 		//Let PlagFinders find the best match
 		for (PlagFinder finder : plagFinders) {
-			JsonObject otherAnswer = finder.getMostSimilarAnswer();
+			Post otherAnswer = finder.getMostSimilarAnswer();
 			double score = finder.getJaroScore();
-			if (score > 0.77) {
+			double minimumScore = 0.78;
+			
+			try {
+				double s = new Double(props.getProperty("minimumScore", "0.78"));
+				if (s > 0) {
+					minimumScore = s;
+				}
+			} catch (Throwable e) {
+				LOGGER.warn("Could not convert score from properties-file to double. Using hardcoded", e);
+			}
+			
+			if (score > minimumScore) {
 				for (Room room : this.chatRooms) {
 					List<OptedInUser> pingUsersList = UserUtils.pingUserIfApplicable(score, room.getRoomId());
 					if (room.getRoomId() == 111347) {

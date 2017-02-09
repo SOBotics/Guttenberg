@@ -72,7 +72,7 @@ public class Check implements SpecialCommand {
             finder.collectData();
             finder.getMostSimilarAnswer();
             double score = Math.round(finder.getJaroScore()*100.0)/100.0;
-            String link = finder.getJaroAnswer().get("link").getAsString();
+            String link = "http://stackoverflow.com/a/"+finder.getJaroAnswer().getAnswerID();
 
             if (score > 0) {
                 String reply = "The closest match with a score of **"+score+"** is [this post]("+link+").";

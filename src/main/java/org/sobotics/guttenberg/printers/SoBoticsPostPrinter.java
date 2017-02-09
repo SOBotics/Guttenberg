@@ -13,11 +13,11 @@ public class SoBoticsPostPrinter implements PostPrinter {
     public String print(PlagFinder finder) {
     	
     	double score = Math.round(finder.getJaroScore()*100.0)/100.0;
-    	String link = "https://stackoverflow.com/a/"+finder.getJaroAnswer().get("answer_id").getAsString();
-    	String targetLink = "https://stackoverflow.com/a/"+finder.getTargetAnswer().get("answer_id").getAsString();
+    	String link = "https://stackoverflow.com/a/"+finder.getJaroAnswer().getAnswerID();
+    	String targetLink = "https://stackoverflow.com/a/"+finder.getTargetAnswer().getAnswerID();
     	
-    	int userOne = finder.getJaroAnswer().get("owner").getAsJsonObject().get("user_id").getAsInt();
-    	int userTwo = finder.getTargetAnswer().get("owner").getAsJsonObject().get("user_id").getAsInt();
+    	int userOne = finder.getJaroAnswer().getAnswerer().getUserId();
+    	int userTwo = finder.getTargetAnswer().getAnswerer().getUserId();
     	
     	String post;
     	
@@ -26,7 +26,7 @@ public class SoBoticsPostPrinter implements PostPrinter {
     		post = "[ [Guttenberg](http://stackapps.com/q/7197/43403) ] [Possible plagiarism]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
     	} else {
     		//duplicated answer; same user
-    		String user = finder.getTargetAnswer().get("owner").getAsJsonObject().get("display_name").getAsString();
+    		String user = finder.getTargetAnswer().getAnswerer().getUsername();
     		post = "[ [Guttenberg](http://stackapps.com/q/7197/43403) ] [Possible repost]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
       }
         return post;
