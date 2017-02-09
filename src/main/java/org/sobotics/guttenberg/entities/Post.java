@@ -157,7 +157,10 @@ public class Post {
     	JsonObject parts = PostUtils.separateBodyParts(this);
     	
     	this.codeOnly = parts.get("body_code").getAsString();
-    	this.plaintext = parts.get("body_plain").getAsString();
     	this.quotes = parts.get("body_quote").getAsString();
+    	
+    	String plain = parts.get("body_plain").getAsString();
+    	plain.replaceFirst("\\d*\\s*up\\s*vote\\s*\\d*\\s*down\\s*vote", "");
+    	this.plaintext = plain;
     }
 }
