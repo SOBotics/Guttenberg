@@ -93,6 +93,7 @@ public class Updater {
             LOGGER.info("New version available: "+this.newVersion.get());
             try {
                 Runtime.getRuntime().exec("nohup java -cp guttenberg-"+this.newVersion.get()+".jar org.sobotics.guttenberg.clients.Client");
+                System.exit(0);
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();
