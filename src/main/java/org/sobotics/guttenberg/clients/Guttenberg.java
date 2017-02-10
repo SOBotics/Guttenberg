@@ -203,7 +203,7 @@ public class Guttenberg {
                             }
                         }
 						
-						if (pings.length() > 1) {
+						if (pings.length() > 2) {
 							report += pings + " )";
 						}
 						
