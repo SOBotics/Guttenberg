@@ -229,4 +229,8 @@ public class PlagFinder {
         //return this.jaroScore > 0.7 ? this.jaroAnswer : null;
     }
     
+    public boolean matchedPostIsRepost() {
+    	return this.targetAnswer.getAnswerer().getUserId() == this.jaroAnswer.getAnswerer().getUserId();
+    }
+    
 }
