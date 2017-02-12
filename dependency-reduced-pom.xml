@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.felixsfd.stackoverflow</groupId>
   <artifactId>guttenberg</artifactId>
-  <version>0.2.1</version>
+  <version>0.3.100</version>
   <build>
     <resources>
       <resource>

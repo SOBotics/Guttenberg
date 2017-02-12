@@ -8,8 +8,10 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sobotics.guttenberg.entities.Post;
 import org.sobotics.guttenberg.utils.ApiUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.PostUtils;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -31,7 +33,7 @@ public class RelatedAnswersFinder {
     }
     
     
-    public List<JsonObject> fetchRelatedAnswers() {
+    public List<Post> fetchRelatedAnswers() {
         //The question_ids of all the new answers
         String idString = "";
         int n = 0;
@@ -77,15 +79,35 @@ public class RelatedAnswersFinder {
                 
                 List<JsonObject> relatedFinal = new ArrayList<JsonObject>();
                 
-                JsonObject relatedAnswers = ApiUtils.getAnswersToQuestionsByIdString(relatedIds, "stackoverflow", prop.getProperty("apikey", ""));
-                //System.out.println(relatedAnswers);
-                for (JsonElement answer : relatedAnswers.get("items").getAsJsonArray()) {
-                    JsonObject answerObject = answer.getAsJsonObject();
-                    relatedFinal.add(answerObject);
+                int i = 1;
+                
+                while (i <= 2) {
+                	LOGGER.info("Fetch page "+i);
+                	JsonObject relatedAnswers = ApiUtils.getAnswersToQuestionsByIdString(relatedIds, "stackoverflow", prop.getProperty("apikey", ""));
+                    //System.out.println(relatedAnswers);
+                    
+                    for (JsonElement answer : relatedAnswers.get("items").getAsJsonArray()) {
+                        JsonObject answerObject = answer.getAsJsonObject();
+                        relatedFinal.add(answerObject);
+                    }
+                    
+                    JsonElement hasMoreElement = relatedAnswers.get("has_more");
+                    
+                    if (hasMoreElement != null && hasMoreElement.getAsBoolean() == false)
+                    	break;
+                    
+                    i++;
                 }
                 
+                List<Post> relatedPosts = new ArrayList<Post>();
+                for (JsonElement item : relatedFinal) {
+                	Post post = PostUtils.getPost(item.getAsJsonObject());
+                	relatedPosts.add(post);
+                }
+                                
                 LOGGER.info("Collected "+relatedFinal.size()+" answers");
-                return relatedFinal;
+                
+                return relatedPosts;
             } else {
                 LOGGER.warn("No ids found!");
             }
@@ -93,12 +115,12 @@ public class RelatedAnswersFinder {
             
         } catch (IOException e) {
             LOGGER.error("Error in RelatedAnswersFinder", e);
-            return new ArrayList<JsonObject>();
+            return new ArrayList<Post>();
         }
         
         
         
-        return new ArrayList<JsonObject>();
+        return new ArrayList<Post>();
     }
     
     

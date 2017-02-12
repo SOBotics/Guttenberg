@@ -32,6 +32,8 @@ public class SoBoticsCommandsList {
             new Alive(message),
             new Check(message),
             new ClearHelp(message),
+            new OptIn(message),
+            new OptOut(message),
             new Quota(message),
             new Say(message),
             new Status(message),

@@ -2,14 +2,17 @@ package org.sobotics.guttenberg.finders;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sobotics.guttenberg.entities.Post;
 import org.sobotics.guttenberg.utils.ApiUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.PostUtils;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -26,39 +29,44 @@ public class PlagFinder {
     /**
      * The answer to check
      * */
-    private JsonObject targetAnswer;
+    private Post targetAnswer;
     
     /**
      * A list of answers that are somehow related to targetAnswer.
      * */
-    public List<JsonObject> relatedAnswers;
+    public List<Post> relatedAnswers;
     
     private double jaroScore = 0;
     
-    private JsonObject jaroAnswer;
+    private Post jaroAnswer;
     
     /**
      * Initializes the PlagFinder with an answer that should be checked for plagiarism
      * */
     public PlagFinder(JsonObject jsonObject) {
-        this.targetAnswer = jsonObject;
-        this.relatedAnswers = new ArrayList<JsonObject>();
+        this.targetAnswer = PostUtils.getPost(jsonObject);
+        this.relatedAnswers = new ArrayList<Post>();
     }
     
-    public PlagFinder(JsonObject target, List<JsonObject> related) {
+    public PlagFinder(Post post) {
+    	this.targetAnswer = post;
+    	this.relatedAnswers = new ArrayList<Post>();
+    }
+    
+    public PlagFinder(Post target, List<Post> related) {
         this.targetAnswer = target;
         this.relatedAnswers = related;
     }
     
     public void collectData() {
-        this.relatedAnswers = new ArrayList<JsonObject>();
+        this.relatedAnswers = new ArrayList<Post>();
         this.fetchRelatedAnswers();
         LOGGER.info("RelatedAnswers: "+this.relatedAnswers.size());
     }
     
     private void fetchRelatedAnswers() {
-        int targetId = this.targetAnswer.get("question_id").getAsInt();
-        int targetAnswerId = this.targetAnswer.get("answer_id").getAsInt();
+        int targetId = this.targetAnswer.getQuestionID();
+        int targetAnswerId = this.targetAnswer.getAnswerID();
         LOGGER.info("Target: "+targetId);
         Properties prop = new Properties();
 
@@ -99,11 +107,12 @@ public class PlagFinder {
                 //System.out.println(relatedAnswers);
                 for (JsonElement answer : relatedAnswers.get("items").getAsJsonArray()) {
                     JsonObject answerObject = answer.getAsJsonObject();
+                    Post answerPost = PostUtils.getPost(answerObject);
                     
-                    int answerId = answerObject.get("answer_id").getAsInt();
+                    int answerId = answerPost.getAnswerID();
                     
                     if (answerId != targetAnswerId)
-                        this.relatedAnswers.add(answerObject);
+                        this.relatedAnswers.add(answerPost);
                 }
                 
                 
@@ -118,21 +127,79 @@ public class PlagFinder {
     }
     
     
-    public JsonObject getMostSimilarAnswer() {
-        String targetText = this.targetAnswer.get("body_markdown").getAsString();
+    public Post getMostSimilarAnswer() {
+        String targetBodyMarkdown = this.targetAnswer.getBodyMarkdown();
+        String targetCodeOnly = this.targetAnswer.getCodeOnly();
+        String targetPlaintext = this.targetAnswer.getPlaintext();
+        String targetQuotes = this.targetAnswer.getQuotes();
+        Instant targetDate = this.targetAnswer.getAnswerCreationDate();
         double highscore = 0;
-        JsonObject closestMatch = this.targetAnswer;
-        closestMatch.addProperty("jaro_winkler", 0);
+        Post closestMatch = this.targetAnswer;
+        Properties quantifiers = new Properties();
+        try {
+        	quantifiers.load(new FileInputStream(FilePathUtils.generalPropertiesFile));
+        } catch (IOException e) {
+        	LOGGER.warn("Could not load quantifiers from general.properties. Using hardcoded", e);
+        }
+        
+        double quantifierBodyMarkdown = 1;
+        double quantifierCodeOnly = 1;
+        double quantifierPlaintext = 1;
+        double quantifierQuotes = 1;
+        
+        try {
+        	quantifierBodyMarkdown = new Double(quantifiers.getProperty("quantifierBodyMarkdown", "1"));
+        	quantifierCodeOnly = new Double(quantifiers.getProperty("quantifierCodeOnly", "1"));
+        	quantifierPlaintext = new Double(quantifiers.getProperty("quantifierPlaintext", "1"));
+        	quantifierQuotes = new Double(quantifiers.getProperty("quantifierQuotes", "1"));
+        } catch (Throwable e) {
+        	LOGGER.warn("Using hardcoded value", e);
+        }
                 
         JaroWinkler jw = new JaroWinkler();
                 
-        for (JsonObject answer : this.relatedAnswers) {
-            String answerBody = answer.get("body_markdown").getAsString();
-            double jaroWinklerScore = jw.similarity(targetText, answerBody);
-            if (highscore < jaroWinklerScore) {
+        for (Post answer : this.relatedAnswers) {
+            String answerBodyMarkdown = answer.getBodyMarkdown();
+            String answerCodeOnly = answer.getCodeOnly();
+            String answerPlaintext = answer.getPlaintext();
+            String answerQuotes = answer.getQuotes();
+            Instant answerDate = answer.getAnswerCreationDate();
+            //double jaroWinklerScore = jw.similarity(targetText, answerBody);
+            
+            double jwBodyMarkdown = jw.similarity(targetBodyMarkdown, answerBodyMarkdown)
+            		* quantifierBodyMarkdown;
+            double jwCodeOnly = answerCodeOnly != null ? ( jw.similarity(targetCodeOnly, answerCodeOnly)
+            		* quantifierCodeOnly) : 0;
+            double jwPlaintext = answerPlaintext != null ? ( jw.similarity(answerPlaintext, targetPlaintext)
+            		* quantifierPlaintext) : 0;
+            double jwQuotes = answerQuotes != null ? ( jw.similarity(answerQuotes, targetQuotes)
+            		* quantifierQuotes) : 0;
+            
+            //LOGGER.info("bodyMarkdown: "+jwBodyMarkdown+"; codeOnly: "+jwCodeOnly+"; plaintext: "+jwPlaintext);
+            
+            /*double jaroWinklerScore = (jwBodyMarkdown > 0 ? jwBodyMarkdown : 1)*0.92 
+            		* (jwCodeOnly > 0 ? jwCodeOnly : 1)*1.0 
+            		* (jwPlaintext > 0 ? jwPlaintext : 1)*0.95;
+            */
+            double usedScores = (jwBodyMarkdown > 0 ? quantifierBodyMarkdown : 0)
+            		+ (jwCodeOnly > 0 ? quantifierCodeOnly : 0)
+            		+ (jwPlaintext > 0 ? quantifierPlaintext : 0)
+            		+ (jwQuotes > 0 ? quantifierQuotes : 0);
+            double jaroWinklerScore = ((jwBodyMarkdown > 0 ? jwBodyMarkdown : 0) 
+            		+ (jwCodeOnly > 0 ? jwCodeOnly : 0)
+            		+ (jwPlaintext > 0 ? jwPlaintext : 0)
+            		+ (jwQuotes > 0 ? jwQuotes : 0)) / usedScores;
+            
+            
+            //LOGGER.info("Score: "+jaroWinklerScore+"\nUsed scores: "+usedScores+"\nbodyMarkdown: "+jwBodyMarkdown+"\ncodeOnly: "+jwCodeOnly+"\nplaintext: "+jwPlaintext);
+            
+            if (jwBodyMarkdown > 0.9)
+            	jaroWinklerScore = jwBodyMarkdown;
+            
+            if (highscore < jaroWinklerScore && targetDate.isAfter(answerDate)) {
                 //new highscore
                 highscore = jaroWinklerScore;
-                answer.addProperty("jaro_winkler", jaroWinklerScore);
+                answer.setScore(highscore);
                 closestMatch = answer;
             }
         }
@@ -145,19 +212,19 @@ public class PlagFinder {
     }
     
     
-    public JsonObject getTargetAnswer() {
+    public Post getTargetAnswer() {
         return this.targetAnswer;
     }
     
     public Integer getTargetAnswerId() {
-        return this.targetAnswer.get("answer_id").getAsInt();
+        return this.targetAnswer.getAnswerID();
     }
     
     public double getJaroScore() {
         return this.jaroScore;
     }
     
-    public JsonObject getJaroAnswer() {
+    public Post getJaroAnswer() {
         return this.jaroAnswer;
         //return this.jaroScore > 0.7 ? this.jaroAnswer : null;
     }
