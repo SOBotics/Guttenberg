@@ -197,11 +197,15 @@ public class Guttenberg {
 						SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
 						String report = printer.print(finder);
 						String pings = " (";
-						for (OptedInUser user : pingUsersList) {
-                            if (!user.isWhenInRoom() || (user.isWhenInRoom() && UserUtils.checkIfUserInRoom(room, user.getUser().getUserId()))) {
-                                pings+=(" @"+user.getUser().getUsername().replace(" ",""));
-                            }
-                        }
+						
+						if (!finder.matchedPostIsRepost()) {
+							//only ping if it's not a repost
+							for (OptedInUser user : pingUsersList) {
+	                            if (!user.isWhenInRoom() || (user.isWhenInRoom() && UserUtils.checkIfUserInRoom(room, user.getUser().getUserId()))) {
+	                                pings+=(" @"+user.getUser().getUsername().replace(" ",""));
+	                            }
+	                        }
+						}
 						
 						if (pings.length() > 2) {
 							report += pings + " )";

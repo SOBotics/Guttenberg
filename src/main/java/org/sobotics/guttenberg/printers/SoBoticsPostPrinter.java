@@ -16,17 +16,16 @@ public class SoBoticsPostPrinter implements PostPrinter {
     	String link = "https://stackoverflow.com/a/"+finder.getJaroAnswer().getAnswerID();
     	String targetLink = "https://stackoverflow.com/a/"+finder.getTargetAnswer().getAnswerID();
     	
-    	int userOne = finder.getJaroAnswer().getAnswerer().getUserId();
-    	int userTwo = finder.getTargetAnswer().getAnswerer().getUserId();
+    	//int userOne = finder.getJaroAnswer().getAnswerer().getUserId();
+    	//int userTwo = finder.getTargetAnswer().getAnswerer().getUserId();
     	
     	String post;
     	
-    	if (userOne != userTwo) {
+    	if (!finder.matchedPostIsRepost()) {
     		//plagiarism; different users
     		post = "[ [Guttenberg](http://stackapps.com/q/7197/43403) ] [Possible plagiarism]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
     	} else {
     		//duplicated answer; same user
-    		String user = finder.getTargetAnswer().getAnswerer().getUsername();
     		post = "[ [Guttenberg](http://stackapps.com/q/7197/43403) ] [Possible repost]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
       }
         return post;
