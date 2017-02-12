@@ -79,10 +79,9 @@ public class RelatedAnswersFinder {
                 
                 List<JsonObject> relatedFinal = new ArrayList<JsonObject>();
                 
-                boolean hasMore = true;
                 int i = 1;
                 
-                while (i <= 3) {
+                while (i <= 2) {
                 	LOGGER.info("Fetch page "+i);
                 	JsonObject relatedAnswers = ApiUtils.getAnswersToQuestionsByIdString(relatedIds, "stackoverflow", prop.getProperty("apikey", ""));
                     //System.out.println(relatedAnswers);

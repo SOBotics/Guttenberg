@@ -196,14 +196,14 @@ public class Guttenberg {
 					if (room.getRoomId() == 111347) {
 						SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
 						String report = printer.print(finder);
-						String pings = "(";
+						String pings = " (";
 						for (OptedInUser user : pingUsersList) {
                             if (!user.isWhenInRoom() || (user.isWhenInRoom() && UserUtils.checkIfUserInRoom(room, user.getUser().getUserId()))) {
                                 pings+=(" @"+user.getUser().getUsername().replace(" ",""));
                             }
                         }
 						
-						if (pings.length() > 1) {
+						if (pings.length() > 2) {
 							report += pings + " )";
 						}
 						

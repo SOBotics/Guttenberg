@@ -40,24 +40,24 @@ public class Reboot implements SpecialCommand {
             }
         }
         else {
-            room.replyTo(message.getId(), "You didn't specify a reboot type, assuming hard.");
-            this.hardReboot(room);
+            room.replyTo(message.getId(), "You didn't specify a reboot type, assuming soft.");
+            this.softReboot(room, instance);
         }
     }
 
     @Override
     public String description() {
-        return "Returns a test reply to inform that the bot is alive";
+        return "Reboots Guttenberg. Usage: `reboot <soft|hard>`";
     }
 
     @Override
     public String name() {
-        return "alive";
+        return "reboot";
     }
     
     private void softReboot(Room room, Guttenberg instance) {
         instance.resetExecutors();
-        room.replyTo(message.getId(), "Reset executor threads. To shutdown and restart, use `reboot hard`.");
+        room.send("Reset executor threads. To shutdown and restart, use `reboot hard`.");
     }
     
     private void hardReboot(Room room) {
