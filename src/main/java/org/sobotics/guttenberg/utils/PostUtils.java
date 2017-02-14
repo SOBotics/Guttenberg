@@ -1,11 +1,14 @@
 package org.sobotics.guttenberg.utils;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.StreamSupport;
 
 import org.sobotics.guttenberg.entities.Post;
 import org.sobotics.guttenberg.entities.SOUser;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -21,7 +24,17 @@ public class PostUtils {
         np.setQuestionID(answer.get("question_id").getAsInt());
         np.setBody(answer.get("body").getAsString());
         np.setBodyMarkdown(JsonUtils.escapeHtmlEncoding(answer.get("body_markdown").getAsString()));
+        
 
+        JsonArray jsonTags = answer.get("tags").getAsJsonArray();
+        List<String> tags = new ArrayList<String>();
+        
+        for (JsonElement tag : jsonTags) {
+        	tags.add(tag.getAsString());
+        }
+        
+        np.setTags(tags);
+        
         SOUser answerer = new SOUser();
 
         try{

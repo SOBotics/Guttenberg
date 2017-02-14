@@ -16,6 +16,8 @@ public class SoBoticsPostPrinter implements PostPrinter {
     	String link = "https://stackoverflow.com/a/"+finder.getJaroAnswer().getAnswerID();
     	String targetLink = "https://stackoverflow.com/a/"+finder.getTargetAnswer().getAnswerID();
     	
+    	String tag = finder.getTargetAnswer().getMainTag();
+    	
     	//int userOne = finder.getJaroAnswer().getAnswerer().getUserId();
     	//int userTwo = finder.getTargetAnswer().getAnswerer().getUserId();
     	
@@ -23,10 +25,10 @@ public class SoBoticsPostPrinter implements PostPrinter {
     	
     	if (!finder.matchedPostIsRepost()) {
     		//plagiarism; different users
-    		post = "[ [Guttenberg](http://stackapps.com/q/7197/43403) ] [Possible plagiarism]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
+    		post = "[ [Guttenberg](http://stackapps.com/q/7197/43403) ] [tag:"+ tag +"] [Possible plagiarism]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
     	} else {
     		//duplicated answer; same user
-    		post = "[ [Guttenberg](http://stackapps.com/q/7197/43403) ] [Possible repost]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
+    		post = "[ [Guttenberg](http://stackapps.com/q/7197/43403) ] [tag:"+ tag +"] [Possible repost]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
       }
         return post;
     }
