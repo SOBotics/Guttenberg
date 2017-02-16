@@ -10,6 +10,7 @@ import org.sobotics.guttenberg.utils.PostUtils;
 
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by bhargav.h on 11-Sep-16.
@@ -22,6 +23,7 @@ public class Post {
     private String body;
     private String bodyMarkdown;
     private SOUser answerer;
+    private List<String> tags;
     
     private String codeOnly;
     private String plaintext;
@@ -83,6 +85,18 @@ public class Post {
 
     public void setAnswerer(SOUser answerer) {
         this.answerer = answerer;
+    }
+    
+    public void setTags(List<String> newTags) {
+    	this.tags = newTags;
+    }
+    
+    public List<String> getTags() {
+    	return this.tags;
+    }
+    
+    public String getMainTag() {
+    	return this.tags.size() > 0 ? this.tags.get(0) : "";
     }
 
     @Override
