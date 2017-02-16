@@ -61,6 +61,7 @@ public class Guttenberg {
         this.executorService = Executors.newSingleThreadScheduledExecutor();
         this.executorServiceCheck = Executors.newSingleThreadScheduledExecutor();
         this.executorServiceUpdate = Executors.newSingleThreadScheduledExecutor();
+        this.executorServiceLogCleaner = Executors.newSingleThreadScheduledExecutor();
         chatRooms = new ArrayList<>();
         
         //this.setLogfile();
