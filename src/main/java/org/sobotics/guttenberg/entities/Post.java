@@ -175,6 +175,7 @@ public class Post {
     	
     	String plain = parts.get("body_plain").getAsString();
     	plain.replaceFirst("\\d*\\s*up\\s*vote\\s*\\d*\\s*down\\s*vote", "");
+    	plain.replaceAll("<!--.*-->", "");
     	this.plaintext = plain;
     }
 }
