@@ -128,6 +128,7 @@ public class PlagFinder {
     
     
     public Post getMostSimilarAnswer() {
+    	LOGGER.info("Calculating...");
         String targetBodyMarkdown = this.targetAnswer.getBodyMarkdown();
         String targetCodeOnly = this.targetAnswer.getCodeOnly();
         String targetPlaintext = this.targetAnswer.getPlaintext();
