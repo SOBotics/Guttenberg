@@ -75,7 +75,7 @@ public class Guttenberg {
                 if (prop.getProperty("location").equals("server")) {
                     chatroom.send("Grias di o/ (SERVER VERSION)" );
                 } else {
-                    chatroom.send("Grias di o/ (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
+                    //chatroom.send("Grias di o/ (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
                 }
             }
 
@@ -165,9 +165,12 @@ public class Guttenberg {
 			}
 		}
 		
+		LOGGER.info("There are "+plagFinders.size()+" PlagFinders");
 		LOGGER.info("Find the duplicates...");
 		//Let PlagFinders find the best match
 		for (PlagFinder finder : plagFinders) {
+			@SuppressWarnings("unused")
+			Post originalAnswer = finder.getMostSimilarAnswer();
 			double score = finder.getJaroScore();
 			double minimumScore = 0.78;
 			
