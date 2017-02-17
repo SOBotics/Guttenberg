@@ -23,6 +23,7 @@ import org.sobotics.guttenberg.finders.RelatedAnswersFinder;
 import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
 import org.sobotics.guttenberg.roomdata.BotRoom;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.PrintUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
 import org.sobotics.guttenberg.utils.UserUtils;
 
@@ -73,9 +74,9 @@ public class Guttenberg {
                 }
                 
                 if (prop.getProperty("location").equals("server")) {
-                    chatroom.send("Grias di o/ (SERVER VERSION)" );
+                    chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (SERVER VERSION)" );
                 } else {
-                    //chatroom.send("Grias di o/ (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
+                    chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
                 }
             }
 
