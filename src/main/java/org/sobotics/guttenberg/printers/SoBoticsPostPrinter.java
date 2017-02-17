@@ -1,6 +1,7 @@
 package org.sobotics.guttenberg.printers;
 
 import org.sobotics.guttenberg.finders.PlagFinder;
+import org.sobotics.guttenberg.utils.PrintUtils;
 
 /**
  * Created by bhargav.h on 20-Oct-16.
@@ -18,17 +19,14 @@ public class SoBoticsPostPrinter implements PostPrinter {
     	
     	String tag = finder.getTargetAnswer().getMainTag();
     	
-    	//int userOne = finder.getJaroAnswer().getAnswerer().getUserId();
-    	//int userTwo = finder.getTargetAnswer().getAnswerer().getUserId();
-    	
     	String post;
     	
     	if (!finder.matchedPostIsRepost()) {
     		//plagiarism; different users
-    		post = "[ [Guttenberg](http://stackapps.com/q/7197/43403) ] [tag:"+ tag +"] [Possible plagiarism]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
+    		post = PrintUtils.printDescription()+"[tag:"+ tag +"] [Possible plagiarism]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
     	} else {
     		//duplicated answer; same user
-    		post = "[ [Guttenberg](http://stackapps.com/q/7197/43403) ] [tag:"+ tag +"] [Possible repost]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
+    		post = PrintUtils.printDescription()+"[tag:"+ tag +"] [Possible repost]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
       }
         return post;
     }

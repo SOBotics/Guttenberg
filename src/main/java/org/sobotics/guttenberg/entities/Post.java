@@ -2,14 +2,9 @@ package org.sobotics.guttenberg.entities;
 
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.sobotics.guttenberg.utils.PostUtils;
 
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -122,37 +117,10 @@ public class Post {
     
     public String getCodeOnly() {
     	return this.codeOnly != null ? this.codeOnly : "";
-    	/*String codeOnly = "";
-    	
-    	Document doc = Jsoup.parse(body);
-    	Elements pres = doc.getElementsByTag("pre");
-    	
-    	Elements codes = new Elements();
-    	
-    	for (Element pre: pres) {
-    		Elements codeInPre = pre.getElementsByTag("code");
-    		for (Element code : codeInPre) {
-    			codes.add(code);
-    		}
-    	}
-    	
-    	for (Element code : codes) {
-    		codeOnly += code.html();
-    	}
-    	
-		return codeOnly;*/
     }
     
     public String getPlaintext() {
     	return this.plaintext != null ? this.plaintext : "";
-    	/*Document doc = Jsoup.parse(body);
-    	Elements pres = doc.getElementsByClass("prettyprint");
-    	for (Element pre: pres) {
-    		pre.remove();
-    	}
-    	
-    	
-    	return doc.text();*/
     }
     
     public String getQuotes() {

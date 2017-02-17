@@ -3,7 +3,6 @@ package org.sobotics.guttenberg.utils;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.StreamSupport;
 
 import org.sobotics.guttenberg.entities.Post;
 import org.sobotics.guttenberg.entities.SOUser;

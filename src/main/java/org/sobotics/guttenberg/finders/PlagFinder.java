@@ -164,7 +164,6 @@ public class PlagFinder {
             String answerPlaintext = answer.getPlaintext();
             String answerQuotes = answer.getQuotes();
             Instant answerDate = answer.getAnswerCreationDate();
-            //double jaroWinklerScore = jw.similarity(targetText, answerBody);
             
             double jwBodyMarkdown = jw.similarity(targetBodyMarkdown, answerBodyMarkdown)
             		* quantifierBodyMarkdown;
@@ -177,10 +176,6 @@ public class PlagFinder {
             
             //LOGGER.info("bodyMarkdown: "+jwBodyMarkdown+"; codeOnly: "+jwCodeOnly+"; plaintext: "+jwPlaintext);
             
-            /*double jaroWinklerScore = (jwBodyMarkdown > 0 ? jwBodyMarkdown : 1)*0.92 
-            		* (jwCodeOnly > 0 ? jwCodeOnly : 1)*1.0 
-            		* (jwPlaintext > 0 ? jwPlaintext : 1)*0.95;
-            */
             double usedScores = (jwBodyMarkdown > 0 ? quantifierBodyMarkdown : 0)
             		+ (jwCodeOnly > 0 ? quantifierCodeOnly : 0)
             		+ (jwPlaintext > 0 ? quantifierPlaintext : 0)
