@@ -3,8 +3,10 @@ package org.sobotics.guttenberg.utils;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.StreamSupport;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.entities.Post;
 import org.sobotics.guttenberg.entities.SOUser;
 
@@ -13,6 +15,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class PostUtils {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(Guttenberg.class);
+	
 	public static Post getPost(JsonObject answer){
 
         Post np = new Post();
@@ -24,16 +29,24 @@ public class PostUtils {
         np.setQuestionID(answer.get("question_id").getAsInt());
         np.setBody(answer.get("body").getAsString());
         np.setBodyMarkdown(JsonUtils.escapeHtmlEncoding(answer.get("body_markdown").getAsString()));
+                
         
-
-        JsonArray jsonTags = answer.get("tags").getAsJsonArray();
-        List<String> tags = new ArrayList<String>();
+        JsonArray jsonTags = new JsonArray();
         
-        for (JsonElement tag : jsonTags) {
-        	tags.add(tag.getAsString());
+        try {
+        	jsonTags = answer.get("tags").getAsJsonArray();
+        	
+        	List<String> tags = new ArrayList<String>();
+            
+            for (JsonElement tag : jsonTags) {
+            	tags.add(tag.getAsString());
+            }
+            
+            np.setTags(tags);
+        } catch (Throwable e) {
+        	//LOGGER.warn("No tags found");
         }
         
-        np.setTags(tags);
         
         SOUser answerer = new SOUser();
 
@@ -44,8 +57,7 @@ public class PostUtils {
             answerer.setUserId(answererJSON.get("user_id").getAsInt());
         }
         catch (Exception e){
-            System.out.println("ANSWERER"+answererJSON);
-            e.printStackTrace();
+            LOGGER.info("Answerer: "+answererJSON, e);
         }
 
         np.setAnswerer(answerer);

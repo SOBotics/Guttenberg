@@ -9,6 +9,7 @@ import org.sobotics.guttenberg.clients.Guttenberg;
 
 import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
+import fr.tunaki.stackoverflow.chat.User;
 
 /**
  *
@@ -28,6 +29,13 @@ public class Reboot implements SpecialCommand {
 
     @Override
     public void execute(Room room, Guttenberg instance) {
+    	User user = message.getUser();
+    	
+    	if (!user.isModerator() && !user.isRoomOwner()) {
+    		room.replyTo(message.getId(), "Sorry, but only room-owners and moderators can use this command");
+    	}
+    	
+    	
         System.out.println("REBOOT COMMAND");
         String[] args = message.getPlainContent().split(" ");
         if (args.length >= 3) {

@@ -38,7 +38,7 @@ public class SoBoticsCommandsList {
             new Say(message),
             new Status(message),
             new Update(message),
-            new Pfiatdi(message),
+            //new Pfiatdi(message),
             new Reboot(message)
         ));
 

@@ -4,10 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Instant;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executors;
@@ -15,8 +13,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.apache.commons.lang.time.DateUtils;
-import org.apache.cxf.helpers.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.finders.NewAnswersFinder;
@@ -27,12 +23,9 @@ import org.sobotics.guttenberg.finders.RelatedAnswersFinder;
 import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
 import org.sobotics.guttenberg.roomdata.BotRoom;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.PrintUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
 import org.sobotics.guttenberg.utils.UserUtils;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 import fr.tunaki.stackoverflow.chat.ChatHost;
 import fr.tunaki.stackoverflow.chat.Room;
@@ -63,8 +56,6 @@ public class Guttenberg {
         this.executorServiceUpdate = Executors.newSingleThreadScheduledExecutor();
         this.executorServiceLogCleaner = Executors.newSingleThreadScheduledExecutor();
         chatRooms = new ArrayList<>();
-        
-        //this.setLogfile();
     }
     
     public void start() {
@@ -83,9 +74,9 @@ public class Guttenberg {
                 }
                 
                 if (prop.getProperty("location").equals("server")) {
-                    chatroom.send("Grias di o/ (SERVER VERSION)" );
+                    chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (SERVER VERSION)" );
                 } else {
-                    chatroom.send("Grias di o/ (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
+                    chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
                 }
             }
 
@@ -175,10 +166,12 @@ public class Guttenberg {
 			}
 		}
 		
+		LOGGER.info("There are "+plagFinders.size()+" PlagFinders");
 		LOGGER.info("Find the duplicates...");
 		//Let PlagFinders find the best match
 		for (PlagFinder finder : plagFinders) {
-			Post otherAnswer = finder.getMostSimilarAnswer();
+			@SuppressWarnings("unused")
+			Post originalAnswer = finder.getMostSimilarAnswer();
 			double score = finder.getJaroScore();
 			double minimumScore = 0.78;
 			
@@ -213,8 +206,6 @@ public class Guttenberg {
 						}
 						
 						room.send(report);
-						//room.send(printer.print(finder));
-						//LOGGER.info("Posted: "+printer.print(finder));
 						StatusUtils.numberOfReportedPosts.incrementAndGet();
 					}
 				}
@@ -242,9 +233,7 @@ public class Guttenberg {
 		Instant lastSuccess = StatusUtils.lastExecutionFinished;
 		
 		long difference = now.getEpochSecond() - lastSuccess.getEpochSecond();
-		
-		//Instant criticalDate = now.minus(15, ChronoUnit.MINUTES);
-		
+				
 		if (difference > 15*60) {
 			for (Room room : this.chatRooms) {
 				if (room.getRoomId() == 111347) {
