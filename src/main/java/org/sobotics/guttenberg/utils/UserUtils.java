@@ -3,7 +3,6 @@ package org.sobotics.guttenberg.utils;
 import fr.tunaki.stackoverflow.chat.Room;
 import fr.tunaki.stackoverflow.chat.User;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

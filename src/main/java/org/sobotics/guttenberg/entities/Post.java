@@ -2,14 +2,10 @@ package org.sobotics.guttenberg.entities;
 
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.sobotics.guttenberg.utils.PostUtils;
 
 import java.time.Instant;
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by bhargav.h on 11-Sep-16.
@@ -22,6 +18,7 @@ public class Post {
     private String body;
     private String bodyMarkdown;
     private SOUser answerer;
+    private List<String> tags;
     
     private String codeOnly;
     private String plaintext;
@@ -84,6 +81,18 @@ public class Post {
     public void setAnswerer(SOUser answerer) {
         this.answerer = answerer;
     }
+    
+    public void setTags(List<String> newTags) {
+    	this.tags = newTags;
+    }
+    
+    public List<String> getTags() {
+    	return this.tags;
+    }
+    
+    public String getMainTag() {
+    	return this.tags.size() > 0 ? this.tags.get(0) : "";
+    }
 
     @Override
     public String toString() {
@@ -108,37 +117,10 @@ public class Post {
     
     public String getCodeOnly() {
     	return this.codeOnly != null ? this.codeOnly : "";
-    	/*String codeOnly = "";
-    	
-    	Document doc = Jsoup.parse(body);
-    	Elements pres = doc.getElementsByTag("pre");
-    	
-    	Elements codes = new Elements();
-    	
-    	for (Element pre: pres) {
-    		Elements codeInPre = pre.getElementsByTag("code");
-    		for (Element code : codeInPre) {
-    			codes.add(code);
-    		}
-    	}
-    	
-    	for (Element code : codes) {
-    		codeOnly += code.html();
-    	}
-    	
-		return codeOnly;*/
     }
     
     public String getPlaintext() {
     	return this.plaintext != null ? this.plaintext : "";
-    	/*Document doc = Jsoup.parse(body);
-    	Elements pres = doc.getElementsByClass("prettyprint");
-    	for (Element pre: pres) {
-    		pre.remove();
-    	}
-    	
-    	
-    	return doc.text();*/
     }
     
     public String getQuotes() {
@@ -161,6 +143,7 @@ public class Post {
     	
     	String plain = parts.get("body_plain").getAsString();
     	plain.replaceFirst("\\d*\\s*up\\s*vote\\s*\\d*\\s*down\\s*vote", "");
+    	plain.replaceAll("<!--.*-->", "");
     	this.plaintext = plain;
     }
 }

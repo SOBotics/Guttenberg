@@ -39,14 +39,6 @@ public class Check implements SpecialCommand {
 
         if(word.contains(" ")){
             String parts[] = word.split(" ");
-            /*if(parts[0].toLowerCase().equals("value")){
-                returnValue = 1;
-                word = parts[1];
-            }
-            else if (parts[0].toLowerCase().equals("explain")){
-                returnValue = 2;
-                word = parts[1];
-            }*/
         }
         if(word.contains("/"))
         {                

@@ -49,20 +49,20 @@ public class Updater {
         for (File file : files) {
             if (file.isFile()) {
                 String name = file.getName();
-                LOGGER.info("File: "+name);
+                //LOGGER.info("File: "+name);
                 Matcher matcher = pattern.matcher(name);
                 matcher.find();
-                LOGGER.info("Init matcher");
+                //LOGGER.info("Init matcher");
                 String v = "";
                 
                 try {
                     v = matcher.group(1);
                 } catch (Exception e) {
-                    LOGGER.error("ERROR", e);
+                    //LOGGER.error("ERROR", e);
                 }
                 
                 
-                LOGGER.info("Matched");
+                //LOGGER.info("Matched");
                 if (v != null && v.length() > 0) {
 
                     Version version = new Version(v);

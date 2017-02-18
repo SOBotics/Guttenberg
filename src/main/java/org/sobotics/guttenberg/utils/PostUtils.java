@@ -1,15 +1,23 @@
 package org.sobotics.guttenberg.utils;
 
 import java.time.Instant;
-import java.util.stream.StreamSupport;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.entities.Post;
 import org.sobotics.guttenberg.entities.SOUser;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class PostUtils {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(Guttenberg.class);
+	
 	public static Post getPost(JsonObject answer){
 
         Post np = new Post();
@@ -21,7 +29,25 @@ public class PostUtils {
         np.setQuestionID(answer.get("question_id").getAsInt());
         np.setBody(answer.get("body").getAsString());
         np.setBodyMarkdown(JsonUtils.escapeHtmlEncoding(answer.get("body_markdown").getAsString()));
-
+                
+        
+        JsonArray jsonTags = new JsonArray();
+        
+        try {
+        	jsonTags = answer.get("tags").getAsJsonArray();
+        	
+        	List<String> tags = new ArrayList<String>();
+            
+            for (JsonElement tag : jsonTags) {
+            	tags.add(tag.getAsString());
+            }
+            
+            np.setTags(tags);
+        } catch (Throwable e) {
+        	//LOGGER.warn("No tags found");
+        }
+        
+        
         SOUser answerer = new SOUser();
 
         try{
@@ -31,8 +57,7 @@ public class PostUtils {
             answerer.setUserId(answererJSON.get("user_id").getAsInt());
         }
         catch (Exception e){
-            System.out.println("ANSWERER"+answererJSON);
-            e.printStackTrace();
+            LOGGER.info("Answerer: "+answererJSON, e);
         }
 
         np.setAnswerer(answerer);

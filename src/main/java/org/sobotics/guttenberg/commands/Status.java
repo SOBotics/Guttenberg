@@ -38,7 +38,6 @@ public class Status implements SpecialCommand {
         
         try{
             prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
-            //prop2.load(new FileInputStream("src/main/resources/guttenberg.properties"));
             InputStream is = Status.class.getResourceAsStream("/guttenberg.properties");
                prop2.load(is);
         }
