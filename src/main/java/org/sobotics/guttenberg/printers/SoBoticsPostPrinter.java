@@ -1,6 +1,7 @@
 package org.sobotics.guttenberg.printers;
 
 import org.sobotics.guttenberg.finders.PlagFinder;
+import org.sobotics.guttenberg.utils.PrintUtils;
 
 /**
  * Created by bhargav.h on 20-Oct-16.
@@ -13,21 +14,20 @@ public class SoBoticsPostPrinter implements PostPrinter {
     public String print(PlagFinder finder) {
     	
     	double score = Math.round(finder.getJaroScore()*100.0)/100.0;
-    	String link = "https://stackoverflow.com/a/"+finder.getJaroAnswer().getAnswerID();
-    	String targetLink = "https://stackoverflow.com/a/"+finder.getTargetAnswer().getAnswerID();
+    	String link = "https://stackoverflow.com/a/"+finder.getJaroAnswer().getAnswerID()+"/4687348";
+    	String targetLink = "https://stackoverflow.com/a/"+finder.getTargetAnswer().getAnswerID()+"/4687348";
     	
-    	int userOne = finder.getJaroAnswer().getAnswerer().getUserId();
-    	int userTwo = finder.getTargetAnswer().getAnswerer().getUserId();
+    	String tag = finder.getTargetAnswer().getMainTag();
+    	String tagMarkdown = tag.length() > 0 ? "[tag:"+tag+"] " : "";
     	
     	String post;
     	
-    	if (userOne != userTwo) {
+    	if (!finder.matchedPostIsRepost()) {
     		//plagiarism; different users
-    		post = "[ [Guttenberg](http://stackapps.com/q/7197/43403) ] [Possible plagiarism]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
+    		post = PrintUtils.printDescription()+tagMarkdown+"[Possible plagiarism]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
     	} else {
     		//duplicated answer; same user
-    		String user = finder.getTargetAnswer().getAnswerer().getUsername();
-    		post = "[ [Guttenberg](http://stackapps.com/q/7197/43403) ] [Possible repost]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
+    		post = PrintUtils.printDescription()+tagMarkdown+"[Possible repost]("+targetLink+") with a score of **"+ score +"**. [Original post]("+link+")";
       }
         return post;
     }

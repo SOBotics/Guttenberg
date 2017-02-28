@@ -6,7 +6,7 @@ package org.sobotics.guttenberg.utils;
 public class PrintUtils {
 
     public static String printDescription(){
-        return " [ [Guttenberg](https://github.com/SOBotics/Guttenberg) ] ";
+        return " [ [Guttenberg](http://stackapps.com/q/7197/43403) ] ";
     }
     public static String printStackAppsPost(){
         return "[Guttenberg - A bot searching for plagiarism on Stack Overflow](http://stackapps.com/q/7197/43403)";
