@@ -43,6 +43,9 @@ public class RelatedAnswersFinder {
         
         System.out.println(idString);
         
+        if (idString.length() < 2)
+        	return new ArrayList<Post>();
+        
         Properties prop = new Properties();
 
         try{
