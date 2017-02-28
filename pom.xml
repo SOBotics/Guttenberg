@@ -6,7 +6,7 @@
 
     <groupId>de.felixsfd.stackoverflow</groupId>
     <artifactId>guttenberg</artifactId>
-    <version>0.5.3</version>
+    <version>0.5.4</version>
 
     <dependencies>
         <dependency>
