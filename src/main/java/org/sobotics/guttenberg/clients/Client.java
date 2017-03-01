@@ -45,14 +45,8 @@ public class Client {
         StackExchangeClient seClient = new StackExchangeClient(prop.getProperty("email"), prop.getProperty("password"));
         
         List<BotRoom> rooms = new ArrayList<>();
-        
-        if (prop.getProperty("location", "undefined").equals("server")) {
-        	//all rooms for the live-version
-        	rooms.add(new SOBoticsChatRoom());
-        } else {
-        	//all rooms for testing
-        	rooms.add(new SOGuttenbergTestingFacility());
-        }
+        rooms.add(new SOBoticsChatRoom());
+        rooms.add(new SOGuttenbergTestingFacility());
         
         
         LOGGER.info("Launch Guttenberg...");

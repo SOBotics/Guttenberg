@@ -24,6 +24,11 @@ public class SOBoticsChatRoom implements BotRoom{
 	public ChatHost getHost() {
 		return ChatHost.STACK_OVERFLOW;
 	}
+    
+    @Override
+	public boolean getIsProductionRoom() {
+		return true;
+	}
 
     @Override
     public Consumer<UserMentionedEvent> getMention(Room room, Guttenberg instance) {

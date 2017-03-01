@@ -19,6 +19,11 @@ public class SOGuttenbergTestingFacility implements BotRoom {
 	}
 	
 	@Override
+	public boolean getIsProductionRoom() {
+		return false;
+	}
+	
+	@Override
 	public ChatHost getHost() {
 		return ChatHost.STACK_EXCHANGE;
 	}

@@ -59,36 +59,36 @@ public class Guttenberg {
     }
     
     public void start() {
+    	Properties prop = new Properties();
+    	try{
+            prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
+        }
+        catch (IOException e){
+            LOGGER.error("login.properties could not be loaded!", e);
+        }
+    	
+    	String botLocation = prop.getProperty("location", "undefined-location");
+    	
         for(BotRoom room:rooms){
-        	LOGGER.info("Join room "+room.getRoomId()+" on "+room.getHost());
-            Room chatroom = client.joinRoom(room.getHost(), room.getRoomId());
-
-            if(room.getRoomId()==111347 || room.getRoomId() == 54445){
-                //check if Guttenberg is running on the server
-                Properties prop = new Properties();
-
-                try{
-                    prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
-                }
-                catch (IOException e){
-                    LOGGER.error("login.properties could not be loaded!", e);
-                }
-                
-                if (prop.getProperty("location").equals("server")) {
+        	if (botLocation.equals("server") == room.getIsProductionRoom()) {
+        		Room chatroom = client.joinRoom(room.getHost(), room.getRoomId());
+        		
+        		if (prop.getProperty("location").equals("server")) {
                     chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (SERVER VERSION)" );
                 } else {
                     chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
                 }
-            }
+        		
+        		chatRooms.add(chatroom);
+                
+                Consumer<UserMentionedEvent> mention = room.getMention(chatroom, this);
+                if(mention != null) {
+                    chatroom.addEventListener(EventType.USER_MENTIONED, mention);
+                }
+                /*if(room.getReply(chatroom)!=null)
+                    chatroom.addEventListener(EventType.MESSAGE_REPLY, room.getReply(chatroom));*/
+        	}
 
-            chatRooms.add(chatroom);
-            
-            Consumer<UserMentionedEvent> mention = room.getMention(chatroom, this);
-            if(mention != null) {
-                chatroom.addEventListener(EventType.USER_MENTIONED, mention);
-            }
-            /*if(room.getReply(chatroom)!=null)
-                chatroom.addEventListener(EventType.MESSAGE_REPLY, room.getReply(chatroom));*/
         }
 		
 		

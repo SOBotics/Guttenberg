@@ -16,6 +16,11 @@ public interface BotRoom {
 
     public int getRoomId();
     public ChatHost getHost();
+    
+    /**
+     * true, if the server-version of Guttenberg will run in this room. false for development-rooms
+     * */
+    public boolean getIsProductionRoom();
     public Consumer<UserMentionedEvent> getMention(Room room, Guttenberg instance);
     //public Consumer<MessageReplyEvent> getReply(Room room);
     //public Validator getValidator();
