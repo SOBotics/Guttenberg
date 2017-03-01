@@ -60,9 +60,10 @@ public class Guttenberg {
     
     public void start() {
         for(BotRoom room:rooms){
-            Room chatroom = client.joinRoom(ChatHost.STACK_OVERFLOW ,room.getRoomId());
+        	LOGGER.info("Join room "+room.getRoomId()+" on "+room.getHost());
+            Room chatroom = client.joinRoom(room.getHost(), room.getRoomId());
 
-            if(room.getRoomId()==111347){
+            if(room.getRoomId()==111347 || room.getRoomId() == 54445){
                 //check if Guttenberg is running on the server
                 Properties prop = new Properties();
 

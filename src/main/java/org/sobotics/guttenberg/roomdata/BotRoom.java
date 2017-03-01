@@ -1,5 +1,6 @@
 package org.sobotics.guttenberg.roomdata;
 
+import fr.tunaki.stackoverflow.chat.ChatHost;
 import fr.tunaki.stackoverflow.chat.Room;
 import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
 
@@ -14,6 +15,7 @@ import org.sobotics.guttenberg.printers.PostPrinter;
 public interface BotRoom {
 
     public int getRoomId();
+    public ChatHost getHost();
     public Consumer<UserMentionedEvent> getMention(Room room, Guttenberg instance);
     //public Consumer<MessageReplyEvent> getReply(Room room);
     //public Validator getValidator();
