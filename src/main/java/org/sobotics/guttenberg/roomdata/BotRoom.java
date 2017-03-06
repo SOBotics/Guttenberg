@@ -6,7 +6,6 @@ import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
 
 import java.util.function.Consumer;
 
-import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.printers.PostPrinter;
 import org.sobotics.guttenberg.services.RunnerService;
 

@@ -2,7 +2,6 @@ package org.sobotics.guttenberg.commands;
 
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
-import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.services.RunnerService;
 
 import fr.tunaki.stackoverflow.chat.Message;

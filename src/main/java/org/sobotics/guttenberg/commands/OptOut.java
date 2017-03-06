@@ -2,7 +2,6 @@ package org.sobotics.guttenberg.commands;
 
 import java.io.IOException;
 
-import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.services.RunnerService;
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;

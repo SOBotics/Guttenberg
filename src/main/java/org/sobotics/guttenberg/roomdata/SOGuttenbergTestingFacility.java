@@ -2,7 +2,6 @@ package org.sobotics.guttenberg.roomdata;
 
 import java.util.function.Consumer;
 
-import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.commandlists.SoBoticsCommandsList;
 import org.sobotics.guttenberg.printers.PostPrinter;
 import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;

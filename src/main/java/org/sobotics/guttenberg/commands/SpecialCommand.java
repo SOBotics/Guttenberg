@@ -2,7 +2,6 @@ package org.sobotics.guttenberg.commands;
 
 import fr.tunaki.stackoverflow.chat.Room;
 
-import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.services.RunnerService;
 
 /**

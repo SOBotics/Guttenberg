@@ -5,7 +5,6 @@ import java.util.Properties;
 import java.io.InputStream;
 
 import org.sobotics.guttenberg.utils.CommandUtils;
-import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.services.RunnerService;
 
 import fr.tunaki.stackoverflow.chat.Message;

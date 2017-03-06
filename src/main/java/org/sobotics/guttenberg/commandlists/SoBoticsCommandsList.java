@@ -13,9 +13,6 @@ import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
 import fr.tunaki.stackoverflow.chat.event.PingMessageEvent;
 
-import org.sobotics.guttenberg.clients.Guttenberg;
-
-
 /**
  * Created by bhargav.h on 28-Oct-16.
  */
@@ -28,7 +25,7 @@ public class SoBoticsCommandsList {
             return;*/
 
         Message message = event.getMessage();
-        System.out.println("Mention: "+message.getContent());
+        LOGGER.info("Mention: "+message.getContent());
         List<SpecialCommand> commands = new ArrayList<>(Arrays.asList(
             new Alive(message),
             new Check(message),

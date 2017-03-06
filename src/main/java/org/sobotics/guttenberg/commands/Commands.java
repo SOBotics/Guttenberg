@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.PrintUtils;
-import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.services.RunnerService;
 
 import fr.tunaki.stackoverflow.chat.Message;
