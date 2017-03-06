@@ -7,11 +7,14 @@ import java.util.concurrent.TimeUnit;
 
 import org.sobotics.guttenberg.utils.StatusUtils;
 
+import fr.tunaki.stackoverflow.chat.ChatHost;
 import fr.tunaki.stackoverflow.chat.Room;
 
 public class SelfCheckService {
 	private ScheduledExecutorService executorService;
 	private RunnerService instance;
+	
+	private Integer oldApiQuota = -1;
 	
 	public SelfCheckService(RunnerService runner) {
 		this.instance = runner;
@@ -19,6 +22,23 @@ public class SelfCheckService {
 	}
 	
 	private void check() throws Throwable {
+		//check quota
+		if (oldApiQuota < ApiService.quota) {
+			//check if it's the first launch
+			if (oldApiQuota != -1) {
+				for (Room room : instance.getChatRooms()) {
+					//only in SOBotics and SEBotics
+					if ((room.getHost() == ChatHost.STACK_OVERFLOW && room.getRoomId() == 111347) 
+							|| (room.getHost() == ChatHost.STACK_EXCHANGE && room.getRoomId() == 54445)) {
+						room.send("API-quota rolled over at "+oldApiQuota);
+					}
+				}
+			}
+		}
+		
+		oldApiQuota = ApiService.quota;
+		
+		//check execution
 		if (StatusUtils.askedForHelp)
 			return;
 		
