@@ -1,9 +1,5 @@
 package org.sobotics.guttenberg.roomdata;
 
-import fr.tunaki.stackoverflow.chat.ChatHost;
-import fr.tunaki.stackoverflow.chat.Room;
-import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
-
 import java.util.function.Consumer;
 
 import org.sobotics.guttenberg.commandlists.SoBoticsCommandsList;
@@ -11,26 +7,28 @@ import org.sobotics.guttenberg.printers.PostPrinter;
 import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
 import org.sobotics.guttenberg.services.RunnerService;
 
-/**
- * Created by bhargav.h on 28-Dec-16.
- */
-public class SOBoticsChatRoom implements BotRoom{
-    @Override
-    public int getRoomId() {
-        return 111347;
-    }
-    
-    @Override
-	public ChatHost getHost() {
-		return ChatHost.STACK_OVERFLOW;
+import fr.tunaki.stackoverflow.chat.ChatHost;
+import fr.tunaki.stackoverflow.chat.Room;
+import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
+
+public class SOGuttenbergTestingFacility implements BotRoom {
+
+	@Override
+	public int getRoomId() {
+		return 54445;
 	}
-    
-    @Override
+	
+	@Override
 	public boolean getIsProductionRoom() {
-		return true;
+		return false;
+	}
+	
+	@Override
+	public ChatHost getHost() {
+		return ChatHost.STACK_EXCHANGE;
 	}
 
-    @Override
+	@Override
     public Consumer<UserMentionedEvent> getMention(Room room, RunnerService instance) {
         return event->new SoBoticsCommandsList().mention(room, event, true, instance);
     }
@@ -49,6 +47,5 @@ public class SOBoticsChatRoom implements BotRoom{
     public boolean getIsLogged() {
         return true;
     }
-
 
 }

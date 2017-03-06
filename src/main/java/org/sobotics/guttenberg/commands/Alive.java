@@ -1,7 +1,7 @@
 package org.sobotics.guttenberg.commands;
 
 import org.sobotics.guttenberg.utils.CommandUtils;
-import org.sobotics.guttenberg.clients.Guttenberg;
+import org.sobotics.guttenberg.services.RunnerService;
 
 import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
@@ -24,7 +24,7 @@ public class Alive implements SpecialCommand {
     }
 
     @Override
-    public void execute(Room room, Guttenberg instance) {
+    public void execute(Room room, RunnerService instance) {
         room.replyTo(message.getId(), "Not sure. Ask someone else.");
     }
 
