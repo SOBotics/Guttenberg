@@ -11,6 +11,7 @@ import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
 import org.sobotics.guttenberg.clients.Guttenberg;
+import org.sobotics.guttenberg.services.RunnerService;
 
 import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
@@ -31,8 +32,7 @@ public class Status implements SpecialCommand {
     }
 
     @Override
-    public void execute(Room room, Guttenberg instance) {
-        LOGGER.info("Checking status...");
+    public void execute(Room room, RunnerService instance) {
         Properties prop = new Properties();
         Properties prop2 = new Properties();
         
@@ -59,7 +59,8 @@ public class Status implements SpecialCommand {
         status.append("\nChecked ").append(StatusUtils.numberOfCheckedTargets).append(" targets and reported ").append(StatusUtils.numberOfReportedPosts);
         status.append("\nRemaining quota: ").append(StatusUtils.remainingQuota);
         
-        room.replyTo(message.getId(), status.toString());
+        //room.replyTo(message.getId(), status.toString());
+        room.send(status.toString());
     }
 
     @Override

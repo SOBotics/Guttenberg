@@ -3,6 +3,7 @@ package org.sobotics.guttenberg.commands;
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
 import org.sobotics.guttenberg.clients.Guttenberg;
+import org.sobotics.guttenberg.services.RunnerService;
 
 import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
@@ -21,7 +22,7 @@ public class ClearHelp implements SpecialCommand {
     }
 
     @Override
-    public void execute(Room room, Guttenberg instance) {
+    public void execute(Room room, RunnerService instance) {
         if (StatusUtils.askedForHelp == true) {
             StatusUtils.askedForHelp = false;
             room.replyTo(this.message.getId(), "Thank you for your help! :-)");

@@ -1,6 +1,7 @@
 package org.sobotics.guttenberg.commands;
 
 import org.sobotics.guttenberg.clients.Updater;
+import org.sobotics.guttenberg.services.RunnerService;
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.clients.Guttenberg;
 
@@ -21,7 +22,7 @@ public class Update implements SpecialCommand {
     }
 
     @Override
-    public void execute(Room room, Guttenberg instance) {
+    public void execute(Room room, RunnerService instance) {
         System.out.println("Load updater...");
         Updater updater = new Updater();
         System.out.println("Check for updates...");

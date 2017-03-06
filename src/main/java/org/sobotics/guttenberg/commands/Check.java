@@ -7,6 +7,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.finders.PlagFinder;
+import org.sobotics.guttenberg.services.RunnerService;
 import org.sobotics.guttenberg.utils.ApiUtils;
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
@@ -33,7 +34,7 @@ public class Check implements SpecialCommand {
     }
 
     @Override
-    public void execute(Room room, Guttenberg instance) {
+    public void execute(Room room, RunnerService instance) {
         String word = CommandUtils.extractData(message.getPlainContent()).trim();
         Integer returnValue = 0;
 

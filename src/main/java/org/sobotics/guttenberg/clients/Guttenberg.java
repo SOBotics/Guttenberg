@@ -40,70 +40,18 @@ public class Guttenberg {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(Guttenberg.class);
     
-    private final StackExchangeClient client;
-    private final List<BotRoom> rooms;
     private final List<Room> chatRooms;
-    private ScheduledExecutorService executorService;
-    private ScheduledExecutorService executorServiceCheck;
-    private ScheduledExecutorService executorServiceUpdate;
-    private ScheduledExecutorService executorServiceLogCleaner;
     
-    public Guttenberg(StackExchangeClient client, List<BotRoom> rooms) {
-        this.client = client;
-        this.rooms = rooms;
-        this.executorService = Executors.newSingleThreadScheduledExecutor();
-        this.executorServiceCheck = Executors.newSingleThreadScheduledExecutor();
-        this.executorServiceUpdate = Executors.newSingleThreadScheduledExecutor();
-        this.executorServiceLogCleaner = Executors.newSingleThreadScheduledExecutor();
-        chatRooms = new ArrayList<>();
+    public Guttenberg(List<Room> rooms) {
+    	this.chatRooms = rooms;
     }
-    
-    public void start() {
-    	Properties prop = new Properties();
-    	try{
-            prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
-        }
-        catch (IOException e){
-            LOGGER.error("login.properties could not be loaded!", e);
-        }
-    	
-    	String botLocation = prop.getProperty("location", "undefined-location");
-    	
-        for(BotRoom room:rooms){
-        	if (botLocation.equals("server") == room.getIsProductionRoom()) {
-        		Room chatroom = client.joinRoom(room.getHost(), room.getRoomId());
-        		
-        		if (prop.getProperty("location").equals("server")) {
-                    chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (SERVER VERSION)" );
-                } else {
-                    chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
-                }
-        		
-        		chatRooms.add(chatroom);
-                
-                Consumer<UserMentionedEvent> mention = room.getMention(chatroom, this);
-                if(mention != null) {
-                    chatroom.addEventListener(EventType.USER_MENTIONED, mention);
-                }
-                /*if(room.getReply(chatroom)!=null)
-                    chatroom.addEventListener(EventType.MESSAGE_REPLY, room.getReply(chatroom));*/
-        	}
-
-        }
-		
-		
-		executorService.scheduleAtFixedRate(()->secureExecute(), 10, 59, TimeUnit.SECONDS);
-		executorServiceCheck.scheduleAtFixedRate(()->checkLastExecution(), 3, 5, TimeUnit.MINUTES);
-		executorServiceUpdate.scheduleAtFixedRate(()->update(), 1, 30, TimeUnit.MINUTES);
-		executorServiceLogCleaner.scheduleAtFixedRate(()->cleanLogs(), 0, 4, TimeUnit.HOURS);
-	}
 	
 	/**
-	 * Executes `excecute()` and catches all the errors
+	 * Executes `execute()` and catches all the errors
 	 * 
 	 * @see http://stackoverflow.com/a/24902026/4687348
 	 * */
-	private void secureExecute() {
+	public void secureExecute() {
 		try {
 			execute();
 		} catch (Throwable e) {
@@ -111,7 +59,7 @@ public class Guttenberg {
 		}
 	}
 	
-	private void execute() throws Throwable {
+	public void execute() throws Throwable {
 		Instant startTime = Instant.now();
 		Properties props = new Properties();
 		LOGGER.info("Executing at - "+startTime);
@@ -223,88 +171,8 @@ public class Guttenberg {
 		LOGGER.info("Finished at - "+StatusUtils.lastExecutionFinished);
 	}
 	
-	/**
-	 * Checks when the last execution was successful. After a certain amount of time without succeeded executions, FelixSFD will be pinged.
-	 * */
-	private void checkLastExecution() {
-		if (StatusUtils.askedForHelp)
-			return;
-		
-		Instant now = Instant.now();
-		Instant lastSuccess = StatusUtils.lastExecutionFinished;
-		
-		long difference = now.getEpochSecond() - lastSuccess.getEpochSecond();
-				
-		if (difference > 15*60) {
-			for (Room room : this.chatRooms) {
-				if (room.getRoomId() == 111347) {
-					room.send("@FelixSFD Please help me! The last successful execution finished at "+StatusUtils.lastExecutionFinished);
-					StatusUtils.askedForHelp = true;
-				}
-			}
-		}
-		
-	}
-	
-	/**
-	 * Checks for updates
-	 * */
-	private void update() {
-		LOGGER.info("Load updater...");
-		Updater updater = new Updater();
-		LOGGER.info("Check for updates...");
-		boolean update = false;
-		try {
-			update = updater.updateIfAvailable(); 
-		} catch (Exception e) {
-			LOGGER.error("Could not update", e);
-			for (Room room : this.chatRooms) {
-				if (room.getRoomId() == 111347) {
-					room.send("Automatic update failed!");
-				}
-			}
-		}
-		
-		if (update) {
-			for (Room room : this.chatRooms) {
-				if (room.getRoomId() == 111347) {
-					room.send("Rebooting for update to version "+updater.getNewVersion().get());
-				}
-				room.leave();
-			}
-			try {
-				wait(10);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			System.exit(0);
-		}
-		
-	}
-	
-	/**
-	 * Removed old logfiles
-	 * 
-	 * @see http://stackoverflow.com/a/15042885/4687348
-	 * */
-	private void cleanLogs() {
-		int keepLogsForDays = 3;
-        File logsDir = new File("./logs");
-        
-        for (File file : logsDir.listFiles()) {
-        	long diff = new Date().getTime() - file.lastModified();
-
-        	if (diff > keepLogsForDays * 24 * 60 * 60 * 1000) {
-        		try {
-        			file.delete();
-        		} catch (SecurityException e) {
-        			LOGGER.error("Could not delete file", e);
-        		}
-        	}
-        }
-	}
     
-    public void resetExecutors() {
+    /*public void resetExecutors() {
         executorService.shutdownNow();
         executorServiceCheck.shutdownNow();
         executorServiceUpdate.shutdownNow();
@@ -319,6 +187,6 @@ public class Guttenberg {
         executorServiceCheck.scheduleAtFixedRate(()->checkLastExecution(), 3, 5, TimeUnit.MINUTES);
         executorServiceUpdate.scheduleAtFixedRate(()->update(), 0, 30, TimeUnit.MINUTES);
         executorServiceLogCleaner.scheduleAtFixedRate(()->cleanLogs(), 0, 4, TimeUnit.HOURS);
-    }
+    }*/
     
 }

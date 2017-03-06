@@ -10,6 +10,7 @@ import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.commandlists.SoBoticsCommandsList;
 import org.sobotics.guttenberg.printers.PostPrinter;
 import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
+import org.sobotics.guttenberg.services.RunnerService;
 
 /**
  * Created by bhargav.h on 28-Dec-16.
@@ -31,7 +32,7 @@ public class SOBoticsChatRoom implements BotRoom{
 	}
 
     @Override
-    public Consumer<UserMentionedEvent> getMention(Room room, Guttenberg instance) {
+    public Consumer<UserMentionedEvent> getMention(Room room, RunnerService instance) {
         return event->new SoBoticsCommandsList().mention(room, event, true, instance);
     }
 

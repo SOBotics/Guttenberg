@@ -3,6 +3,7 @@ package org.sobotics.guttenberg.commands;
 import java.io.IOException;
 
 import org.sobotics.guttenberg.clients.Guttenberg;
+import org.sobotics.guttenberg.services.RunnerService;
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.FileUtils;
@@ -25,7 +26,7 @@ public class OptIn implements SpecialCommand {
     }
 
 	@Override
-	public void execute(Room room, Guttenberg instance) {
+	public void execute(Room room, RunnerService instance) {
 		User user = message.getUser();
         long userId = user.getId();
         String userName = user.getName();

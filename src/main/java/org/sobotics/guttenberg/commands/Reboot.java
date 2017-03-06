@@ -6,6 +6,7 @@ import java.io.InputStream;
 
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.clients.Guttenberg;
+import org.sobotics.guttenberg.services.RunnerService;
 
 import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
@@ -28,7 +29,7 @@ public class Reboot implements SpecialCommand {
     }
 
     @Override
-    public void execute(Room room, Guttenberg instance) {
+    public void execute(Room room, RunnerService instance) {
     	User user = message.getUser();
     	
     	if (!user.isModerator() && !user.isRoomOwner()) {
@@ -63,8 +64,8 @@ public class Reboot implements SpecialCommand {
         return "reboot";
     }
     
-    private void softReboot(Room room, Guttenberg instance) {
-        instance.resetExecutors();
+    private void softReboot(Room room, RunnerService instance) {
+        instance.reboot();
         room.send("Reset executor threads. To shutdown and restart, use `reboot hard`.");
     }
     
