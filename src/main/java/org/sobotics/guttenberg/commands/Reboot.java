@@ -34,6 +34,7 @@ public class Reboot implements SpecialCommand {
     	
     	if (!user.isModerator() && !user.isRoomOwner()) {
     		room.replyTo(message.getId(), "Sorry, but only room-owners and moderators can use this command");
+    		return;
     	}
     	
     	
@@ -49,7 +50,7 @@ public class Reboot implements SpecialCommand {
             }
         }
         else {
-            room.replyTo(message.getId(), "You didn't specify a reboot type, assuming soft.");
+            room.send("You didn't specify a reboot type. Assuming soft.");
             this.softReboot(room, instance);
         }
     }
