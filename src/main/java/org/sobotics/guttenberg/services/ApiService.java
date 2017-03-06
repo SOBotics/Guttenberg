@@ -29,7 +29,7 @@ public class ApiService {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(ApiService.class);
 
-    public static int quota=0;
+    private static int quota=0;
 
     public ApiService(String site){
         Properties prop = new Properties();

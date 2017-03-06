@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.sobotics.guttenberg.utils.StatusUtils;
 
@@ -14,7 +15,7 @@ public class SelfCheckService {
 	private ScheduledExecutorService executorService;
 	private RunnerService instance;
 	
-	private Integer oldApiQuota = -1;
+	private AtomicInteger oldApiQuota = new AtomicInteger(-1);
 	
 	public SelfCheckService(RunnerService runner) {
 		this.instance = runner;
@@ -23,9 +24,9 @@ public class SelfCheckService {
 	
 	private void check() throws Throwable {
 		//check quota
-		if (oldApiQuota < ApiService.quota) {
+		if (oldApiQuota.get() < StatusUtils.remainingQuota.get()) {
 			//check if it's the first launch
-			if (oldApiQuota != -1) {
+			if (oldApiQuota.get() != -1) {
 				for (Room room : instance.getChatRooms()) {
 					//only in SOBotics and SEBotics
 					if ((room.getHost() == ChatHost.STACK_OVERFLOW && room.getRoomId() == 111347) 
@@ -36,7 +37,7 @@ public class SelfCheckService {
 			}
 		}
 		
-		oldApiQuota = ApiService.quota;
+		oldApiQuota = StatusUtils.remainingQuota;
 		
 		//check execution
 		if (StatusUtils.askedForHelp)
