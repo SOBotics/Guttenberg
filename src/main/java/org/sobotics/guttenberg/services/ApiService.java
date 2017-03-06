@@ -8,7 +8,6 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.utils.ApiUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.JsonUtils;
@@ -20,6 +19,8 @@ import com.google.gson.JsonObject;
  */
 public class ApiService {
 
+	public static ApiService defaultService = new ApiService("stackoverflow");
+	
     private String apiKey;
     private String autoflagKey;
     private String autoflagToken;
@@ -47,6 +48,31 @@ public class ApiService {
         this.userId = prop.getProperty("userid");
 
 
+    }
+    
+    public JsonObject getRelatedQuestionsByIds(String questionIds) throws IOException {
+    	JsonObject questionJson = ApiUtils.getRelatedQuestionsByIds(questionIds, site, apiKey);
+    	JsonUtils.handleBackoff(LOGGER, questionJson);
+        quota = questionJson.get("quota_remaining").getAsInt();
+        return questionJson;
+    }
+    
+    public JsonObject getLinkedQuestionsByIds(String questionIds) throws IOException {
+    	JsonObject questionJson = ApiUtils.getLinkedQuestionsByIds(questionIds, site, apiKey);
+    	JsonUtils.handleBackoff(LOGGER, questionJson);
+        quota = questionJson.get("quota_remaining").getAsInt();
+        return questionJson;
+    }
+    
+    public JsonObject getAnswersToQuestionsByIdString(String questionIds) throws IOException {
+    	return getAnswersToQuestionsByIdString(questionIds, 1);
+    }
+    
+    public JsonObject getAnswersToQuestionsByIdString(String questionIds, Integer page) throws IOException {
+    	JsonObject answersJson = ApiUtils.getAnswersToQuestionsByIdString(questionIds, page, site, apiKey);
+    	JsonUtils.handleBackoff(LOGGER, answersJson);
+        quota = answersJson.get("quota_remaining").getAsInt();
+        return answersJson;
     }
 
     public JsonObject getQuestionDetailsByIds(List<Integer> questionIdList) throws IOException {
@@ -83,6 +109,7 @@ public class ApiService {
         quota = answersJson.get("quota_remaining").getAsInt();
         return answersJson;
     }
+    
     public JsonObject getAnswerFlagOptions(Integer answerId) throws IOException{
         JsonObject flagOptionsJson = ApiUtils.getAnswerFlagOptions(answerId,site,autoflagKey,autoflagToken);
         JsonUtils.handleBackoff(LOGGER, flagOptionsJson);

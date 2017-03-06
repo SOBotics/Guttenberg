@@ -11,13 +11,14 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.entities.Post;
-import org.sobotics.guttenberg.utils.ApiUtils;
+import org.sobotics.guttenberg.services.ApiService;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.PostUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * Fetches the most recent answers
@@ -46,7 +47,9 @@ public class NewAnswersFinder {
         }
         
         try {
-            com.google.gson.JsonObject apiResult = ApiUtils.getFirstPageOfAnswers(time, "stackoverflow", prop.getProperty("apikey", ""));
+            JsonObject apiResult = ApiService.defaultService.getFirstPageOfAnswers(time);
+        	
+        	//com.google.gson.JsonObject apiResult = ApiUtils.getFirstPageOfAnswers(time, "stackoverflow", prop.getProperty("apikey", ""));
             //fetched answers
             
             JsonArray items = apiResult.get("items").getAsJsonArray();
