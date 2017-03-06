@@ -45,12 +45,9 @@ public class SoBoticsCommandsList {
         commands.add(new Commands(message,commands));
         
         for(SpecialCommand command: commands){
-        	LOGGER.info("Check for "+command);
             if(command.validate()){
                 command.execute(room, instance);
             }
         }
-        
-        LOGGER.info("The message was: "+event.getMessage().getContent());
     }
 }
