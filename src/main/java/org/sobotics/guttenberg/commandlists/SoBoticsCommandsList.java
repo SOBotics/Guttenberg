@@ -7,13 +7,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.commands.*;
+import org.sobotics.guttenberg.services.RunnerService;
 
 import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
 import fr.tunaki.stackoverflow.chat.event.PingMessageEvent;
-
-import org.sobotics.guttenberg.clients.Guttenberg;
-
 
 /**
  * Created by bhargav.h on 28-Oct-16.
@@ -22,12 +20,12 @@ public class SoBoticsCommandsList {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SoBoticsCommandsList.class);
 
-    public void mention(Room room, PingMessageEvent event, boolean isReply, Guttenberg instance){
+    public void mention(Room room, PingMessageEvent event, boolean isReply, RunnerService instance){
         /*if(CheckUtils.checkIfUserIsBlacklisted(event.getUserId()))
             return;*/
 
         Message message = event.getMessage();
-        System.out.println("Mention:"+message);
+        LOGGER.info("Mention: "+message.getContent());
         List<SpecialCommand> commands = new ArrayList<>(Arrays.asList(
             new Alive(message),
             new Check(message),
@@ -38,7 +36,6 @@ public class SoBoticsCommandsList {
             new Say(message),
             new Status(message),
             new Update(message),
-            //new Pfiatdi(message),
             new Reboot(message)
         ));
 
@@ -49,7 +46,5 @@ public class SoBoticsCommandsList {
                 command.execute(room, instance);
             }
         }
-        
-        LOGGER.info(event.getMessage().getContent());
     }
 }

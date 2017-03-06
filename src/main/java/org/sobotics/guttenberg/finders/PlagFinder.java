@@ -10,6 +10,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.entities.Post;
+import org.sobotics.guttenberg.services.ApiService;
 import org.sobotics.guttenberg.utils.ApiUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.PostUtils;
@@ -103,7 +104,8 @@ public class PlagFinder {
                 LOGGER.info("Related question IDs: "+relatedIds);
                 LOGGER.info("Fetching all answers...");
                 
-                JsonObject relatedAnswers = ApiUtils.getAnswersToQuestionsByIdString(relatedIds, "stackoverflow", prop.getProperty("apikey", ""));
+                JsonObject relatedAnswers = ApiService.defaultService.getAnswersToQuestionsByIdString(relatedIds);
+                //JsonObject relatedAnswers = ApiUtils.getAnswersToQuestionsByIdString(relatedIds, "stackoverflow", prop.getProperty("apikey", ""));
                 //System.out.println(relatedAnswers);
                 for (JsonElement answer : relatedAnswers.get("items").getAsJsonArray()) {
                     JsonObject answerObject = answer.getAsJsonObject();

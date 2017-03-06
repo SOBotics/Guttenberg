@@ -6,7 +6,7 @@
 
     <groupId>de.felixsfd.stackoverflow</groupId>
     <artifactId>guttenberg</artifactId>
-    <version>0.5.4</version>
+    <version>0.6.0</version>
 
     <dependencies>
         <dependency>
@@ -17,7 +17,7 @@
         <dependency>
             <groupId>fr.tunaki.stackoverflow</groupId>
             <artifactId>chatexchange</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.optimaize.languagedetector</groupId>

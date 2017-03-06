@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.roomdata.BotRoom;
 import org.sobotics.guttenberg.roomdata.SOBoticsChatRoom;
+import org.sobotics.guttenberg.roomdata.SOGuttenbergTestingFacility;
+import org.sobotics.guttenberg.services.RunnerService;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
 
@@ -45,12 +47,14 @@ public class Client {
         
         List<BotRoom> rooms = new ArrayList<>();
         rooms.add(new SOBoticsChatRoom());
+        rooms.add(new SOGuttenbergTestingFacility());
+        
         
         LOGGER.info("Launch Guttenberg...");
         
-        Guttenberg guttenberg = new Guttenberg(seClient, rooms);
+        RunnerService runner = new RunnerService(seClient, rooms);
         
-        guttenberg.start();
+        runner.start();
         
         StatusUtils.startupDate = Instant.now();
         LOGGER.info(StatusUtils.startupDate + " - Successfully launched Guttenberg!");
