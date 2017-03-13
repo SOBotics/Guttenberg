@@ -48,7 +48,7 @@
         <dependency>
         	<groupId>org.sobotics</groupId>
         	<artifactId>redunda-lib</artifactId>
-        	<version>0.1.1</version>
+        	<version>0.1.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <repositories>
