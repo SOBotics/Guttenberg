@@ -82,4 +82,9 @@ public class OptIn implements SpecialCommand {
 		return "opt-in";
 	}
 
+	@Override
+	public boolean availableInStandby() {
+		return false;
+	}
+
 }

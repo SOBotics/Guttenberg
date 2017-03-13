@@ -59,4 +59,9 @@ public class Update implements SpecialCommand {
         return "update";
     }
 
+	@Override
+	public boolean availableInStandby() {
+		return false;
+	}
+
 }

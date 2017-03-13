@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sobotics.PingService;
 import org.sobotics.guttenberg.commands.*;
 import org.sobotics.guttenberg.services.RunnerService;
 
@@ -43,7 +44,14 @@ public class SoBoticsCommandsList {
         
         for(SpecialCommand command: commands){
             if(command.validate()){
-                command.execute(room, instance);
+            	boolean standbyMode = PingService.standby.get();
+            	if (standbyMode == true) {
+            		if (command.availableInStandby() == true) {
+            			command.execute(room, instance);
+            		}
+            	} else {
+            		command.execute(room, instance);
+            	}
             }
         }
     }

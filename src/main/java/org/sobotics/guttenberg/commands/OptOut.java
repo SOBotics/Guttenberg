@@ -55,4 +55,9 @@ public class OptOut implements SpecialCommand {
 		return "opt-out";
 	}
 
+	@Override
+	public boolean availableInStandby() {
+		return false;
+	}
+
 }

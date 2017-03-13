@@ -35,4 +35,9 @@ public class Quota implements SpecialCommand {
         return "quota";
     }
 
+	@Override
+	public boolean availableInStandby() {
+		return false;
+	}
+
 }
