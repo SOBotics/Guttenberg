@@ -85,4 +85,9 @@ public class Reboot implements SpecialCommand {
             room.replyTo(message.getId(), "**Reboot failed:** '" + e.getMessage() + "'.");
         }
     }
+
+	@Override
+	public boolean availableInStandby() {
+		return false;
+	}
 }

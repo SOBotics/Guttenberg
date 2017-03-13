@@ -9,6 +9,7 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sobotics.PingService;
 import org.sobotics.guttenberg.roomdata.BotRoom;
 import org.sobotics.guttenberg.roomdata.SOBoticsChatRoom;
 import org.sobotics.guttenberg.roomdata.SOGuttenbergTestingFacility;
@@ -48,6 +49,16 @@ public class Client {
         List<BotRoom> rooms = new ArrayList<>();
         rooms.add(new SOBoticsChatRoom());
         rooms.add(new SOGuttenbergTestingFacility());
+        
+        
+        LOGGER.info("Connecting to Redunda...");
+        PingService redunda = new PingService(prop.getProperty("redunda_apikey", ""));
+        String productionInstance = prop.getProperty("production_instance", "false");
+        if (productionInstance.equals("false")) {
+        	redunda.setDebugging(true);
+        	LOGGER.info("Set Redunda debugging to true");
+        }
+        redunda.start();
         
         
         LOGGER.info("Launch Guttenberg...");

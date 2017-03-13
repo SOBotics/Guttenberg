@@ -72,4 +72,9 @@ public class Status implements SpecialCommand {
         return "status";
     }
 
+	@Override
+	public boolean availableInStandby() {
+		return true;
+	}
+
 }

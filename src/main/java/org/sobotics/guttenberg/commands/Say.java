@@ -36,4 +36,9 @@ public class Say implements SpecialCommand {
     public String name() {
         return "say";
     }
+
+	@Override
+	public boolean availableInStandby() {
+		return false;
+	}
 }

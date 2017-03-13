@@ -40,4 +40,9 @@ public class ClearHelp implements SpecialCommand {
         return "clear";
     }
 
+	@Override
+	public boolean availableInStandby() {
+		return false;
+	}
+
 }

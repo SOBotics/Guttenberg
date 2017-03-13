@@ -87,4 +87,9 @@ public class Check implements SpecialCommand {
         return "check";
     }
 
+	@Override
+	public boolean availableInStandby() {
+		return false;
+	}
+
 }
