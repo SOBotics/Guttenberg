@@ -50,6 +50,10 @@ public class Client {
         rooms.add(new SOGuttenbergTestingFacility());
         
         
+        LOGGER.info("Connecting to Redunda...");
+        //PingService redunda = new PingService();
+        
+        
         LOGGER.info("Launch Guttenberg...");
         
         RunnerService runner = new RunnerService(seClient, rooms);
