@@ -56,6 +56,7 @@ public class Client {
         String productionInstance = prop.getProperty("production_instance", "false");
         if (productionInstance.equals("false")) {
         	redunda.setDebugging(true);
+        	LOGGER.info("Set Redunda debugging to true");
         }
         redunda.start();
         
