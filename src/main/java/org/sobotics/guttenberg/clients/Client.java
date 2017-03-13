@@ -53,6 +53,10 @@ public class Client {
         
         LOGGER.info("Connecting to Redunda...");
         PingService redunda = new PingService(prop.getProperty("redunda_apikey", ""));
+        String productionInstance = prop.getProperty("production_instance", "false");
+        if (productionInstance.equals("false")) {
+        	redunda.setDebugging(true);
+        }
         redunda.start();
         
         
