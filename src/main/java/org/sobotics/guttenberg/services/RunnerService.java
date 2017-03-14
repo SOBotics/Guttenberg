@@ -60,7 +60,7 @@ public class RunnerService {
         		update.start();
         		
         		if (prop.getProperty("production_instance").equals("true")) {
-                    chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (SERVER VERSION; Instance _"+prop.getProperty("location", "undefined")+"_)" );
+                    chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (SERVER VERSION; Instance [_"+prop.getProperty("location", "undefined")+"_](https://redunda.sobotics.org/bots/4/bot_instances))" );
                 } else {
                     chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (DEVELOPMENT VERSION; Instance _"+prop.getProperty("location")+"_)" );
                 }

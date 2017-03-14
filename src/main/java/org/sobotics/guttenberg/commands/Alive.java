@@ -45,7 +45,7 @@ public class Alive implements SpecialCommand {
             room.replyTo(message.getId(), "Maybe. But something strange is going on!");
             return;
         }
-        room.send("The instance "+prop.getProperty("location", "undefined")+ "is running.\nStandby: "+PingService.standby.toString());
+        room.send("The instance ["+prop.getProperty("location", "undefined")+ "](https://redunda.sobotics.org/bots/4/bot_instances) is running.\nStandby: "+PingService.standby.toString());
     }
 
     @Override
