@@ -2,6 +2,7 @@ package org.sobotics.guttenberg.clients;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.PingService;
+import org.sobotics.guttenberg.commands.Status;
 import org.sobotics.guttenberg.roomdata.BotRoom;
 import org.sobotics.guttenberg.roomdata.SOBoticsChatRoom;
 import org.sobotics.guttenberg.roomdata.SOGuttenbergTestingFacility;
@@ -50,14 +52,26 @@ public class Client {
         rooms.add(new SOBoticsChatRoom());
         rooms.add(new SOGuttenbergTestingFacility());
         
+        //get current version
+        Properties guttenbergProperties = new Properties();
+        String version = "0.0.0";
+        try{
+            InputStream is = Status.class.getResourceAsStream("/guttenberg.properties");
+            guttenbergProperties.load(is);
+            version = guttenbergProperties.getProperty("version", "0.0.0");
+        }
+        catch (IOException e){
+            LOGGER.error("Could not load properties", e);
+        }
         
         LOGGER.info("Connecting to Redunda...");
-        PingService redunda = new PingService(prop.getProperty("redunda_apikey", ""));
+        PingService redunda = new PingService(prop.getProperty("redunda_apikey", ""), version);
         String productionInstance = prop.getProperty("production_instance", "false");
         if (productionInstance.equals("false")) {
         	redunda.setDebugging(true);
         	LOGGER.info("Set Redunda debugging to true");
         }
+        
         redunda.start();
         
         

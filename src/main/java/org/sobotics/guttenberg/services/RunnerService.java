@@ -45,10 +45,10 @@ public class RunnerService {
             LOGGER.error("login.properties could not be loaded!", e);
         }
     	
-    	String botLocation = prop.getProperty("location", "undefined-location");
+    	String isProductionInstance = prop.getProperty("production_instance", "false");
     	
         for(BotRoom room:rooms){
-        	if (botLocation.equals("server") == room.getIsProductionRoom()) {
+        	if (isProductionInstance.equals("true") == room.getIsProductionRoom()) {
         		Room chatroom = client.joinRoom(room.getHost(), room.getRoomId());
         		
         		//start services
@@ -59,10 +59,10 @@ public class RunnerService {
         		UpdateService update = new UpdateService(this);
         		update.start();
         		
-        		if (prop.getProperty("location").equals("server")) {
-                    chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (SERVER VERSION)" );
+        		if (prop.getProperty("production_instance").equals("true")) {
+                    chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (SERVER VERSION; Instance [_"+prop.getProperty("location", "undefined")+"_](https://redunda.sobotics.org/bots/4/bot_instances))" );
                 } else {
-                    chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
+                    chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (DEVELOPMENT VERSION; Instance _"+prop.getProperty("location")+"_)" );
                 }
         		
         		chatRooms.add(chatroom);
