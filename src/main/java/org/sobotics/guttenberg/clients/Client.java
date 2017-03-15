@@ -10,7 +10,7 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sobotics.PingService;
+import org.sobotics.redunda.PingService;
 import org.sobotics.guttenberg.commands.Status;
 import org.sobotics.guttenberg.roomdata.BotRoom;
 import org.sobotics.guttenberg.roomdata.SOBoticsChatRoom;

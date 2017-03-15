@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sobotics.PingService;
+import org.sobotics.redunda.PingService;
 import org.sobotics.guttenberg.commands.*;
 import org.sobotics.guttenberg.services.RunnerService;
 
