@@ -10,7 +10,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.finders.NewAnswersFinder;
-import org.sobotics.PingService;
+import org.sobotics.redunda.PingService;
 import org.sobotics.guttenberg.entities.OptedInUser;
 import org.sobotics.guttenberg.entities.Post;
 import org.sobotics.guttenberg.finders.PlagFinder;

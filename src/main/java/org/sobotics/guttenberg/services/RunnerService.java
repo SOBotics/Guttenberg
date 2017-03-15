@@ -16,13 +16,15 @@ import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.roomdata.BotRoom;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.StatusUtils;
+import org.sobotics.redunda.PingServiceDelegate;
 
 import fr.tunaki.stackoverflow.chat.Room;
 import fr.tunaki.stackoverflow.chat.StackExchangeClient;
 import fr.tunaki.stackoverflow.chat.event.EventType;
 import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
 
-public class RunnerService {
+public class RunnerService implements PingServiceDelegate {
 	private StackExchangeClient client;
     private List<BotRoom> rooms;
     private List<Room> chatRooms;
@@ -114,4 +116,12 @@ public class RunnerService {
     public List<Room> getChatRooms() {
     	return this.chatRooms;
     }
+    
+    @Override
+	public void standbyStatusChanged(boolean newStatus) {
+		if (newStatus == false) {
+			StatusUtils.lastExecutionFinished = Instant.now();
+			StatusUtils.lastSucceededExecutionStarted = Instant.now().minusSeconds(30);
+		}
+	}
 }

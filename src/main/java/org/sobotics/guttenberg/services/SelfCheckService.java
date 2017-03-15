@@ -6,7 +6,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.sobotics.PingService;
+import org.sobotics.redunda.PingService;
 import org.sobotics.guttenberg.utils.StatusUtils;
 
 import fr.tunaki.stackoverflow.chat.ChatHost;
