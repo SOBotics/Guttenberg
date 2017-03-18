@@ -63,9 +63,9 @@ public class SoBoticsCommandsList {
     
     public void globalCommand(Room room, MessagePostedEvent event,  RunnerService instance) {
     	Message message = event.getMessage();
-        LOGGER.info("Message: "+message.getContent());
+        //LOGGER.info("Message: "+message.getContent());
     	
-    	//return immediately, if @gut is part of the message
+    	//return immediately, if @gut is part of the message!
     	String username = "";
         
         Properties prop = new Properties();
@@ -80,7 +80,7 @@ public class SoBoticsCommandsList {
         }
         
         boolean containsUsername = message.getPlainContent().toLowerCase().contains("@"+username);
-        LOGGER.info("containsUsername: "+containsUsername);
+        //LOGGER.info("containsUsername: "+containsUsername);
         if (containsUsername == true)
         	return;
     	
