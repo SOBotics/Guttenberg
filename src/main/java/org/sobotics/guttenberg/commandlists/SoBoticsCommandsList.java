@@ -79,7 +79,8 @@ public class SoBoticsCommandsList {
             username = "gut";
         }
         
-        boolean containsUsername = message.getPlainContent().contains("@"+username);
+        boolean containsUsername = message.getPlainContent().toLowerCase().contains("@"+username);
+        LOGGER.info("containsUsername: "+containsUsername);
         if (containsUsername == true)
         	return;
     	
