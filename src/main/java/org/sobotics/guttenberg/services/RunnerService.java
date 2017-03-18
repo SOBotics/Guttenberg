@@ -22,6 +22,7 @@ import org.sobotics.redunda.PingServiceDelegate;
 import fr.tunaki.stackoverflow.chat.Room;
 import fr.tunaki.stackoverflow.chat.StackExchangeClient;
 import fr.tunaki.stackoverflow.chat.event.EventType;
+import fr.tunaki.stackoverflow.chat.event.MessagePostedEvent;
 import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
 
 public class RunnerService implements PingServiceDelegate {
@@ -70,8 +71,12 @@ public class RunnerService implements PingServiceDelegate {
         		chatRooms.add(chatroom);
                 
                 Consumer<UserMentionedEvent> mention = room.getMention(chatroom, this);
+                Consumer<MessagePostedEvent> messagePosted = room.getMessage(chatroom, this);
                 if(mention != null) {
                     chatroom.addEventListener(EventType.USER_MENTIONED, mention);
+                }
+                if(messagePosted != null) {
+                    chatroom.addEventListener(EventType.MESSAGE_POSTED, messagePosted);
                 }
                 /*if(room.getReply(chatroom)!=null)
                     chatroom.addEventListener(EventType.MESSAGE_REPLY, room.getReply(chatroom));*/
