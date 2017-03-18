@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import org.sobotics.guttenberg.utils.FilePathUtils;
 
 import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
+import fr.tunaki.stackoverflow.chat.User;
 import fr.tunaki.stackoverflow.chat.event.MessagePostedEvent;
 import fr.tunaki.stackoverflow.chat.event.PingMessageEvent;
 
@@ -62,6 +64,17 @@ public class SoBoticsCommandsList {
     }
     
     public void globalCommand(Room room, MessagePostedEvent event,  RunnerService instance) {
+    	//only ROs should execute global commands!
+    	try {
+    		User user = event.getUser().get();
+    		if (!user.isModerator() && !user.isRoomOwner())
+    			return;
+    	} catch (Throwable e) {
+    		LOGGER.warn("Could not verify privileges of that user. Don't execute the command.", e);
+    		return;
+    	}
+    	
+    	
     	Message message = event.getMessage();
         //LOGGER.info("Message: "+message.getContent());
     	
