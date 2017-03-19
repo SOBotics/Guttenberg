@@ -17,6 +17,7 @@ import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.roomdata.BotRoom;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
+import org.sobotics.redunda.PingService;
 import org.sobotics.redunda.PingServiceDelegate;
 
 import fr.tunaki.stackoverflow.chat.Room;
@@ -63,7 +64,10 @@ public class RunnerService implements PingServiceDelegate {
         		update.start();
         		
         		if (prop.getProperty("production_instance").equals("true")) {
-                    chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (SERVER VERSION; Instance [_"+prop.getProperty("location", "undefined")+"_](https://redunda.sobotics.org/bots/4/bot_instances))" );
+        			//only post the welcome message, when not on standby
+            		if (PingService.standby.get() == false) {
+            			chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (SERVER VERSION; Instance [_"+prop.getProperty("location", "undefined")+"_](https://redunda.sobotics.org/bots/4/bot_instances))" );
+            		}
                 } else {
                     chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (DEVELOPMENT VERSION; Instance _"+prop.getProperty("location")+"_)" );
                 }
