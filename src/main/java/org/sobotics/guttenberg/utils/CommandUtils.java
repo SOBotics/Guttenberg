@@ -29,7 +29,9 @@ public class CommandUtils {
             username = "gut";
         }
         
-        return message.split(" ")[0].toLowerCase().startsWith("@"+username) && message.split(" ")[1].toLowerCase().equals(command);
+        boolean usernameMatch = message.split(" ")[0].toLowerCase().startsWith("@"+username) || message.split(" ")[0].toLowerCase().startsWith("@bots");
+        
+        return usernameMatch && message.split(" ")[1].toLowerCase().equals(command);
     }
     public static String extractData(String message){
         String parts[] = message.split(" ");

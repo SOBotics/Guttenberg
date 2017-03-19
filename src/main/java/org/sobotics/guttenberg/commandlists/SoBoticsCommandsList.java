@@ -1,17 +1,24 @@
 package org.sobotics.guttenberg.commandlists;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.redunda.PingService;
 import org.sobotics.guttenberg.commands.*;
 import org.sobotics.guttenberg.services.RunnerService;
+import org.sobotics.guttenberg.utils.FilePathUtils;
 
 import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
+import fr.tunaki.stackoverflow.chat.User;
+import fr.tunaki.stackoverflow.chat.event.MessagePostedEvent;
 import fr.tunaki.stackoverflow.chat.event.PingMessageEvent;
 
 /**
@@ -41,6 +48,58 @@ public class SoBoticsCommandsList {
         ));
 
         commands.add(new Commands(message,commands));
+        
+        for(SpecialCommand command: commands){
+            if(command.validate()){
+            	boolean standbyMode = PingService.standby.get();
+            	if (standbyMode == true) {
+            		if (command.availableInStandby() == true) {
+            			command.execute(room, instance);
+            		}
+            	} else {
+            		command.execute(room, instance);
+            	}
+            }
+        }
+    }
+    
+    public void globalCommand(Room room, MessagePostedEvent event,  RunnerService instance) {
+    	//only ROs should execute global commands!
+    	try {
+    		User user = event.getUser().get();
+    		if (!user.isModerator() && !user.isRoomOwner())
+    			return;
+    	} catch (Throwable e) {
+    		LOGGER.warn("Could not verify privileges of that user. Don't execute the command.", e);
+    		return;
+    	}
+    	
+    	
+    	Message message = event.getMessage();
+        //LOGGER.info("Message: "+message.getContent());
+    	
+    	//return immediately, if @gut is part of the message!
+    	String username = "";
+        
+        Properties prop = new Properties();
+
+        try{
+            prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
+            username = prop.getProperty("username").substring(0,3).toLowerCase();
+        }
+        catch (IOException e){
+            LOGGER.error("Could not load login.properties", e);
+            username = "gut";
+        }
+        
+        boolean containsUsername = message.getPlainContent().toLowerCase().contains("@"+username);
+        //LOGGER.info("containsUsername: "+containsUsername);
+        if (containsUsername == true)
+        	return;
+    	
+        List<SpecialCommand> commands = new ArrayList<>(Arrays.asList(
+            new Alive(message)
+        ));
         
         for(SpecialCommand command: commands){
             if(command.validate()){
