@@ -10,6 +10,7 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sobotics.redunda.DataService;
 import org.sobotics.redunda.PingService;
 import org.sobotics.guttenberg.commands.Status;
 import org.sobotics.guttenberg.roomdata.BotRoom;
@@ -67,9 +68,21 @@ public class Client {
         LOGGER.info("Connecting to Redunda...");
         PingService redunda = new PingService(prop.getProperty("redunda_apikey", ""), version);
         String productionInstance = prop.getProperty("production_instance", "false");
+        
+        
+        //track files for synchronization
+        DataService redundaData = redunda.buildDataService();
+        redundaData.trackFile(FilePathUtils.optedUsersFile);
+        redundaData.trackFile(FilePathUtils.generalPropertiesFile);
+        
         if (productionInstance.equals("false")) {
         	redunda.setDebugging(true);
         	LOGGER.info("Set Redunda debugging to true");
+        } else {
+        	//not debugging
+        	LOGGER.info("Start synchronization...");
+            redundaData.syncAndStart();
+            LOGGER.info("Synchronization finished!");
         }
         
         //first check manually, so that RunnerService will know the status before posting the welcome message

@@ -76,7 +76,14 @@ public class SoBoticsCommandsList {
     	
     	
     	Message message = event.getMessage();
-        //LOGGER.info("Message: "+message.getContent());
+        LOGGER.info("Message: "+message.getContent());
+        
+        int cp = Character.codePointAt(message.getPlainContent(), 0);
+        
+        if (PingService.standby.get() == false && (cp == 128642 || (cp>=128644 && cp<=128650))) {
+        	room.send("[🚃](http://bit.ly/2nRi9kX)");
+        	return;
+        }
     	
     	//return immediately, if @gut is part of the message!
     	String username = "";
