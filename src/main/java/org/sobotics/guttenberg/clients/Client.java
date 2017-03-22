@@ -85,6 +85,11 @@ public class Client {
             LOGGER.info("Synchronization finished!");
         }
         
+        //first check manually, so that RunnerService will know the status before posting the welcome message
+        boolean isOnStandby = redunda.checkStandbyStatus();
+        if (isOnStandby)
+        	LOGGER.info("Launching in standby...");
+        
         redunda.start();
         
         
