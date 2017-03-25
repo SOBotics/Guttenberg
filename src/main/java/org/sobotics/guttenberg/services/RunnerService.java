@@ -16,13 +16,17 @@ import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.roomdata.BotRoom;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.StatusUtils;
+import org.sobotics.redunda.PingService;
+import org.sobotics.redunda.PingServiceDelegate;
 
 import fr.tunaki.stackoverflow.chat.Room;
 import fr.tunaki.stackoverflow.chat.StackExchangeClient;
 import fr.tunaki.stackoverflow.chat.event.EventType;
+import fr.tunaki.stackoverflow.chat.event.MessagePostedEvent;
 import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
 
-public class RunnerService {
+public class RunnerService implements PingServiceDelegate {
 	private StackExchangeClient client;
     private List<BotRoom> rooms;
     private List<Room> chatRooms;
@@ -45,10 +49,10 @@ public class RunnerService {
             LOGGER.error("login.properties could not be loaded!", e);
         }
     	
-    	String botLocation = prop.getProperty("location", "undefined-location");
+    	String isProductionInstance = prop.getProperty("production_instance", "false");
     	
         for(BotRoom room:rooms){
-        	if (botLocation.equals("server") == room.getIsProductionRoom()) {
+        	if (isProductionInstance.equals("true") == room.getIsProductionRoom()) {
         		Room chatroom = client.joinRoom(room.getHost(), room.getRoomId());
         		
         		//start services
@@ -59,17 +63,24 @@ public class RunnerService {
         		UpdateService update = new UpdateService(this);
         		update.start();
         		
-        		if (prop.getProperty("location").equals("server")) {
-                    chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (SERVER VERSION)" );
+        		if (prop.getProperty("production_instance").equals("true")) {
+        			//only post the welcome message, when not on standby
+            		if (PingService.standby.get() == false) {
+            			chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (SERVER VERSION; Instance [_"+prop.getProperty("location", "undefined")+"_](https://redunda.sobotics.org/bots/4/bot_instances))" );
+            		}
                 } else {
-                    chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (DEVELOPMENT VERSION; "+prop.getProperty("location")+")" );
+                    chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (DEVELOPMENT VERSION; Instance _"+prop.getProperty("location")+"_)" );
                 }
         		
         		chatRooms.add(chatroom);
                 
                 Consumer<UserMentionedEvent> mention = room.getMention(chatroom, this);
+                Consumer<MessagePostedEvent> messagePosted = room.getMessage(chatroom, this);
                 if(mention != null) {
                     chatroom.addEventListener(EventType.USER_MENTIONED, mention);
+                }
+                if(messagePosted != null) {
+                    chatroom.addEventListener(EventType.MESSAGE_POSTED, messagePosted);
                 }
                 /*if(room.getReply(chatroom)!=null)
                     chatroom.addEventListener(EventType.MESSAGE_REPLY, room.getReply(chatroom));*/
@@ -114,4 +125,12 @@ public class RunnerService {
     public List<Room> getChatRooms() {
     	return this.chatRooms;
     }
+    
+    @Override
+	public void standbyStatusChanged(boolean newStatus) {
+		if (newStatus == false) {
+			StatusUtils.lastExecutionFinished = Instant.now();
+			StatusUtils.lastSucceededExecutionStarted = Instant.now().minusSeconds(30);
+		}
+	}
 }

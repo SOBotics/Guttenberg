@@ -10,6 +10,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.finders.NewAnswersFinder;
+import org.sobotics.redunda.PingService;
 import org.sobotics.guttenberg.entities.OptedInUser;
 import org.sobotics.guttenberg.entities.Post;
 import org.sobotics.guttenberg.finders.PlagFinder;
@@ -48,6 +49,12 @@ public class Guttenberg {
 	}
 	
 	public void execute() throws Throwable {
+		boolean standbyMode = PingService.standby.get();
+		if (standbyMode == true) {
+			LOGGER.info("STANDBY - " + Instant.now());
+			return;
+		}
+		
 		Instant startTime = Instant.now();
 		Properties props = new Properties();
 		LOGGER.info("Executing at - "+startTime);

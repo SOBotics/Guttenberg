@@ -2,6 +2,7 @@ package org.sobotics.guttenberg.roomdata;
 
 import fr.tunaki.stackoverflow.chat.ChatHost;
 import fr.tunaki.stackoverflow.chat.Room;
+import fr.tunaki.stackoverflow.chat.event.MessagePostedEvent;
 import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
 
 import java.util.function.Consumer;
@@ -34,6 +35,11 @@ public class SOBoticsChatRoom implements BotRoom{
     public Consumer<UserMentionedEvent> getMention(Room room, RunnerService instance) {
         return event->new SoBoticsCommandsList().mention(room, event, true, instance);
     }
+    
+    @Override
+	public Consumer<MessagePostedEvent> getMessage(Room room, RunnerService instance) {
+    	return event->new SoBoticsCommandsList().globalCommand(room, event, instance);
+	}
 
     /*@Override
     public Consumer<MessageReplyEvent> getReply(Room room) {
@@ -49,6 +55,5 @@ public class SOBoticsChatRoom implements BotRoom{
     public boolean getIsLogged() {
         return true;
     }
-
 
 }

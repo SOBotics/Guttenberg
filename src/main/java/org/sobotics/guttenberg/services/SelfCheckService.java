@@ -6,6 +6,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.sobotics.redunda.PingService;
 import org.sobotics.guttenberg.utils.StatusUtils;
 
 import fr.tunaki.stackoverflow.chat.ChatHost;
@@ -23,6 +24,11 @@ public class SelfCheckService {
 	}
 	
 	private void check() throws Throwable {
+		boolean standbyMode = PingService.standby.get();
+		if (standbyMode == true) {
+			return;
+		}
+		
 		//check quota
 		if (oldApiQuota.get() < StatusUtils.remainingQuota.get()) {
 			//check if it's the first launch

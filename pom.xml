@@ -6,7 +6,7 @@
 
     <groupId>de.felixsfd.stackoverflow</groupId>
     <artifactId>guttenberg</artifactId>
-    <version>0.6.0</version>
+    <version>0.7.0</version>
 
     <dependencies>
         <dependency>
@@ -44,6 +44,11 @@
             <groupId>info.debatty</groupId>
             <artifactId>java-string-similarity</artifactId>
             <version>0.21</version>
+        </dependency>
+        <dependency>
+        	<groupId>org.sobotics</groupId>
+        	<artifactId>redunda-lib</artifactId>
+        	<version>0.3.0</version>
         </dependency>
     </dependencies>
     <repositories>

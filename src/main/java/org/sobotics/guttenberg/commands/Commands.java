@@ -52,5 +52,10 @@ public class Commands implements SpecialCommand {
         return "Returns the list of commands associated with this bot";
     }
 
+	@Override
+	public boolean availableInStandby() {
+		return false;
+	}
+
 
 }

@@ -12,4 +12,5 @@ public interface SpecialCommand {
     public void execute(Room room, RunnerService instance);
     public String description();
     public String name();
+    public boolean availableInStandby();
 }
