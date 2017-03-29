@@ -74,7 +74,7 @@ public class OptIn implements SpecialCommand {
 
 	@Override
 	public String description() {
-		return "Get notified about possible plagiarism with a certain score. Usage: `opt-in <score> <always?>`";
+		return "Get notified about possible plagiarism with a certain score. Usage: opt-in <score> <always?>";
 	}
 
 	@Override
