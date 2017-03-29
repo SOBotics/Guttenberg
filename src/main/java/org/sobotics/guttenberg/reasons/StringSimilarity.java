@@ -104,7 +104,7 @@ public class StringSimilarity implements Reason {
 		for (Post post : this.originals) {
 			double currentScore = StringSimilarity.similarityOf(this.target, post);
 			//TODO: limit still hardcoded
-			if (currentScore > 0.75) {
+			if (currentScore > 0.78) {
 				matched = true;
 				
 				//add post to list of matched posts

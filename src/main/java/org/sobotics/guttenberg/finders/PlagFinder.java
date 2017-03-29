@@ -260,7 +260,9 @@ public class PlagFinder {
     					if (existingMatch.getOriginal().getAnswerID() == id) {
     						//if it exists, add the new reason
     						alreadyExists = true;
-    						existingMatch.reasons.add(reason.description());
+    						if (!existingMatch.reasons.contains(reason.description())) {
+    							existingMatch.reasons.add(reason.description());
+    						}
     						matches.set(i, existingMatch);
     					}
     					
