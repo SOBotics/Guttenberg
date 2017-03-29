@@ -47,7 +47,7 @@ public class OptOut implements SpecialCommand {
 
 	@Override
 	public String description() {
-		return "Removed you from the list";
+		return "Removes you from the list";
 	}
 
 	@Override
