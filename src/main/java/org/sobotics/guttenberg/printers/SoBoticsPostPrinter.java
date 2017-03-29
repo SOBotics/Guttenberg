@@ -1,5 +1,6 @@
 package org.sobotics.guttenberg.printers;
 
+import org.sobotics.guttenberg.entities.PostMatch;
 import org.sobotics.guttenberg.finders.PlagFinder;
 import org.sobotics.guttenberg.utils.PrintUtils;
 
@@ -31,4 +32,21 @@ public class SoBoticsPostPrinter implements PostPrinter {
       }
         return post;
     }
+
+	@Override
+	public String print(PostMatch match) {
+		String message;
+		String reasonsList = "";
+		
+		String targetLink = "https://stackoverflow.com/a/"+match.getTarget().getAnswerID()+"/4687348";
+		String originalLink = "https://stackoverflow.com/a/"+match.getOriginal().getAnswerID()+"/4687348";
+		
+		for (String reason : match.reasons) {
+			reasonsList += reason+"; ";
+		}
+		
+		message = PrintUtils.printDescription()+"[Possible plagiarism]("+targetLink+") of [this post]("+originalLink+")";
+		message += "; **Reasons:** "+reasonsList;
+		return message;
+	}
 }

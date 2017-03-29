@@ -10,6 +10,10 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.entities.Post;
+import org.sobotics.guttenberg.entities.PostMatch;
+import org.sobotics.guttenberg.reasonlists.ReasonList;
+import org.sobotics.guttenberg.reasonlists.SOBoticsReasonList;
+import org.sobotics.guttenberg.reasons.Reason;
 import org.sobotics.guttenberg.services.ApiService;
 import org.sobotics.guttenberg.utils.ApiUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
@@ -229,6 +233,51 @@ public class PlagFinder {
     
     public boolean matchedPostIsRepost() {
     	return this.targetAnswer.getAnswerer().getUserId() == this.jaroAnswer.getAnswerer().getUserId();
+    }
+    
+    public List<PostMatch> matchesForReasons() {
+    	List<PostMatch> matches = new ArrayList<PostMatch>();
+    	//get reasonlist
+    	ReasonList reasonList = new SOBoticsReasonList(this.targetAnswer, this.relatedAnswers);
+    	
+    	for (Reason reason : reasonList.reasons()) {
+    		//check if the reason applies
+    		if (reason.check() == true) {
+    			//if yes, add (new) posts to the list
+    			
+    			//get matched posts for that reason
+    			List<Post> matchedPosts = reason.matchedPosts();
+    			
+    			if (matchedPosts == null)
+    				return null;
+    			
+    			for (Post post : matchedPosts) {
+    				//check if the new post is already part of a PostMatch
+    				boolean alreadyExists = false;
+    				int id = post.getAnswerID();
+    				int i = 0;
+    				for (PostMatch existingMatch : matches) {
+    					if (existingMatch.getOriginal().getAnswerID() == id) {
+    						//if it exists, add the new reason
+    						alreadyExists = true;
+    						existingMatch.reasons.add(reason.description());
+    						matches.set(i, existingMatch);
+    					}
+    					
+    					i++;
+    				}
+    				
+    				//if it doesn't exist yet, add it
+    				if (!alreadyExists) {
+    					PostMatch newMatch = new PostMatch(this.targetAnswer, post);
+    					newMatch.reasons.add(reason.description());
+    					matches.add(newMatch);
+    				}
+    			}
+    		}
+    	}
+    	
+    	return matches;
     }
     
 }

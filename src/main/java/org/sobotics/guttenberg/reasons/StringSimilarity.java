@@ -3,6 +3,7 @@ package org.sobotics.guttenberg.reasons;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -22,13 +23,15 @@ public class StringSimilarity implements Reason {
 
 	private Post target;
 	private List<Post> originals;
+	private List<Post> matchedPosts = new ArrayList<Post>();
+	private double score = -1;
 	
 	public StringSimilarity(Post target, List<Post> originalPosts) {
 		this.target = target;
 		this.originals = originalPosts;
 	}
 	
-	public static boolean similarityOf(Post targetPost, Post originalPost) {
+	public static double similarityOf(Post targetPost, Post originalPost) {
 		String targetBodyMarkdown = targetPost.getBodyMarkdown();
         String targetCodeOnly = targetPost.getCodeOnly();
         String targetPlaintext = targetPost.getPlaintext();
@@ -82,23 +85,35 @@ public class StringSimilarity implements Reason {
         		+ (jwPlaintext > 0 ? jwPlaintext : 0)
         		+ (jwQuotes > 0 ? jwQuotes : 0)) / usedScores;
         
-        if (jwBodyMarkdown > 0.9)
-        	return true;
+        //LOGGER.info("Score: "+jaroWinklerScore);
         
-        //TODO: limit still hardcoded!
-        if(jaroWinklerScore > 0.8)
-        	return true;
+        if (jwBodyMarkdown > 0.9) {
+        	return jwBodyMarkdown;
+        }
         
-		return false;
+        if(jaroWinklerScore > 0.01) {
+        	return jaroWinklerScore;
+        }
+        
+		return -1;
 	}
 	
 	@Override
 	public boolean check() {
 		boolean matched = false;
 		for (Post post : this.originals) {
-			boolean similar = StringSimilarity.similarityOf(this.target, post);
-			if (similar == true)
+			double currentScore = StringSimilarity.similarityOf(this.target, post);
+			//TODO: limit still hardcoded
+			if (currentScore > 0.75) {
 				matched = true;
+				
+				//add post to list of matched posts
+				this.matchedPosts.add(post);
+				
+				//update score
+				if(this.score <= currentScore)
+					this.score = currentScore;
+			}
 		}
 		
 		return matched;
@@ -106,19 +121,18 @@ public class StringSimilarity implements Reason {
 
 	@Override
 	public String description() {
-		return "String similarity";
+		double roundedScore = Math.round(this.score()*100.0)/100.0;
+		return score() >= 0 ? "String similarity >= "+roundedScore : "String similarity";
 	}
 
 	@Override
 	public double score() {
-		// TODO Auto-generated method stub
-		return 1;
+		return this.score;
 	}
 
 	@Override
 	public List<Post> matchedPosts() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.matchedPosts;
 	}
 
 }
