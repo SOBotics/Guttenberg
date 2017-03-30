@@ -103,8 +103,18 @@ public class StringSimilarity implements Reason {
 		boolean matched = false;
 		for (Post post : this.originals) {
 			double currentScore = StringSimilarity.similarityOf(this.target, post);
-			//TODO: limit still hardcoded
-			if (currentScore > 0.78) {
+			
+			//get the report threshold
+			Properties prop = new Properties();
+	        try {
+	        	prop.load(new FileInputStream(FilePathUtils.generalPropertiesFile));
+	        } catch (IOException e) {
+	        	LOGGER.warn("Could not load general.properties. Using hardcoded value", e);
+	        }
+			
+	        double minimumScore = new Double(prop.getProperty("minimumScore", "0.8"));
+	        
+			if (currentScore >= minimumScore) {
 				matched = true;
 				
 				//add post to list of matched posts
