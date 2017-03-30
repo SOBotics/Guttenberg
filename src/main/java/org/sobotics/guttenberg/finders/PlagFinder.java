@@ -132,7 +132,7 @@ public class PlagFinder {
         }
     }
     
-    
+    /*
     public Post getMostSimilarAnswer() {
     	LOGGER.info("Calculating...");
         String targetBodyMarkdown = this.targetAnswer.getBodyMarkdown();
@@ -211,7 +211,7 @@ public class PlagFinder {
         this.jaroAnswer = closestMatch;
         
         return highscore > 0 ? closestMatch : null;
-    }
+    }*/
     
     
     public Post getTargetAnswer() {
