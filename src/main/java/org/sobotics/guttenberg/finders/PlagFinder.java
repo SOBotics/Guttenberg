@@ -41,8 +41,10 @@ public class PlagFinder {
      * */
     public List<Post> relatedAnswers;
     
+    @Deprecated
     private double jaroScore = 0;
     
+    @Deprecated
     private Post jaroAnswer;
     
     /**
@@ -132,7 +134,7 @@ public class PlagFinder {
         }
     }
     
-    /*
+    @Deprecated
     public Post getMostSimilarAnswer() {
     	LOGGER.info("Calculating...");
         String targetBodyMarkdown = this.targetAnswer.getBodyMarkdown();
@@ -211,7 +213,7 @@ public class PlagFinder {
         this.jaroAnswer = closestMatch;
         
         return highscore > 0 ? closestMatch : null;
-    }*/
+    }
     
     
     public Post getTargetAnswer() {
@@ -222,25 +224,43 @@ public class PlagFinder {
         return this.targetAnswer.getAnswerID();
     }
     
+    @Deprecated
     public double getJaroScore() {
         return this.jaroScore;
     }
     
+    @Deprecated
     public Post getJaroAnswer() {
         return this.jaroAnswer;
         //return this.jaroScore > 0.7 ? this.jaroAnswer : null;
     }
     
+    @Deprecated
     public boolean matchedPostIsRepost() {
     	return this.targetAnswer.getAnswerer().getUserId() == this.jaroAnswer.getAnswerer().getUserId();
     }
     
+    /**
+     * Returns the PostMatch objects.
+     * 
+     * Calls matchesForReasons(boolean) with a default value of false
+     * */
     public List<PostMatch> matchesForReasons() {
+    	return matchesForReasons(false);
+    }
+    
+    /**
+     * Returns the PostMatch objects.
+     * 
+     * @parameter ignoringScores If true, the reasons will ignore any minimum scores
+     * */
+    public List<PostMatch> matchesForReasons(boolean ignoringScores) {
     	List<PostMatch> matches = new ArrayList<PostMatch>();
     	//get reasonlist
     	ReasonList reasonList = new SOBoticsReasonList(this.targetAnswer, this.relatedAnswers);
     	
-    	for (Reason reason : reasonList.reasons()) {
+    	for (Reason reason : reasonList.reasons(ignoringScores)) {
+    		//LOGGER.info("Checking reason "+reason.description()+"\nIgnoring score: "+ignoringScores);
     		//check if the reason applies
     		if (reason.check() == true) {
     			//if yes, add (new) posts to the list

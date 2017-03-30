@@ -65,13 +65,19 @@ public class Check implements SpecialCommand {
             PlagFinder finder = new PlagFinder(target);
             finder.collectData();
             //finder.getMostSimilarAnswer();
-            List<PostMatch> matches = finder.matchesForReasons();
+            List<PostMatch> matches = finder.matchesForReasons(true);
             
             if (matches.size() > 0) {
+            	int i = 0;
             	String reply = "These posts are similar to the target: ";
             	for (PostMatch match : matches) {
+            		if (i > 5)
+            			break;
             		reply += "["+match.getOriginal().getAnswerID()+"](http://stackoverflow.com/a/"+match.getOriginal().getAnswerID()+"); ";
+            		i++;
             	}
+            	
+            	room.replyTo(message.getId(), reply);
             } else {
             	room.replyTo(message.getId(), "No similar posts found.");
             }

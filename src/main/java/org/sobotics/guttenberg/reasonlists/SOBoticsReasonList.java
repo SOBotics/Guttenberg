@@ -18,9 +18,14 @@ public class SOBoticsReasonList implements ReasonList {
 	
 	@Override
 	public List<Reason> reasons() {
+		return reasons(false);
+	}
+	
+	@Override
+	public List<Reason> reasons(boolean ignoringScores) {
 		List<Reason> reasons = new ArrayList<Reason>();
 		
-		reasons.add(new StringSimilarity(this.target, this.originals));
+		reasons.add(new StringSimilarity(this.target, this.originals, ignoringScores));
 		
 		
 		return reasons;

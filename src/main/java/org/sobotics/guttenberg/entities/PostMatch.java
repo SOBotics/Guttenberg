@@ -25,4 +25,11 @@ public class PostMatch {
 	public Post getOriginal() {
 		return this.original;
 	}
+	
+	/**
+	 * Returns if the target and original post have the same author
+	 * */
+	public boolean isRepost() {
+		return target.getAnswerer().getUserId() == original.getAnswerer().getUserId();
+	}
 }

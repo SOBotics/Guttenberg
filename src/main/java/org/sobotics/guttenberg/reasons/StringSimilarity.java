@@ -25,10 +25,17 @@ public class StringSimilarity implements Reason {
 	private List<Post> originals;
 	private List<Post> matchedPosts = new ArrayList<Post>();
 	private double score = -1;
+	private boolean ignoringScore = false;
 	
 	public StringSimilarity(Post target, List<Post> originalPosts) {
 		this.target = target;
 		this.originals = originalPosts;
+	}
+	
+	public StringSimilarity(Post target, List<Post> originalPosts, boolean ignoringScore) {
+		this.target = target;
+		this.originals = originalPosts;
+		this.ignoringScore = ignoringScore;
 	}
 	
 	public static double similarityOf(Post targetPost, Post originalPost) {
@@ -114,7 +121,7 @@ public class StringSimilarity implements Reason {
 			
 	        double minimumScore = new Double(prop.getProperty("minimumScore", "0.8"));
 	        
-			if (currentScore >= minimumScore) {
+			if (currentScore >= minimumScore || this.ignoringScore == true) {
 				matched = true;
 				
 				//add post to list of matched posts
