@@ -41,14 +41,17 @@ public class SoBoticsPostPrinter implements PostPrinter {
 		String targetLink = "https://stackoverflow.com/a/"+match.getTarget().getAnswerID()+"/4687348";
 		String originalLink = "https://stackoverflow.com/a/"+match.getOriginal().getAnswerID()+"/4687348";
 		
-		for (String reason : match.reasons) {
+		for (String reason : match.getReasonStrings()) {
 			reasonsList += reason+"; ";
 		}
 		
 		String plagOrRepost = match.isRepost() ? "repost" : "plagiarism";
 		
+		double roundedTotalScore = Math.round(match.getTotalScore()*100.0)/100.0;
+		
 		message = PrintUtils.printDescription()+"[Possible "+plagOrRepost+"]("+targetLink+") of [this post]("+originalLink+")";
 		message += "; **Reasons:** "+reasonsList;
+		message += "**"+roundedTotalScore+"**; ";
 		return message;
 	}
 }

@@ -280,9 +280,7 @@ public class PlagFinder {
     					if (existingMatch.getOriginal().getAnswerID() == id) {
     						//if it exists, add the new reason
     						alreadyExists = true;
-    						if (!existingMatch.reasons.contains(reason.description())) {
-    							existingMatch.reasons.add(reason.description());
-    						}
+    						existingMatch.addReason(reason);
     						matches.set(i, existingMatch);
     					}
     					
@@ -292,7 +290,7 @@ public class PlagFinder {
     				//if it doesn't exist yet, add it
     				if (!alreadyExists) {
     					PostMatch newMatch = new PostMatch(this.targetAnswer, post);
-    					newMatch.reasons.add(reason.description());
+    					newMatch.addReason(reason);
     					matches.add(newMatch);
     				}
     			}

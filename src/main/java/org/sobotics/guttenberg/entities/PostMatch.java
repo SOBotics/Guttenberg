@@ -11,7 +11,8 @@ import org.sobotics.guttenberg.reasons.Reason;
 public class PostMatch {
 	private Post target;
 	private Post original;
-	public List<String> reasons = new ArrayList<String>();
+	private List<String> reasons = new ArrayList<String>();
+	private double totalScore = 0;
 	
 	public PostMatch(Post targetPost, Post originalPost) {
 		this.target = targetPost;
@@ -24,6 +25,23 @@ public class PostMatch {
 	
 	public Post getOriginal() {
 		return this.original;
+	}
+	
+	public void addReason(Reason reason) {
+		if (!reasons.contains(reason.description())) {
+			//add reason
+			this.reasons.add(reason.description());
+			//add score
+			this.totalScore += reason.score();
+		}
+	}
+	
+	public List<String> getReasonStrings() {
+		return this.reasons;
+	}
+	
+	public double getTotalScore() {
+		return this.totalScore;
 	}
 	
 	/**
