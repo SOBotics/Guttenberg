@@ -49,7 +49,7 @@ public class SoBoticsPostPrinter implements PostPrinter {
 		
 		double roundedTotalScore = Math.round(match.getTotalScore()*100.0)/100.0;
 		
-		message = PrintUtils.printDescription()+"[Possible "+plagOrRepost+"]("+targetLink+") of [this post]("+originalLink+")";
+		message = PrintUtils.printDescription()+"["+match.getTarget().getAnswerID()+"]("+targetLink+") is possible "+plagOrRepost+" of [this post]("+originalLink+")";
 		message += "; **Reasons:** "+reasonsList;
 		message += "**"+roundedTotalScore+"**; ";
 		return message;

@@ -139,7 +139,7 @@ public class StringSimilarity implements Reason {
 	@Override
 	public String description() {
 		double roundedScore = Math.round(this.score()*100.0)/100.0;
-		return score() >= 0 ? "String similarity >= "+roundedScore : "String similarity";
+		return score() >= 0 ? "String similarity "+roundedScore : "String similarity";
 	}
 
 	@Override

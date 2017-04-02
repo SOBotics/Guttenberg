@@ -2,6 +2,8 @@ package org.sobotics.guttenberg.commands;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
@@ -68,12 +70,19 @@ public class Check implements SpecialCommand {
             List<PostMatch> matches = finder.matchesForReasons(true);
             
             if (matches.size() > 0) {
+            	//sort the matches
+            	Collections.sort(matches, 
+            		    Comparator.comparingDouble(PostMatch::getTotalScore).reversed());
+            	
+            	
+            	//prepare printing them
             	int i = 0;
             	String reply = "These posts are similar to the target: ";
             	for (PostMatch match : matches) {
             		if (i > 5)
             			break;
-            		reply += "["+match.getOriginal().getAnswerID()+"](http://stackoverflow.com/a/"+match.getOriginal().getAnswerID()+"); ";
+            		double roundedTotalScore = Math.round(match.getTotalScore()*100.0)/100.0;
+            		reply += "["+match.getOriginal().getAnswerID()+"](http://stackoverflow.com/a/"+match.getOriginal().getAnswerID()+") ("+roundedTotalScore+"); ";
             		i++;
             	}
             	
