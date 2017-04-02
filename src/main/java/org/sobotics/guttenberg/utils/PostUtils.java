@@ -95,4 +95,28 @@ public class PostUtils {
         
         return result;
     }
+	
+	public static List<String> getCodeParagraphs(String markdown) {
+		List<String> output = new ArrayList<String>();
+		
+		String[] paragraphs = markdown.split("\\n");
+		String buffer = "";
+		
+		for (String paragraph : paragraphs) {
+            if (paragraph.startsWith("    ")) {
+            	//found a codeblock -> add to buffer
+                buffer += paragraph + "\n";
+            }
+            else {
+                //a non-code paragraph. This resets the codeblock
+            	//-> write buffer to array; then clear buffer
+            	if (buffer.length() > 4) {
+            		output.add(buffer);
+            	}
+            	buffer = "";
+            }
+        }
+		
+		return output;
+	}
 }

@@ -26,6 +26,7 @@ public class SOBoticsReasonList implements ReasonList {
 		List<Reason> reasons = new ArrayList<Reason>();
 		
 		reasons.add(new StringSimilarity(this.target, this.originals, ignoringScores));
+		reasons.add(new ExactParagraphMatch(this.target, this.originals));
 		
 		
 		return reasons;

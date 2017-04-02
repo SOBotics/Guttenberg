@@ -6,6 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.entities.Post;
+import org.sobotics.guttenberg.utils.PostUtils;
 
 import info.debatty.java.stringsimilarity.JaroWinkler;
 
@@ -31,10 +32,29 @@ public class ExactParagraphMatch implements Reason {
 		JaroWinkler jw = new JaroWinkler();
 		boolean matched = false;
 		
-		
-		
+		List<String> targetCodePs = PostUtils.getCodeParagraphs(this.target.getBodyMarkdown());
+		//System.out.println(targetCodePs);
 		for (Post original : this.originals) {
+			List<String> originalCodePs = PostUtils.getCodeParagraphs(original.getBodyMarkdown());
 			
+			//Loop through targetCodePs
+			for (String targetCode : targetCodePs) {
+				//loop through originalCodePs
+				for (String originalCode : originalCodePs) {
+					double similarity = jw.similarity(targetCode, originalCode);
+					if (similarity > 0.93) {
+						System.out.println("Exact match: "+similarity);
+						if (this.score < 0)
+							this.score = 0;
+						
+						this.score++;
+						matched = true;
+						if (!this.matchedPosts.contains(original)) {
+							this.matchedPosts.add(original);
+						}
+					}
+				}
+			}
 		}
 		
 		return matched;
@@ -47,7 +67,7 @@ public class ExactParagraphMatch implements Reason {
 
 	@Override
 	public double score() {
-		return 0;
+		return this.score;
 	}
 
 	@Override
