@@ -45,7 +45,9 @@ public class SoBoticsPostPrinter implements PostPrinter {
 			reasonsList += reason+"; ";
 		}
 		
-		message = PrintUtils.printDescription()+"[Possible plagiarism]("+targetLink+") of [this post]("+originalLink+")";
+		String plagOrRepost = match.isRepost() ? "repost" : "plagiarism";
+		
+		message = PrintUtils.printDescription()+"[Possible "+plagOrRepost+"]("+targetLink+") of [this post]("+originalLink+")";
 		message += "; **Reasons:** "+reasonsList;
 		return message;
 	}
