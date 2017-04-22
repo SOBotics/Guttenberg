@@ -1,5 +1,6 @@
 package org.sobotics.guttenberg.printers;
 
+import org.sobotics.guttenberg.entities.PostMatch;
 import org.sobotics.guttenberg.finders.PlagFinder;
 
 /**
@@ -7,4 +8,5 @@ import org.sobotics.guttenberg.finders.PlagFinder;
  */
 public interface PostPrinter {
     public String print(PlagFinder finder);
+    public String print(PostMatch match);
 }

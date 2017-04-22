@@ -13,6 +13,7 @@ import org.sobotics.guttenberg.finders.NewAnswersFinder;
 import org.sobotics.redunda.PingService;
 import org.sobotics.guttenberg.entities.OptedInUser;
 import org.sobotics.guttenberg.entities.Post;
+import org.sobotics.guttenberg.entities.PostMatch;
 import org.sobotics.guttenberg.finders.PlagFinder;
 import org.sobotics.guttenberg.finders.RelatedAnswersFinder;
 import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
@@ -113,51 +114,23 @@ public class Guttenberg {
 		LOGGER.info("There are "+plagFinders.size()+" PlagFinders");
 		LOGGER.info("Find the duplicates...");
 		//Let PlagFinders find the best match
+		List<PostMatch> allMatches = new ArrayList<PostMatch>();
 		for (PlagFinder finder : plagFinders) {
-			@SuppressWarnings("unused")
-			Post originalAnswer = finder.getMostSimilarAnswer();
-			double score = finder.getJaroScore();
-			double minimumScore = 0.78;
+			List<PostMatch> matchesInFinder = finder.matchesForReasons();
 			
-			try {
-				double s = new Double(props.getProperty("minimumScore", "0.78"));
-				if (s > 0) {
-					minimumScore = s;
-				}
-			} catch (Throwable e) {
-				LOGGER.warn("Could not convert score from properties-file to double. Using hardcoded", e);
-			}
-			
-			if (score > minimumScore) {
-				for (Room room : this.chatRooms) {
-					List<OptedInUser> pingUsersList = UserUtils.pingUserIfApplicable(score, room.getRoomId());
-					if (room.getRoomId() == 111347) {
-						SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
-						String report = printer.print(finder);
-						String pings = " (";
-						
-						if (!finder.matchedPostIsRepost()) {
-							//only ping if it's not a repost
-							for (OptedInUser user : pingUsersList) {
-	                            if (!user.isWhenInRoom() || (user.isWhenInRoom() && UserUtils.checkIfUserInRoom(room, user.getUser().getUserId()))) {
-	                                pings+=(" @"+user.getUser().getUsername().replace(" ",""));
-	                            }
-	                        }
-						}
-						
-						if (pings.length() > 2) {
-							report += pings + " )";
-						}
-						
-						room.send(report);
-						StatusUtils.numberOfReportedPosts.incrementAndGet();
+			if (matchesInFinder != null) {
+				LOGGER.info("Found "+matchesInFinder.size()+" PostMatches in this PlagFinder");
+				allMatches.addAll(matchesInFinder);
+				
+				for (PostMatch match : matchesInFinder) {
+					SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
+					String message = printer.print(match);
+					
+					for (Room room : this.chatRooms) {
+						room.send(message);
 					}
 				}
-			} else {
-				//LOGGER.info("Score "+finder.getJaroScore()+" too low");
 			}
-			
-			StatusUtils.numberOfCheckedTargets.incrementAndGet();
 			
 		}
 		
