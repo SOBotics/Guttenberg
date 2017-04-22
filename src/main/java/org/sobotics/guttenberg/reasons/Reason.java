@@ -20,8 +20,16 @@ public interface Reason {
 	 * 
 	 * @return a short description of the reason like "String similarity"
 	 * */
+	@Deprecated
 	public String description();
 	
+	/**
+	 * The description of the reason
+	 * 
+	 * @parameter index The index in the `matchedPosts()`-array
+	 * 
+	 * @return a short description of the reason like "String similarity"
+	 * */
 	public String description(int index);
 	
 	/**
@@ -38,5 +46,10 @@ public interface Reason {
 	 * */
 	public List<Post> matchedPosts();
 	
+	/**
+	 * The scores for the matched posts in the same order as `matchedPosts()`
+	 * 
+	 * @return The Posts
+	 * */
 	public List<Double> getScores();
 }
