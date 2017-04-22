@@ -27,12 +27,22 @@ public class PostMatch {
 		return this.original;
 	}
 	
+	@Deprecated
 	public void addReason(Reason reason) {
 		if (!reasons.contains(reason.description())) {
 			//add reason
 			this.reasons.add(reason.description());
 			//add score
 			this.totalScore += reason.score();
+		}
+	}
+	
+	public void addReason(String reason, double score) {
+		if (!reasons.contains(reason)) {
+			//add reason
+			this.reasons.add(reason);
+			//add score
+			this.totalScore += score;
 		}
 	}
 	

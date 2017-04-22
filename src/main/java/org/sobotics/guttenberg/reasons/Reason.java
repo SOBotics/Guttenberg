@@ -22,6 +22,8 @@ public interface Reason {
 	 * */
 	public String description();
 	
+	public String description(int index);
+	
 	/**
 	 * The score that specific reason reached. This has no influence on whether a post is reported or not.
 	 * 
@@ -35,4 +37,6 @@ public interface Reason {
 	 * @return The Posts
 	 * */
 	public List<Post> matchedPosts();
+	
+	public List<Double> getScores();
 }

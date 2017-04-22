@@ -267,6 +267,8 @@ public class PlagFinder {
     			
     			//get matched posts for that reason
     			List<Post> matchedPosts = reason.matchedPosts();
+    			List<Double> scores = reason.getScores();
+    			int n = 0; //counts the matched posts to get the score correctly from "scores"
     			
     			if (matchedPosts == null)
     				return null;
@@ -280,7 +282,9 @@ public class PlagFinder {
     					if (existingMatch.getOriginal().getAnswerID() == id) {
     						//if it exists, add the new reason
     						alreadyExists = true;
-    						existingMatch.addReason(reason);
+    						//existingMatch.addReason(reason);
+    						existingMatch.addReason(reason.description(i), scores.get(n));
+    						
     						matches.set(i, existingMatch);
     					}
     					
@@ -290,9 +294,12 @@ public class PlagFinder {
     				//if it doesn't exist yet, add it
     				if (!alreadyExists) {
     					PostMatch newMatch = new PostMatch(this.targetAnswer, post);
-    					newMatch.addReason(reason);
+    					//newMatch.addReason(reason);
+    					newMatch.addReason(reason.description(i), scores.get(n));
     					matches.add(newMatch);
     				}
+    				
+    				n++;
     			}
     		}
     	}

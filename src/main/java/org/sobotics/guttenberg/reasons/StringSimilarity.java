@@ -24,6 +24,7 @@ public class StringSimilarity implements Reason {
 	private Post target;
 	private List<Post> originals;
 	private List<Post> matchedPosts = new ArrayList<Post>();
+	private List<Double> scoreList = new ArrayList<Double>();
 	private double score = -1;
 	private boolean ignoringScore = false;
 	
@@ -126,6 +127,7 @@ public class StringSimilarity implements Reason {
 				
 				//add post to list of matched posts
 				this.matchedPosts.add(post);
+				this.scoreList.add(currentScore);
 				
 				//update score
 				if(this.score <= currentScore)
@@ -141,6 +143,12 @@ public class StringSimilarity implements Reason {
 		double roundedScore = Math.round(this.score()*100.0)/100.0;
 		return score() >= 0 ? "String similarity "+roundedScore : "String similarity";
 	}
+	
+	@Override
+	public String description(int index) {
+		double roundedScore = Math.round(this.scoreList.get(index)*100.0)/100.0;
+		return score() >= 0 ? "String similarity "+roundedScore : "String similarity";
+	}
 
 	@Override
 	public double score() {
@@ -150,6 +158,11 @@ public class StringSimilarity implements Reason {
 	@Override
 	public List<Post> matchedPosts() {
 		return this.matchedPosts;
+	}
+	
+	@Override
+	public List<Double> getScores() {
+		return this.scoreList;
 	}
 
 }

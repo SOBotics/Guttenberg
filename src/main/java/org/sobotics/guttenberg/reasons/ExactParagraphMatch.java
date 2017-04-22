@@ -20,6 +20,7 @@ public class ExactParagraphMatch implements Reason {
 	private Post target;
 	private List<Post> originals;
 	private List<Post> matchedPosts = new ArrayList<Post>();
+	private List<Double> scoreList = new ArrayList<Double>();
 	private double score = -1;
 	
 	public ExactParagraphMatch(Post target, List<Post> originalPosts) {
@@ -42,8 +43,8 @@ public class ExactParagraphMatch implements Reason {
 				//loop through originalCodePs
 				for (String originalCode : originalCodePs) {
 					double similarity = jw.similarity(targetCode, originalCode);
-					if (similarity > 0.93) {
-						System.out.println("Exact match: "+similarity);
+					if (similarity > 0.97) {
+						System.out.println("Exact match: "+similarity+"\n"+targetCode);
 						if (this.score < 0)
 							this.score = 0;
 						
@@ -51,6 +52,7 @@ public class ExactParagraphMatch implements Reason {
 						matched = true;
 						if (!this.matchedPosts.contains(original)) {
 							this.matchedPosts.add(original);
+							this.scoreList.add(1.0);
 						}
 					}
 				}
@@ -64,6 +66,11 @@ public class ExactParagraphMatch implements Reason {
 	public String description() {
 		return "Exact paragraph match";
 	}
+	
+	@Override
+	public String description(int index) {
+		return "Exact paragraph match";
+	}
 
 	@Override
 	public double score() {
@@ -73,6 +80,11 @@ public class ExactParagraphMatch implements Reason {
 	@Override
 	public List<Post> matchedPosts() {
 		return this.matchedPosts;
+	}
+	
+	@Override
+	public List<Double> getScores() {
+		return this.scoreList;
 	}
 
 }
