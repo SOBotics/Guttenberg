@@ -1,7 +1,6 @@
 package org.sobotics.guttenberg.entities;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -90,6 +89,6 @@ public class PostMatch {
 		int lengthOne = this.original.getBodyMarkdown().length();
 		int lengthTwo = this.target.getBodyMarkdown().length();
 		
-		return lengthOne > minimumLength && lengthTwo > minimumLength;
+		return lengthOne >= minimumLength && lengthTwo >= minimumLength;
 	}
 }
