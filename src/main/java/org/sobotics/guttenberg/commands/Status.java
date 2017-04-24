@@ -46,17 +46,18 @@ public class Status implements SpecialCommand {
         
         
         StringBuilder status = new StringBuilder();
-        status.append("Running since: ").append(StatusUtils.startupDate);
+        status.append("Location: ").append(prop.getProperty("location", "undefined"));
+        status.append("\nRunning since: ").append(StatusUtils.startupDate);
         
         if (room.getRoomId() == 111347) {
             status.append("\nLast execution finished: ").append(StatusUtils.lastExecutionFinished);
-            status.append("\nLocation: ").append(prop.getProperty("location", "undefined"));
         }
         
         String version = prop2.getProperty("version", "undefined");
         status.append("\nVersion: ").append(version);
         status.append("\nChecked ").append(StatusUtils.numberOfCheckedTargets).append(" targets and reported ").append(StatusUtils.numberOfReportedPosts);
         status.append("\nRemaining quota: ").append(StatusUtils.remainingQuota);
+        status.append("\n---");
         
         //room.replyTo(message.getId(), status.toString());
         room.send(status.toString());
