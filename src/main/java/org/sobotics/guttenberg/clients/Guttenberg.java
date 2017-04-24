@@ -123,11 +123,13 @@ public class Guttenberg {
 				allMatches.addAll(matchesInFinder);
 				
 				for (PostMatch match : matchesInFinder) {
-					SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
-					String message = printer.print(match);
-					
-					for (Room room : this.chatRooms) {
-						room.send(message);
+					if (match.isValidMatch()) {
+						SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
+						String message = printer.print(match);
+						
+						for (Room room : this.chatRooms) {
+							room.send(message);
+						}
 					}
 				}
 			}
