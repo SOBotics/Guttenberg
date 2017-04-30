@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
+import org.sobotics.redunda.PingService;
 import org.sobotics.guttenberg.services.RunnerService;
 
 import fr.tunaki.stackoverflow.chat.Message;
@@ -46,7 +47,8 @@ public class Status implements SpecialCommand {
         
         
         StringBuilder status = new StringBuilder();
-        status.append("Location: ").append(prop.getProperty("location", "undefined"));
+        //status.append("Location: ").append(prop.getProperty("location", "undefined"));
+        status.append("Location: ").append(PingService.location);
         status.append("\nRunning since: ").append(StatusUtils.startupDate);
         
         if (room.getRoomId() == 111347) {
