@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.finders.NewAnswersFinder;
 import org.sobotics.redunda.PingService;
-import org.sobotics.guttenberg.entities.OptedInUser;
 import org.sobotics.guttenberg.entities.Post;
 import org.sobotics.guttenberg.entities.PostMatch;
 import org.sobotics.guttenberg.finders.PlagFinder;
@@ -19,7 +18,6 @@ import org.sobotics.guttenberg.finders.RelatedAnswersFinder;
 import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
-import org.sobotics.guttenberg.utils.UserUtils;
 
 import fr.tunaki.stackoverflow.chat.Room;
 
@@ -123,11 +121,13 @@ public class Guttenberg {
 				allMatches.addAll(matchesInFinder);
 				
 				for (PostMatch match : matchesInFinder) {
-					SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
-					String message = printer.print(match);
-					
-					for (Room room : this.chatRooms) {
-						room.send(message);
+					if (match.isValidMatch()) {
+						SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
+						String message = printer.print(match);
+						
+						for (Room room : this.chatRooms) {
+							room.send(message);
+						}
 					}
 				}
 			}
