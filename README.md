@@ -14,14 +14,13 @@ Every 60 seconds, Guttenberg fetches the most recent answers (the "targets") on 
 
 ## Accuracy
 
-At the moment, we are testing a very early version of the bot. That's why we get lot's of false positives. But we did already find copied answers without proper attribution and users posting the same answer on multiple questions.
-
+We have no statistics about the accuracy yet.
 
 ## Plans for the future
 
-### Feedback
+### Feedback statistics
 
-We have no statistics about the amount of tps and fps yet. In a future release, we want to allow users replying to a report to give feedback.
+Although users can send feedback, we are not logging it yet, so we can't provide statistics. In the future, this should be done by a dashboard like Sentinel.
 
 
   [1]: http://chat.stackoverflow.com/rooms/111347/sobotics
