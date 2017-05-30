@@ -1,11 +1,15 @@
 package org.sobotics.guttenberg.reasons;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.entities.Post;
+import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.PostUtils;
 
 import info.debatty.java.stringsimilarity.JaroWinkler;
@@ -30,6 +34,15 @@ public class ExactParagraphMatch implements Reason {
 	
 	@Override
 	public boolean check() {
+		Properties prop = new Properties();
+        try {
+        	prop.load(new FileInputStream(FilePathUtils.generalPropertiesFile));
+        } catch (IOException e) {
+        	LOGGER.warn("Could not load general.properties. Using hardcoded value", e);
+        }
+		
+        double minimumLength = new Double(prop.getProperty("minimumExactMatchLength", "100"));
+		
 		JaroWinkler jw = new JaroWinkler();
 		boolean matched = false;
 		
@@ -43,7 +56,7 @@ public class ExactParagraphMatch implements Reason {
 				//loop through originalCodePs
 				for (String originalCode : originalCodePs) {
 					double similarity = jw.similarity(targetCode, originalCode);
-					if (similarity > 0.97) {
+					if (similarity > 0.97 && originalCode.length() >= minimumLength && targetCode.length() >= minimumLength) {
 						System.out.println("Exact match: "+similarity+"\n"+targetCode);
 						if (this.score < 0)
 							this.score = 0;
