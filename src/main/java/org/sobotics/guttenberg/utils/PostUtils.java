@@ -14,6 +14,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import fr.tunaki.stackoverflow.chat.Message;
+import fr.tunaki.stackoverflow.chat.Room;
+import fr.tunaki.stackoverflow.chat.event.PingMessageEvent;
+
 public class PostUtils {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(Guttenberg.class);
@@ -119,4 +123,45 @@ public class PostUtils {
 		
 		return output;
 	}
+	
+	public static void reply(Room room, PingMessageEvent event, boolean isReply){
+        Message message = event.getMessage();
+        Message parentMessage = room.getMessage(event.getParentMessageId());
+        long parentMessageId = parentMessage.getId();
+		System.out.println(message.getContent());
+        /*if (CheckUtils.checkIfUserIsBlacklisted(event.getUserId())){
+            System.out.println("Blacklisted user");
+            return;
+        }*/
+		
+		//only privileged users can send feedback
+		if (!event.getMessage().getUser().isRoomOwner() && !event.getMessage().getUser().isModerator()) {
+			return;
+		}
+		
+		//check if message is a report
+		if (!parentMessage.getPlainContent().startsWith("[ [")) {
+			LOGGER.info("This is either not a report or it was already handled");
+			return;
+		}
+		
+		String newMessage = "";
+		
+        if (CommandUtils.checkForCommand(message.getContent(),"k")){
+        	newMessage = "---"+ parentMessage.getPlainContent() + "--- k by "+ message.getUser().getName();
+        }
+        if (CommandUtils.checkForCommand(message.getContent(),"f")){
+        	newMessage = "---"+ parentMessage.getPlainContent() + "--- f by "+ message.getUser().getName();
+        }
+        
+        
+        //if newMessage longer than 10, edit it
+        if (newMessage.length() > 10) {
+        	try {
+        		room.edit(parentMessageId, newMessage);
+        	} catch (Throwable e) {
+        		LOGGER.info("Could not edit message", e);
+        	}
+        }
+    }
 }
