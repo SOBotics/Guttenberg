@@ -3,6 +3,7 @@ package org.sobotics.guttenberg.roomdata;
 import fr.tunaki.stackoverflow.chat.ChatHost;
 import fr.tunaki.stackoverflow.chat.Room;
 import fr.tunaki.stackoverflow.chat.event.MessagePostedEvent;
+import fr.tunaki.stackoverflow.chat.event.MessageReplyEvent;
 import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
 
 import java.util.function.Consumer;
@@ -23,7 +24,7 @@ public interface BotRoom {
      * */
     public boolean getIsProductionRoom();
     public Consumer<UserMentionedEvent> getMention(Room room, RunnerService instance);
-    //public Consumer<MessageReplyEvent> getReply(Room room);
+    public Consumer<MessageReplyEvent> getReply(Room room);
     public Consumer<MessagePostedEvent> getMessage(Room room, RunnerService instance);
     //public Validator getValidator();
     public PostPrinter getPostPrinter();

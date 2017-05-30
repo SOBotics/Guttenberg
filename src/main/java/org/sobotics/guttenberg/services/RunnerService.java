@@ -82,8 +82,8 @@ public class RunnerService implements PingServiceDelegate {
                 if(messagePosted != null) {
                     chatroom.addEventListener(EventType.MESSAGE_POSTED, messagePosted);
                 }
-                /*if(room.getReply(chatroom)!=null)
-                    chatroom.addEventListener(EventType.MESSAGE_REPLY, room.getReply(chatroom));*/
+                if(room.getReply(chatroom)!=null)
+                    chatroom.addEventListener(EventType.MESSAGE_REPLY, room.getReply(chatroom));
         	}
 
         }
