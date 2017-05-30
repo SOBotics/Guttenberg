@@ -47,7 +47,6 @@ public class Status implements SpecialCommand {
         
         
         StringBuilder status = new StringBuilder();
-        //status.append("Location: ").append(prop.getProperty("location", "undefined"));
         status.append("Location: ").append(PingService.location);
         status.append("\nRunning since: ").append(StatusUtils.startupDate);
         
@@ -61,7 +60,6 @@ public class Status implements SpecialCommand {
         status.append("\nRemaining quota: ").append(StatusUtils.remainingQuota);
         status.append("\n---");
         
-        //room.replyTo(message.getId(), status.toString());
         room.send(status.toString());
     }
 

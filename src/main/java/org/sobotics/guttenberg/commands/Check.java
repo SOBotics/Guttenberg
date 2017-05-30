@@ -66,7 +66,6 @@ public class Check implements SpecialCommand {
             JsonObject target = answer.get("items").getAsJsonArray().get(0).getAsJsonObject();
             PlagFinder finder = new PlagFinder(target);
             finder.collectData();
-            //finder.getMostSimilarAnswer();
             List<PostMatch> matches = finder.matchesForReasons(true);
             
             if (matches.size() > 0) {
@@ -90,16 +89,6 @@ public class Check implements SpecialCommand {
             } else {
             	room.replyTo(message.getId(), "No similar posts found.");
             }
-            
-            //double score = Math.round(finder.getJaroScore()*100.0)/100.0;
-            //String link = "http://stackoverflow.com/a/"+finder.getJaroAnswer().getAnswerID();
-
-            /*if (score > 0) {
-                String reply = "The closest match with a score of **"+score+"** is [this post]("+link+").";
-                room.replyTo(message.getId(), reply);
-            } else {
-                room.replyTo(message.getId(), "There are no similar posts.");
-            }  */
         } catch (IOException e) {
             LOGGER.error("ERROR", e);
         }

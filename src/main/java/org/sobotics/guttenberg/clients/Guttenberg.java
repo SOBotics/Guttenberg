@@ -57,7 +57,6 @@ public class Guttenberg {
 		Instant startTime = Instant.now();
 		Properties props = new Properties();
 		LOGGER.info("Executing at - "+startTime);
-		//NewAnswersFinder answersFinder = new NewAnswersFinder();
 		
 		try {
 			props.load(new FileInputStream(FilePathUtils.generalPropertiesFile));

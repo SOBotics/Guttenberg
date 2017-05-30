@@ -145,7 +145,6 @@ public class PostUtils {
 				LOGGER.info("This post has already been handled");
 				return;
 			}
-			//LOGGER.info("This is not a report");
 			
 			room.replyTo(message.getId(), "You can only send feedback to reports. This message wasn't one.");
 			

@@ -2,7 +2,6 @@ package org.sobotics.guttenberg.finders;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -22,8 +21,6 @@ import org.sobotics.guttenberg.utils.PostUtils;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import info.debatty.java.stringsimilarity.JaroWinkler;
-
 /**
  * Checks an answer for plagiarism by collecting similar answers from different sources.
  * */
@@ -40,12 +37,6 @@ public class PlagFinder {
      * A list of answers that are somehow related to targetAnswer.
      * */
     public List<Post> relatedAnswers;
-    
-    @Deprecated
-    private double jaroScore = 0;
-    
-    @Deprecated
-    private Post jaroAnswer;
     
     /**
      * Initializes the PlagFinder with an answer that should be checked for plagiarism
@@ -134,87 +125,6 @@ public class PlagFinder {
         }
     }
     
-    @Deprecated
-    public Post getMostSimilarAnswer() {
-    	LOGGER.info("Calculating...");
-        String targetBodyMarkdown = this.targetAnswer.getBodyMarkdown();
-        String targetCodeOnly = this.targetAnswer.getCodeOnly();
-        String targetPlaintext = this.targetAnswer.getPlaintext();
-        String targetQuotes = this.targetAnswer.getQuotes();
-        Instant targetDate = this.targetAnswer.getAnswerCreationDate();
-        double highscore = 0;
-        Post closestMatch = this.targetAnswer;
-        Properties quantifiers = new Properties();
-        try {
-        	quantifiers.load(new FileInputStream(FilePathUtils.generalPropertiesFile));
-        } catch (IOException e) {
-        	LOGGER.warn("Could not load quantifiers from general.properties. Using hardcoded", e);
-        }
-        
-        double quantifierBodyMarkdown = 1;
-        double quantifierCodeOnly = 1;
-        double quantifierPlaintext = 1;
-        double quantifierQuotes = 1;
-        
-        try {
-        	quantifierBodyMarkdown = new Double(quantifiers.getProperty("quantifierBodyMarkdown", "1"));
-        	quantifierCodeOnly = new Double(quantifiers.getProperty("quantifierCodeOnly", "1"));
-        	quantifierPlaintext = new Double(quantifiers.getProperty("quantifierPlaintext", "1"));
-        	quantifierQuotes = new Double(quantifiers.getProperty("quantifierQuotes", "1"));
-        } catch (Throwable e) {
-        	LOGGER.warn("Using hardcoded value", e);
-        }
-                
-        JaroWinkler jw = new JaroWinkler();
-                
-        for (Post answer : this.relatedAnswers) {
-            String answerBodyMarkdown = answer.getBodyMarkdown();
-            String answerCodeOnly = answer.getCodeOnly();
-            String answerPlaintext = answer.getPlaintext();
-            String answerQuotes = answer.getQuotes();
-            Instant answerDate = answer.getAnswerCreationDate();
-            
-            double jwBodyMarkdown = jw.similarity(targetBodyMarkdown, answerBodyMarkdown)
-            		* quantifierBodyMarkdown;
-            double jwCodeOnly = answerCodeOnly != null ? ( jw.similarity(targetCodeOnly, answerCodeOnly)
-            		* quantifierCodeOnly) : 0;
-            double jwPlaintext = answerPlaintext != null ? ( jw.similarity(answerPlaintext, targetPlaintext)
-            		* quantifierPlaintext) : 0;
-            double jwQuotes = answerQuotes != null ? ( jw.similarity(answerQuotes, targetQuotes)
-            		* quantifierQuotes) : 0;
-            
-            //LOGGER.info("bodyMarkdown: "+jwBodyMarkdown+"; codeOnly: "+jwCodeOnly+"; plaintext: "+jwPlaintext);
-            
-            double usedScores = (jwBodyMarkdown > 0 ? quantifierBodyMarkdown : 0)
-            		+ (jwCodeOnly > 0 ? quantifierCodeOnly : 0)
-            		+ (jwPlaintext > 0 ? quantifierPlaintext : 0)
-            		+ (jwQuotes > 0 ? quantifierQuotes : 0);
-            double jaroWinklerScore = ((jwBodyMarkdown > 0 ? jwBodyMarkdown : 0) 
-            		+ (jwCodeOnly > 0 ? jwCodeOnly : 0)
-            		+ (jwPlaintext > 0 ? jwPlaintext : 0)
-            		+ (jwQuotes > 0 ? jwQuotes : 0)) / usedScores;
-            
-            
-            //LOGGER.info("Score: "+jaroWinklerScore+"\nUsed scores: "+usedScores+"\nbodyMarkdown: "+jwBodyMarkdown+"\ncodeOnly: "+jwCodeOnly+"\nplaintext: "+jwPlaintext);
-            
-            if (jwBodyMarkdown > 0.9)
-            	jaroWinklerScore = jwBodyMarkdown;
-            
-            if (highscore < jaroWinklerScore && targetDate.isAfter(answerDate)) {
-                //new highscore
-                highscore = jaroWinklerScore;
-                answer.setScore(highscore);
-                closestMatch = answer;
-            }
-        }
-        LOGGER.info("Score: "+highscore);
-        
-        this.jaroScore = highscore;
-        this.jaroAnswer = closestMatch;
-        
-        return highscore > 0 ? closestMatch : null;
-    }
-    
     
     public Post getTargetAnswer() {
         return this.targetAnswer;
@@ -222,22 +132,6 @@ public class PlagFinder {
     
     public Integer getTargetAnswerId() {
         return this.targetAnswer.getAnswerID();
-    }
-    
-    @Deprecated
-    public double getJaroScore() {
-        return this.jaroScore;
-    }
-    
-    @Deprecated
-    public Post getJaroAnswer() {
-        return this.jaroAnswer;
-        //return this.jaroScore > 0.7 ? this.jaroAnswer : null;
-    }
-    
-    @Deprecated
-    public boolean matchedPostIsRepost() {
-    	return this.targetAnswer.getAnswerer().getUserId() == this.jaroAnswer.getAnswerer().getUserId();
     }
     
     /**
@@ -282,7 +176,6 @@ public class PlagFinder {
     					if (existingMatch.getOriginal().getAnswerID() == id) {
     						//if it exists, add the new reason
     						alreadyExists = true;
-    						//existingMatch.addReason(reason);
     						existingMatch.addReason(reason.description(i), scores.get(n));
     						
     						matches.set(i, existingMatch);
@@ -294,7 +187,6 @@ public class PlagFinder {
     				//if it doesn't exist yet, add it
     				if (!alreadyExists) {
     					PostMatch newMatch = new PostMatch(this.targetAnswer, post);
-    					//newMatch.addReason(reason);
     					newMatch.addReason(reason.description(i), scores.get(n));
     					matches.add(newMatch);
     				}
