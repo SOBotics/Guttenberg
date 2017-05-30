@@ -141,7 +141,14 @@ public class PostUtils {
 		
 		//check if message is a report
 		if (!parentMessage.getPlainContent().startsWith("[ [")) {
-			LOGGER.info("This is either not a report or it was already handled");
+			if (parentMessage.getPlainContent().startsWith("---")) {
+				LOGGER.info("This post has already been handled");
+				return;
+			}
+			//LOGGER.info("This is not a report");
+			
+			room.replyTo(message.getId(), "You can only send feedback to reports. This message wasn't one.");
+			
 			return;
 		}
 		
