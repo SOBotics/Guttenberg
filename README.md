@@ -7,21 +7,20 @@ Guttenberg is a bot that searches for plagiarism or duplicated answers on Stack 
 
 ## Implementation
 
-Every 60 seconds, Guttenberg fetches the most recent answers (the "targets") on Stack Overflow. For each of these answers, possibly related posts (for example answers to related questions) are collected. Each related post will be split into the full markdown, code-blocks, plaintext paragraphs and blockquotes. These parts are compared with the "target" and the [Jaro-Winkler distance](https://en.wikipedia.org/wiki/Jaro–Winkler_distance) will be calculated. If one of the comparison reaches a certain score (which is defined in `general.properties`), a message like this will be posted in chat:
+Every 60 seconds, Guttenberg fetches the most recent answers (the "targets") on Stack Overflow. For each of these answers, possibly related posts (for example answers to related questions) are collected. All those posts will be checked for different characteristics (such as the [Jaro-Winkler distance](https://en.wikipedia.org/wiki/Jaro–Winkler_distance) of the posts). If at least one of the characteristics mets the requirements, a message like this will be posted in chat:
 
-![](https://i.imgur.com/HhwCWJr.png)
+![sample chat message](http://i.stack.imgur.com/hB7Hz.png)
 
 
 ## Accuracy
 
-At the moment, we are testing a very early version of the bot. That's why we get lot's of false positives. But we did already find copied answers without proper attribution and users posting the same answer on multiple questions.
-
+We have no statistics about the accuracy yet.
 
 ## Plans for the future
 
-### Feedback
+### Feedback statistics
 
-We have no statistics about the amount of tps and fps yet. In a future release, we want to allow users replying to a report to give feedback.
+Although users can send feedback, we are not logging it yet, so we can't provide statistics. In the future, this should be done by a dashboard like Sentinel.
 
 
   [1]: http://chat.stackoverflow.com/rooms/111347/sobotics
