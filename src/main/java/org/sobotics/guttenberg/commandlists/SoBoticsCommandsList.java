@@ -63,10 +63,10 @@ public class SoBoticsCommandsList {
     }
     
     public void globalCommand(Room room, MessagePostedEvent event,  RunnerService instance) {
-    	//only ROs should execute global commands!
+    	//only ROs (and Generic Bot) should execute global commands!
     	try {
     		User user = event.getUser().get();
-    		if (!user.isModerator() && !user.isRoomOwner())
+    		if (!user.isModerator() && !user.isRoomOwner() && user.getId() != 7481043)
     			return;
     	} catch (Throwable e) {
     		LOGGER.warn("Could not verify privileges of that user. Don't execute the command.", e);
