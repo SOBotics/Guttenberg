@@ -140,24 +140,30 @@ public class PostUtils {
 		}
 		
 		//check if message is a report
+		boolean isReport = true;
 		if (!parentMessage.getPlainContent().startsWith("[ [")) {
 			if (parentMessage.getPlainContent().startsWith("---")) {
 				LOGGER.info("This post has already been handled");
 				return;
 			}
 			
-			room.replyTo(message.getId(), "You can only send feedback to reports. This message wasn't one.");
-			
-			return;
+			isReport = false;
 		}
 		
 		String newMessage = "";
-		
+		boolean isValidFeedback = false;
         if (CommandUtils.checkForCommand(message.getContent(),"k")){
         	newMessage = "---"+ parentMessage.getPlainContent() + "--- k by "+ message.getUser().getName();
+        	isValidFeedback = true;
         }
         if (CommandUtils.checkForCommand(message.getContent(),"f")){
         	newMessage = "---"+ parentMessage.getPlainContent() + "--- f by "+ message.getUser().getName();
+        	isValidFeedback = true;
+        }
+        
+        if (!isReport && isValidFeedback) {
+        	room.replyTo(message.getId(), "You can only send feedback to reports. This message wasn't one.");
+        	return;
         }
         
         
