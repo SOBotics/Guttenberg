@@ -67,6 +67,7 @@ public class Guttenberg {
 		
 		//Fetch recent answers / The targets
 		List<Post> recentAnswers = NewAnswersFinder.findRecentAnswers();
+		StatusUtils.numberOfCheckedTargets.addAndGet(recentAnswers.size());
 		//Fetch their question_ids
 		List<Integer> ids = new ArrayList<Integer>();
 		for (Post answer : recentAnswers) {
@@ -121,6 +122,7 @@ public class Guttenberg {
 				
 				for (PostMatch match : matchesInFinder) {
 					if (match.isValidMatch()) {
+						StatusUtils.numberOfReportedPosts.incrementAndGet();
 						SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
 						String message = printer.print(match);
 						
