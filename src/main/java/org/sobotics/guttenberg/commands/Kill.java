@@ -25,7 +25,7 @@ public class Kill implements SpecialCommand {
 		User user = message.getUser();
     	
     	if (!user.isModerator() && !user.isRoomOwner()) {
-    		room.replyTo(message.getId(), "Sorry, but only room-owners and moderators can use this command");
+    		room.replyTo(message.getId(), "Sorry, but only room-owners and moderators can use this command (@FelixSFD)");
     		return;
     	}
     	

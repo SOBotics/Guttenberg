@@ -28,7 +28,6 @@ public class NewAnswersFinder {
     private static final Logger LOGGER = LoggerFactory.getLogger(NewAnswersFinder.class);
     
     public static List<Post> findRecentAnswers() {
-        //long unixTime = (long)System.currentTimeMillis()/1000;
         Instant time = Instant.now().minusSeconds(59+1);
         
         //Use time of last execution-start to really get ALL answers
@@ -48,8 +47,6 @@ public class NewAnswersFinder {
         
         try {
             JsonObject apiResult = ApiService.defaultService.getFirstPageOfAnswers(time);
-        	
-        	//com.google.gson.JsonObject apiResult = ApiUtils.getFirstPageOfAnswers(time, "stackoverflow", prop.getProperty("apikey", ""));
             //fetched answers
             
             JsonArray items = apiResult.get("items").getAsJsonArray();
