@@ -3,6 +3,7 @@ package org.sobotics.guttenberg.commands;
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
+import org.sobotics.redunda.PingService;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -41,7 +42,7 @@ public class Quota implements SpecialCommand {
             return;
         }
         
-        room.send("The remaining quota on "+prop.getProperty("location", "undefined")+" is: "+StatusUtils.remainingQuota);
+        room.send("The remaining quota on "+PingService.location+" is: "+StatusUtils.remainingQuota);
     }
 
     @Override

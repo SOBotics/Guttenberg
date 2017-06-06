@@ -6,10 +6,12 @@ import org.sobotics.guttenberg.commandlists.SoBoticsCommandsList;
 import org.sobotics.guttenberg.printers.PostPrinter;
 import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
 import org.sobotics.guttenberg.services.RunnerService;
+import org.sobotics.guttenberg.utils.PostUtils;
 
 import fr.tunaki.stackoverflow.chat.ChatHost;
 import fr.tunaki.stackoverflow.chat.Room;
 import fr.tunaki.stackoverflow.chat.event.MessagePostedEvent;
+import fr.tunaki.stackoverflow.chat.event.MessageReplyEvent;
 import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
 
 public class SOGuttenbergTestingFacility implements BotRoom {
@@ -39,10 +41,10 @@ public class SOGuttenbergTestingFacility implements BotRoom {
     	return event->new SoBoticsCommandsList().globalCommand(room, event, instance);
 	}
 
-    /*@Override
+    @Override
     public Consumer<MessageReplyEvent> getReply(Room room) {
         return event-> PostUtils.reply(room, event, true);
-    }*/
+    }
 
     @Override
     public PostPrinter getPostPrinter() {

@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.entities.Post;
 import org.sobotics.guttenberg.services.ApiService;
-import org.sobotics.guttenberg.utils.ApiUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.PostUtils;
 
@@ -60,10 +59,8 @@ public class RelatedAnswersFinder {
         
         try {
         	JsonObject relatedQuestions = ApiService.defaultService.getRelatedQuestionsByIds(idString);
-            //JsonObject relatedQuestions = ApiUtils.getRelatedQuestionsByIds(idString, "stackoverflow", prop.getProperty("apikey", ""));
             LOGGER.info("Related done");
             JsonObject linkedQuestions = ApiService.defaultService.getLinkedQuestionsByIds(idString);
-            //JsonObject linkedQuestions = ApiUtils.getLinkedQuestionsByIds(idString, "stackoverflow", prop.getProperty("apikey", ""));
             LOGGER.info("linked done");
             
             String relatedIds = "";
@@ -90,7 +87,6 @@ public class RelatedAnswersFinder {
                 while (i <= 2) {
                 	LOGGER.info("Fetch page "+i);
                 	JsonObject relatedAnswers = ApiService.defaultService.getAnswersToQuestionsByIdString(relatedIds, i);
-                	//JsonObject relatedAnswers = ApiUtils.getAnswersToQuestionsByIdString(relatedIds, "stackoverflow", prop.getProperty("apikey", ""));
                     //System.out.println(relatedAnswers);
                     
                     for (JsonElement answer : relatedAnswers.get("items").getAsJsonArray()) {

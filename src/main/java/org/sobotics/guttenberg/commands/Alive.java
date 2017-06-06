@@ -1,11 +1,6 @@
 package org.sobotics.guttenberg.commands;
 
 import org.sobotics.guttenberg.utils.CommandUtils;
-import org.sobotics.guttenberg.utils.FilePathUtils;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,18 +28,9 @@ public class Alive implements SpecialCommand {
     }
 
     @Override
-    public void execute(Room room, RunnerService instance) {
-    	Properties prop = new Properties();
-
-        try{
-            prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
-        }
-        catch (IOException e){
-            LOGGER.error("Error: ", e);
-            room.replyTo(message.getId(), "Maybe. But something strange is going on!");
-            return;
-        }
-        room.send("The instance "+prop.getProperty("location", "undefined")+ " is running.\nStandby: "+PingService.standby.toString());
+    public void execute(Room room, RunnerService instance) {  
+    	LOGGER.info("Someone wants to know, if I'm alive");
+        room.send("The instance "+PingService.location+ " is running.\nStandby: "+PingService.standby.toString());
     }
 
     @Override

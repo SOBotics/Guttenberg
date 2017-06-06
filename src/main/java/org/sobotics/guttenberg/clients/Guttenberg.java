@@ -11,14 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.finders.NewAnswersFinder;
 import org.sobotics.redunda.PingService;
-import org.sobotics.guttenberg.entities.OptedInUser;
 import org.sobotics.guttenberg.entities.Post;
+import org.sobotics.guttenberg.entities.PostMatch;
 import org.sobotics.guttenberg.finders.PlagFinder;
 import org.sobotics.guttenberg.finders.RelatedAnswersFinder;
 import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
-import org.sobotics.guttenberg.utils.UserUtils;
 
 import fr.tunaki.stackoverflow.chat.Room;
 
@@ -58,7 +57,6 @@ public class Guttenberg {
 		Instant startTime = Instant.now();
 		Properties props = new Properties();
 		LOGGER.info("Executing at - "+startTime);
-		//NewAnswersFinder answersFinder = new NewAnswersFinder();
 		
 		try {
 			props.load(new FileInputStream(FilePathUtils.generalPropertiesFile));
@@ -69,6 +67,7 @@ public class Guttenberg {
 		
 		//Fetch recent answers / The targets
 		List<Post> recentAnswers = NewAnswersFinder.findRecentAnswers();
+		StatusUtils.numberOfCheckedTargets.addAndGet(recentAnswers.size());
 		//Fetch their question_ids
 		List<Integer> ids = new ArrayList<Integer>();
 		for (Post answer : recentAnswers) {
@@ -113,51 +112,26 @@ public class Guttenberg {
 		LOGGER.info("There are "+plagFinders.size()+" PlagFinders");
 		LOGGER.info("Find the duplicates...");
 		//Let PlagFinders find the best match
+		List<PostMatch> allMatches = new ArrayList<PostMatch>();
 		for (PlagFinder finder : plagFinders) {
-			@SuppressWarnings("unused")
-			Post originalAnswer = finder.getMostSimilarAnswer();
-			double score = finder.getJaroScore();
-			double minimumScore = 0.78;
+			List<PostMatch> matchesInFinder = finder.matchesForReasons();
 			
-			try {
-				double s = new Double(props.getProperty("minimumScore", "0.78"));
-				if (s > 0) {
-					minimumScore = s;
-				}
-			} catch (Throwable e) {
-				LOGGER.warn("Could not convert score from properties-file to double. Using hardcoded", e);
-			}
-			
-			if (score > minimumScore) {
-				for (Room room : this.chatRooms) {
-					List<OptedInUser> pingUsersList = UserUtils.pingUserIfApplicable(score, room.getRoomId());
-					if (room.getRoomId() == 111347) {
-						SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
-						String report = printer.print(finder);
-						String pings = " (";
-						
-						if (!finder.matchedPostIsRepost()) {
-							//only ping if it's not a repost
-							for (OptedInUser user : pingUsersList) {
-	                            if (!user.isWhenInRoom() || (user.isWhenInRoom() && UserUtils.checkIfUserInRoom(room, user.getUser().getUserId()))) {
-	                                pings+=(" @"+user.getUser().getUsername().replace(" ",""));
-	                            }
-	                        }
-						}
-						
-						if (pings.length() > 2) {
-							report += pings + " )";
-						}
-						
-						room.send(report);
+			if (matchesInFinder != null) {
+				LOGGER.info("Found "+matchesInFinder.size()+" PostMatches in this PlagFinder");
+				allMatches.addAll(matchesInFinder);
+				
+				for (PostMatch match : matchesInFinder) {
+					if (match.isValidMatch()) {
 						StatusUtils.numberOfReportedPosts.incrementAndGet();
+						SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
+						String message = printer.print(match);
+						
+						for (Room room : this.chatRooms) {
+							room.send(message);
+						}
 					}
 				}
-			} else {
-				//LOGGER.info("Score "+finder.getJaroScore()+" too low");
 			}
-			
-			StatusUtils.numberOfCheckedTargets.incrementAndGet();
 			
 		}
 		

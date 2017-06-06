@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
+import org.sobotics.redunda.PingService;
 import org.sobotics.guttenberg.services.RunnerService;
 
 import fr.tunaki.stackoverflow.chat.Message;
@@ -46,19 +47,19 @@ public class Status implements SpecialCommand {
         
         
         StringBuilder status = new StringBuilder();
-        status.append("Running since: ").append(StatusUtils.startupDate);
+        status.append("Location: ").append(PingService.location);
+        status.append("\nRunning since: ").append(StatusUtils.startupDate);
         
         if (room.getRoomId() == 111347) {
             status.append("\nLast execution finished: ").append(StatusUtils.lastExecutionFinished);
-            status.append("\nLocation: ").append(prop.getProperty("location", "undefined"));
         }
         
         String version = prop2.getProperty("version", "undefined");
         status.append("\nVersion: ").append(version);
         status.append("\nChecked ").append(StatusUtils.numberOfCheckedTargets).append(" targets and reported ").append(StatusUtils.numberOfReportedPosts);
         status.append("\nRemaining quota: ").append(StatusUtils.remainingQuota);
+        status.append("\n---");
         
-        //room.replyTo(message.getId(), status.toString());
         room.send(status.toString());
     }
 

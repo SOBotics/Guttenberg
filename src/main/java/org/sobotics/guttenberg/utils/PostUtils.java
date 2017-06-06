@@ -14,6 +14,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import fr.tunaki.stackoverflow.chat.Message;
+import fr.tunaki.stackoverflow.chat.Room;
+import fr.tunaki.stackoverflow.chat.event.PingMessageEvent;
+
 public class PostUtils {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(Guttenberg.class);
@@ -94,5 +98,82 @@ public class PostUtils {
         result.addProperty("body_quote", quote);
         
         return result;
+    }
+	
+	public static List<String> getCodeParagraphs(String markdown) {
+		List<String> output = new ArrayList<String>();
+		
+		String[] paragraphs = markdown.split("\\n");
+		String buffer = "";
+		
+		for (String paragraph : paragraphs) {
+            if (paragraph.startsWith("    ")) {
+            	//found a codeblock -> add to buffer
+                buffer += paragraph + "\n";
+            }
+            else {
+                //a non-code paragraph. This resets the codeblock
+            	//-> write buffer to array; then clear buffer
+            	if (buffer.length() > 4) {
+            		output.add(buffer);
+            	}
+            	buffer = "";
+            }
+        }
+		
+		return output;
+	}
+	
+	public static void reply(Room room, PingMessageEvent event, boolean isReply){
+        Message message = event.getMessage();
+        Message parentMessage = room.getMessage(event.getParentMessageId());
+        long parentMessageId = parentMessage.getId();
+		System.out.println(message.getContent());
+        /*if (CheckUtils.checkIfUserIsBlacklisted(event.getUserId())){
+            System.out.println("Blacklisted user");
+            return;
+        }*/
+		
+		//only privileged users can send feedback
+		if (!event.getMessage().getUser().isRoomOwner() && !event.getMessage().getUser().isModerator()) {
+			return;
+		}
+		
+		//check if message is a report
+		boolean isReport = true;
+		if (!parentMessage.getPlainContent().startsWith("[ [")) {
+			if (parentMessage.getPlainContent().startsWith("---")) {
+				LOGGER.info("This post has already been handled");
+				return;
+			}
+			
+			isReport = false;
+		}
+		
+		String newMessage = "";
+		boolean isValidFeedback = false;
+        if (CommandUtils.checkForCommand(message.getContent(),"k")){
+        	newMessage = "---"+ parentMessage.getPlainContent() + "--- k by "+ message.getUser().getName();
+        	isValidFeedback = true;
+        }
+        if (CommandUtils.checkForCommand(message.getContent(),"f")){
+        	newMessage = "---"+ parentMessage.getPlainContent() + "--- f by "+ message.getUser().getName();
+        	isValidFeedback = true;
+        }
+        
+        if (!isReport && isValidFeedback) {
+        	room.replyTo(message.getId(), "You can only send feedback to reports. This message wasn't one.");
+        	return;
+        }
+        
+        
+        //if newMessage longer than 10, edit it
+        if (newMessage.length() > 10) {
+        	try {
+        		room.edit(parentMessageId, newMessage);
+        	} catch (Throwable e) {
+        		LOGGER.info("Could not edit message", e);
+        	}
+        }
     }
 }

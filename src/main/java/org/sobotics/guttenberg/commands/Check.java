@@ -2,10 +2,14 @@ package org.sobotics.guttenberg.commands;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sobotics.guttenberg.entities.PostMatch;
 import org.sobotics.guttenberg.finders.PlagFinder;
 import org.sobotics.guttenberg.services.RunnerService;
 import org.sobotics.guttenberg.utils.ApiUtils;
@@ -62,16 +66,29 @@ public class Check implements SpecialCommand {
             JsonObject target = answer.get("items").getAsJsonArray().get(0).getAsJsonObject();
             PlagFinder finder = new PlagFinder(target);
             finder.collectData();
-            finder.getMostSimilarAnswer();
-            double score = Math.round(finder.getJaroScore()*100.0)/100.0;
-            String link = "http://stackoverflow.com/a/"+finder.getJaroAnswer().getAnswerID();
-
-            if (score > 0) {
-                String reply = "The closest match with a score of **"+score+"** is [this post]("+link+").";
-                room.replyTo(message.getId(), reply);
+            List<PostMatch> matches = finder.matchesForReasons(true);
+            
+            if (matches.size() > 0) {
+            	//sort the matches
+            	Collections.sort(matches, 
+            		    Comparator.comparingDouble(PostMatch::getTotalScore).reversed());
+            	
+            	
+            	//prepare printing them
+            	int i = 0;
+            	String reply = "These posts are similar to the target: ";
+            	for (PostMatch match : matches) {
+            		if (i > 5)
+            			break;
+            		double roundedTotalScore = Math.round(match.getTotalScore()*100.0)/100.0;
+            		reply += "["+match.getOriginal().getAnswerID()+"](http://stackoverflow.com/a/"+match.getOriginal().getAnswerID()+") ("+roundedTotalScore+"); ";
+            		i++;
+            	}
+            	
+            	room.replyTo(message.getId(), reply);
             } else {
-                room.replyTo(message.getId(), "There are no similar posts.");
-            }  
+            	room.replyTo(message.getId(), "No similar posts found.");
+            }
         } catch (IOException e) {
             LOGGER.error("ERROR", e);
         }
