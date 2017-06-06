@@ -15,8 +15,8 @@ public class SoBoticsPostPrinter implements PostPrinter {
 		String message;
 		String reasonsList = "";
 		
-		String targetLink = "https://stackoverflow.com/a/"+match.getTarget().getAnswerID()+"/4687348";
-		String originalLink = "https://stackoverflow.com/a/"+match.getOriginal().getAnswerID()+"/4687348";
+		String targetLink = "//stackoverflow.com/a/"+match.getTarget().getAnswerID()+"/4687348";
+		String originalLink = "//stackoverflow.com/a/"+match.getOriginal().getAnswerID()+"/4687348";
 		
 		for (String reason : match.getReasonStrings()) {
 			reasonsList += reason+"; ";
