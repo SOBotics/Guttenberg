@@ -20,7 +20,7 @@ public class SearchTerms {
 	public SearchTerms(Post p){
 		this.post = p;
 		this.query = getQuery(this.post);
-		//this.exactTerm = getExactTerm(this.post);
+		this.exactTerm = getExactTerm(this.post);
 	}
 	
 	/**
@@ -36,7 +36,7 @@ public class SearchTerms {
 		if (retValue==null){
 			retValue = getLineFromText(post);
 		}
-		return "\"" + retValue.trim() + "\"";
+		return retValue.trim();
 	}
 	
 	/**
@@ -49,6 +49,17 @@ public class SearchTerms {
 		if (retVal==null){
 			retVal = getFistLineFromCode(post);
 		}
+		if (retVal==null){
+			retVal = getLineFromText(post);
+		}
+		
+		if (retVal!=null){
+			String[] reduce = retVal.split("\n|\"|;|:");
+			retVal = reduce[0];
+		}
+		
+		
+		
 		return retVal;
 	}
 
