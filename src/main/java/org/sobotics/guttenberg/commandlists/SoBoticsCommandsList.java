@@ -56,10 +56,10 @@ public class SoBoticsCommandsList {
 				boolean standbyMode = PingService.standby.get();
 				if (command instanceof CheckUser){
 					User user = event.getUser().get();
-//					if (!user.isModerator() && !user.isRoomOwner()){
-//						room.replyTo(message.getId(), "This command can only be executed by RO or moderator");
-//						return;
-//					}
+					if (!user.isModerator() && !user.isRoomOwner()){
+						room.replyTo(message.getId(), "This command can only be executed by RO or moderator");
+						return;
+					}
 				}
 				if (standbyMode && command.availableInStandby()) {
 					command.execute(room, instance);
