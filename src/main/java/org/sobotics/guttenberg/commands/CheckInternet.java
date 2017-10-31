@@ -243,7 +243,7 @@ public class CheckInternet implements SpecialCommand {
 
 	@Override
 	public String name() {
-		return "checkuserinternet";
+		return CMD;
 	}
 
 	@Override

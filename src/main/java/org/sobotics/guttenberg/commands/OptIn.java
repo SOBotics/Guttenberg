@@ -13,6 +13,7 @@ import fr.tunaki.stackoverflow.chat.User;
 
 public class OptIn implements SpecialCommand {
 
+	private static final String CMD = "opt-in";
 	private Message message;
 
     public OptIn(Message message) {
@@ -21,7 +22,7 @@ public class OptIn implements SpecialCommand {
 
     @Override
     public boolean validate() {
-        return CommandUtils.checkForCommand(message.getPlainContent(),"opt-in");
+        return CommandUtils.checkForCommand(message.getPlainContent(), CMD);
     }
 
 	@Override
@@ -79,7 +80,7 @@ public class OptIn implements SpecialCommand {
 
 	@Override
 	public String name() {
-		return "opt-in";
+		return CMD;
 	}
 
 	@Override

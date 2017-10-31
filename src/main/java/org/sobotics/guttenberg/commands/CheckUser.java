@@ -133,7 +133,7 @@ public class CheckUser extends CheckInternet {
 
 	@Override
 	public String name() {
-		return "checkuser";
+		return CMD;
 	}
 
 	@Override

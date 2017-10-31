@@ -9,6 +9,7 @@ import fr.tunaki.stackoverflow.chat.Room;
 
 public class ClearHelp implements SpecialCommand {
 
+	private static final String CMD = "clear";
     private final Message message;
 
     public ClearHelp(Message message) {
@@ -17,7 +18,7 @@ public class ClearHelp implements SpecialCommand {
     
     @Override
     public boolean validate() {
-        return CommandUtils.checkForCommand(message.getPlainContent(),"clear");
+        return CommandUtils.checkForCommand(message.getPlainContent(), CMD);
     }
 
     @Override
@@ -37,7 +38,7 @@ public class ClearHelp implements SpecialCommand {
 
     @Override
     public String name() {
-        return "clear";
+        return CMD;
     }
 
 	@Override

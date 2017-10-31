@@ -10,7 +10,7 @@ import fr.tunaki.stackoverflow.chat.Room;
  * Created by bhargav.h on 30-Sep-16.
  */
 public class Say implements SpecialCommand {
-
+	private static final String CMD = "say";
     private final Message message;
 
     public Say(Message message) {
@@ -19,7 +19,7 @@ public class Say implements SpecialCommand {
 
     @Override
     public boolean validate() {
-        return CommandUtils.checkForCommand(message.getPlainContent(),"say");
+        return CommandUtils.checkForCommand(message.getPlainContent(), CMD);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class Say implements SpecialCommand {
 
     @Override
     public String name() {
-        return "say";
+        return CMD;
     }
 
 	@Override
