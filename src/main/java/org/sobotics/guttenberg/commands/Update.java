@@ -8,7 +8,7 @@ import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
 
 public class Update implements SpecialCommand {
-
+	private static final String CMD = "update";
     private final Message message;
 
     public Update(Message message) {
@@ -17,7 +17,7 @@ public class Update implements SpecialCommand {
     
     @Override
     public boolean validate() {
-        return CommandUtils.checkForCommand(message.getPlainContent(),"update");
+        return CommandUtils.checkForCommand(message.getPlainContent(), CMD);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class Update implements SpecialCommand {
 
     @Override
     public String name() {
-        return "update";
+        return CMD;
     }
 
 	@Override

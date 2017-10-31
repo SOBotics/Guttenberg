@@ -9,6 +9,7 @@ import fr.tunaki.stackoverflow.chat.User;
 
 public class Kill implements SpecialCommand {
 
+	private static final String CMD = "kill";
 	private final Message message;
     
     public Kill(Message message) {
@@ -17,7 +18,7 @@ public class Kill implements SpecialCommand {
     
 	@Override
 	public boolean validate() {
-		return CommandUtils.checkForCommand(message.getPlainContent(), "kill");
+		return CommandUtils.checkForCommand(message.getPlainContent(), CMD);
 	}
 
 	@Override
@@ -40,7 +41,7 @@ public class Kill implements SpecialCommand {
 
 	@Override
 	public String name() {
-		return "kill";
+		return CMD;
 	}
 
 	@Override
