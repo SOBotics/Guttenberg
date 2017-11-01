@@ -159,5 +159,10 @@ public class SearchTerms {
 		return post;
 	}
 	
+	@Override
+	public String toString(){
+		return "Query: " + query + ", exact term:" + exactTerm;
+	}
+	
 
 }

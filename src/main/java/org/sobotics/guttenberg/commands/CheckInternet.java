@@ -88,7 +88,11 @@ public class CheckInternet implements SpecialCommand {
 				room.replyTo(message.getId(), "Could not find post id: " + postId + " with api call");
 				return;
 			}
-			checkPost(room, post);
+			SearchTerms st = new SearchTerms(post);
+			output(room,PrintUtils.printDescription() +  "*Checking post: ["   + post.getAnswerID() + "](https://stackoverflow.com/a/" + post.getAnswerID() + ") Search term: " + st.getQuery() + ", exact match: " + st.getExactTerm() + "*");
+			throttleForChat();
+			SearchResult sr = checkPost(post, st);
+			output(room,post,sr);
 
 		} catch (IOException e) {
 			LOGGER.error("Error calling API", e);
@@ -96,6 +100,7 @@ public class CheckInternet implements SpecialCommand {
 		}
 
 	}
+
 
 	/**
 	 * Search internet for similar post and use gut to check'em
@@ -106,20 +111,39 @@ public class CheckInternet implements SpecialCommand {
 	 *            the post
 	 * @throws IOException
 	 */
-	protected void checkPost(Room room, Post post) throws IOException {
+	protected SearchResult checkPost(Post post, SearchTerms st) throws IOException {
 
-		SearchTerms st = new SearchTerms(post);
 
-		output(room,PrintUtils.printDescription() +  "*Checking post: ["   + post.getAnswerID() + "](https://stackoverflow.com/a/" + post.getAnswerID() + ") Search term: " + st.getQuery() + ", exact match: " + st.getExactTerm() + "*");
-		throttleForChat();
 		InternetSearch is = new InternetSearch();
-		SearchResult result = is.google(st);
-
+		SearchResult result = is.google(post,st);
+		
 		if (result.getItems().isEmpty()) {
+			return result;
+		}
+		
+		List<Post> relatedAnswers = getRelatedAnswers(post, result);
+		if (!relatedAnswers.isEmpty()) {
+			PlagFinder finder = new PlagFinder(post, relatedAnswers);
+			List<PostMatch> matches = finder.matchesForReasons(true);
+			if (!matches.isEmpty()) {
+				Collections.sort(matches);
+				PostMatch bestMatch = matches.get(0);
+				result.setPostMatch(bestMatch);
+			}
+		}
+		
+		return result;
+
+		
+	}
+
+	protected void output(Room room, Post post, SearchResult result) {
+		if (result==null || result.getItems().isEmpty()) {
 			output(room, "No search results on search term");
 			return;
 		}
 
+		
 		SearchItem bestSOPost = result.getFirstResult(true);
 		SearchItem bestOffSitePost = result.getFirstResult(false);
 
@@ -141,25 +165,17 @@ public class CheckInternet implements SpecialCommand {
 			appendLinkAndPosition(result, bestOffSitePost, searchMessage);
 		}
 
-		List<Post> relatedAnswers = getRelatedAnswers(post, result);
-		if (!relatedAnswers.isEmpty()) {
-			PlagFinder finder = new PlagFinder(post, relatedAnswers);
-			List<PostMatch> matches = finder.matchesForReasons(true);
-			if (!matches.isEmpty()) {
-				Collections.sort(matches);
-				PostMatch bestMatch = matches.get(0);
-				searchMessage.append(", SO Match: ");
-				searchMessage.append("[").append(bestMatch.getOriginal().getAnswerID()).append("]");
-				String originalLink = "https://stackoverflow.com/a/" + bestMatch.getOriginal().getAnswerID();
-				searchMessage.append("(").append(originalLink).append(") Score:").append(NumberFormat.getNumberInstance().format(bestMatch.getTotalScore()));
-			}
-
+		PostMatch bestMatch = result.getPostMatch();
+		if (bestMatch!=null){
+			searchMessage.append(", SO Match: ");
+			searchMessage.append("[").append(bestMatch.getOriginal().getAnswerID()).append("]");
+			String originalLink = "https://stackoverflow.com/a/" + bestMatch.getOriginal().getAnswerID();
+			searchMessage.append("(").append(originalLink).append(") Score:").append(NumberFormat.getNumberInstance().format(bestMatch.getTotalScore()));
 		}
-
 		output(room, searchMessage.toString());
-		
-	}
 
+	}
+	
 	protected void throttleForChat() {
 		try {
 			Thread.sleep(5000);
@@ -273,7 +289,7 @@ public class CheckInternet implements SpecialCommand {
 		int postId = 38717190;
 		Post post = cu.getPost(postId, prop);
 		if (post != null) {
-			cu.checkPost(null, post);
+			cu.checkPost(post, new SearchTerms(post));
 		}
 
 	}
