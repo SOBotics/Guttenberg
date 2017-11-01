@@ -86,6 +86,7 @@ public class CheckUser extends CheckInternet {
 			room.send("Check user: " + userId + " - START");
 			JsonObject answers = ApiUtils.getAnswerDetailsByIds(idAnswers, STACKOVERFLOW, prop.getProperty("apikey", ""));
 			List<SearchResult> results = new ArrayList<>();
+			int nr = 1;
 			if (answers.has(ITEMS)) {
 				for (JsonElement element : answers.get(ITEMS).getAsJsonArray()) {
 					JsonObject object = element.getAsJsonObject();
@@ -100,6 +101,12 @@ public class CheckUser extends CheckInternet {
 							throttleForChat();
 						}
 					}
+					if (nr>99){
+						room.send("That's all the google api-quota we have for today");
+						break;
+					}
+					nr++;
+					
 				}
 			}
 
