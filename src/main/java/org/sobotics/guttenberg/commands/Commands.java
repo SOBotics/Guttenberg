@@ -14,6 +14,7 @@ import fr.tunaki.stackoverflow.chat.Room;
  */
 public class Commands implements SpecialCommand {
 
+	private static final String CMD = "commands";
     private final Message message;
     private final List<SpecialCommand> commands;
 
@@ -24,7 +25,7 @@ public class Commands implements SpecialCommand {
 
     @Override
     public boolean validate() {
-        return CommandUtils.checkForCommand(message.getPlainContent(),"commands");
+        return CommandUtils.checkForCommand(message.getPlainContent(), CMD);
     }
 
     @Override
@@ -44,7 +45,7 @@ public class Commands implements SpecialCommand {
 
     @Override
     public String name() {
-        return "commands";
+        return CMD;
     }
 
     @Override

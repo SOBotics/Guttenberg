@@ -30,6 +30,10 @@ public class Client {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(Client.class);
 
+    private Client(){
+    	super();
+    }
+    
     public static void main(String[] args) {
         LOGGER.info("Hello, World!");
         LOGGER.info("Load properties...");
@@ -45,6 +49,8 @@ public class Client {
             LOGGER.error("Could not load login.properties! Shutting down...");
             return;
         }
+        
+        Guttenberg.setLoginProperties(prop);
         
         LOGGER.info("Initialize chat...");
         StackExchangeClient seClient = new StackExchangeClient(prop.getProperty("email"), prop.getProperty("password"));

@@ -13,7 +13,7 @@ import org.sobotics.guttenberg.utils.FilePathUtils;
 /**
  * Represents a plagiarized post
  * */
-public class PostMatch {
+public class PostMatch implements Comparable<PostMatch>{
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(PostMatch.class);
 	
@@ -90,5 +90,10 @@ public class PostMatch {
 		int lengthTwo = this.target.getBodyMarkdown().length();
 		
 		return lengthOne >= minimumLength && lengthTwo >= minimumLength;
+	}
+
+	@Override
+	public int compareTo(PostMatch o) {
+		return Double.compare(o.getTotalScore(),getTotalScore());
 	}
 }

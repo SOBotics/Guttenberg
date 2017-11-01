@@ -19,7 +19,7 @@ import fr.tunaki.stackoverflow.chat.Room;
 public class Status implements SpecialCommand {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(Status.class);
-    
+    private static final String CMD = "status";
     private final Message message;
 
     public Status(Message message) {
@@ -28,7 +28,7 @@ public class Status implements SpecialCommand {
     
     @Override
     public boolean validate() {
-        return CommandUtils.checkForCommand(message.getPlainContent(),"status");
+        return CommandUtils.checkForCommand(message.getPlainContent(), CMD);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class Status implements SpecialCommand {
 
     @Override
     public String name() {
-        return "status";
+        return CMD;
     }
 
 	@Override

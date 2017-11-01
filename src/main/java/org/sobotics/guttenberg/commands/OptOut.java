@@ -13,6 +13,7 @@ import fr.tunaki.stackoverflow.chat.User;
 
 public class OptOut implements SpecialCommand {
 
+	private static final String CMD = "opt-out";
 	private Message message;
 
     public OptOut(Message message) {
@@ -21,7 +22,7 @@ public class OptOut implements SpecialCommand {
 
     @Override
     public boolean validate() {
-        return CommandUtils.checkForCommand(message.getPlainContent(),"opt-out");
+        return CommandUtils.checkForCommand(message.getPlainContent(), CMD);
     }
 
 	@Override
@@ -52,7 +53,7 @@ public class OptOut implements SpecialCommand {
 
 	@Override
 	public String name() {
-		return "opt-out";
+		return CMD;
 	}
 
 	@Override
