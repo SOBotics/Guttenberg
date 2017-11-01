@@ -72,7 +72,7 @@ public class CheckUser extends CheckInternet {
 		Properties prop = Guttenberg.getLoginProperties();
 
 		LOGGER.info("Executing command on user id: " + userId);
-
+		List<SearchResult> results = new ArrayList<>();
 		try {
 			/**
 			 * It would have been better with Long, but util method takes
@@ -85,7 +85,6 @@ public class CheckUser extends CheckInternet {
 			}
 			room.send("Check user: " + userId + " - START");
 			JsonObject answers = ApiUtils.getAnswerDetailsByIds(idAnswers, STACKOVERFLOW, prop.getProperty("apikey", ""));
-			List<SearchResult> results = new ArrayList<>();
 			int nr = 1;
 			if (answers.has(ITEMS)) {
 				for (JsonElement element : answers.get(ITEMS).getAsJsonArray()) {
@@ -101,8 +100,8 @@ public class CheckUser extends CheckInternet {
 							throttleForChat();
 						}
 					}
-					if (nr>99){
-						room.send("That's all the google api-quota we have for today");
+					if (nr>50){
+						room.send("I have hit maximum number of post that I check on same user 50 (api-quota problem)");
 						break;
 					}
 					nr++;
@@ -110,15 +109,16 @@ public class CheckUser extends CheckInternet {
 				}
 			}
 
-			if (!results.isEmpty()) {
-				printReport(room, results);
-			}
 
 		} catch (IOException e) {
 			LOGGER.error("Error calling API", e);
 			room.replyTo(message.getId(), "Error calling search, maybe we ran out of quota");
 		}
 
+		if (!results.isEmpty()) {
+			printReport(room, results);
+		}
+		
 	}
 
 	private void outputDirectHit(Room room, SearchResult result) {
