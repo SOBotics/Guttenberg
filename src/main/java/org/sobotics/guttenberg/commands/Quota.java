@@ -19,6 +19,7 @@ import fr.tunaki.stackoverflow.chat.Room;
 public class Quota implements SpecialCommand {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Quota.class);
+	private static final String CMD = "quota";
     private final Message message;
 
     public Quota(Message message) {
@@ -27,7 +28,7 @@ public class Quota implements SpecialCommand {
     
     @Override
     public boolean validate() {
-        return CommandUtils.checkForCommand(message.getPlainContent(),"quota");
+        return CommandUtils.checkForCommand(message.getPlainContent(), CMD);
     }
 
     @Override
@@ -52,7 +53,7 @@ public class Quota implements SpecialCommand {
 
     @Override
     public String name() {
-        return "quota";
+        return CMD;
     }
 
 	@Override

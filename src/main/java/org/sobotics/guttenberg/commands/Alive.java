@@ -16,6 +16,7 @@ import fr.tunaki.stackoverflow.chat.Room;
 public class Alive implements SpecialCommand {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Alive.class);
+	private static final String CMD = "alive";
     private final Message message;
 
     public Alive(Message message) {
@@ -24,7 +25,7 @@ public class Alive implements SpecialCommand {
 
     @Override
     public boolean validate() {
-        return CommandUtils.checkForCommand(message.getPlainContent(),"alive");
+        return CommandUtils.checkForCommand(message.getPlainContent(), CMD);
     }
 
     @Override
@@ -40,7 +41,7 @@ public class Alive implements SpecialCommand {
 
     @Override
     public String name() {
-        return "alive";
+        return CMD;
     }
 
 	@Override

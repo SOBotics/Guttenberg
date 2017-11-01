@@ -29,6 +29,7 @@ public class Guttenberg {
     private static final Logger LOGGER = LoggerFactory.getLogger(Guttenberg.class);
     
     private final List<Room> chatRooms;
+    private static Properties loginProperties;
     
     public Guttenberg(List<Room> rooms) {
     	this.chatRooms = rooms;
@@ -138,6 +139,18 @@ public class Guttenberg {
 		StatusUtils.lastSucceededExecutionStarted = startTime;
 		StatusUtils.lastExecutionFinished = Instant.now();
 		LOGGER.info("Finished at - "+StatusUtils.lastExecutionFinished);
+	}
+
+	public static Properties getLoginProperties() {
+		if (loginProperties==null){
+			throw new NullPointerException("The login properties have not been instanced");
+		}
+			
+		return loginProperties;
+	}
+
+	public static void setLoginProperties(Properties loginProperties) {
+		Guttenberg.loginProperties = loginProperties;
 	}
     
 }

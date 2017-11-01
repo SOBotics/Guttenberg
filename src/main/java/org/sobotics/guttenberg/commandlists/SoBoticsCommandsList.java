@@ -25,99 +25,105 @@ import fr.tunaki.stackoverflow.chat.event.PingMessageEvent;
  */
 public class SoBoticsCommandsList {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SoBoticsCommandsList.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SoBoticsCommandsList.class);
 
-    public void mention(Room room, PingMessageEvent event, boolean isReply, RunnerService instance){
-        /*if(CheckUtils.checkIfUserIsBlacklisted(event.getUserId()))
-            return;*/
+	public void mention(Room room, PingMessageEvent event, boolean isReply, RunnerService instance) {
+		/*
+		 * if(CheckUtils.checkIfUserIsBlacklisted(event.getUserId())) return;
+		 */
 
-        Message message = event.getMessage();
-        LOGGER.info("Mention: "+message.getContent());
-        List<SpecialCommand> commands = new ArrayList<>(Arrays.asList(
-            new Alive(message),
-            new Check(message),
-            new ClearHelp(message),
-            new OptIn(message),
-            new OptOut(message),
-            new Quota(message),
-            new Say(message),
-            new Status(message),
-            new Update(message),
-            new Reboot(message)
-        ));
+		Message message = event.getMessage();
+		LOGGER.info("Mention: " + message.getContent());
+		List<SpecialCommand> commands = new ArrayList<>(Arrays.asList(
+				new Alive(message),
+				new CheckInternet(message),
+				new CheckUser(message),
+				new Check(message), 
+				new ClearHelp(message), 
+				new OptIn(message),
+				new OptOut(message), 
+				new Quota(message), 
+				new Say(message), 
+				new Status(message), 
+				new Update(message), 
+				new Reboot(message)
+				));
 
-        commands.add(new Commands(message,commands));
-        
-        for(SpecialCommand command: commands){
-            if(command.validate()){
-            	boolean standbyMode = PingService.standby.get();
-            	if (standbyMode == true) {
-            		if (command.availableInStandby() == true) {
-            			command.execute(room, instance);
-            		}
-            	} else {
-            		command.execute(room, instance);
-            	}
-            }
-        }
-    }
-    
-    public void globalCommand(Room room, MessagePostedEvent event,  RunnerService instance) {
-    	//only ROs (and Generic Bot) should execute global commands!
-    	try {
-    		User user = event.getUser().get();
-    		if (!user.isModerator() && !user.isRoomOwner() && user.getId() != 7481043)
-    			return;
-    	} catch (Throwable e) {
-    		LOGGER.warn("Could not verify privileges of that user. Don't execute the command.", e);
-    		return;
-    	}
-    	
-    	
-    	Message message = event.getMessage();
-        LOGGER.info("Message: "+message.getContent());
-        
-        int cp = Character.codePointAt(message.getPlainContent(), 0);
-        
-        if (PingService.standby.get() == false && (cp == 128642 || (cp>=128644 && cp<=128650))) {
-        	room.send("[🚃](http://bit.ly/2nRi9kX)");
-        	return;
-        }
-    	
-    	//return immediately, if @gut is part of the message!
-    	String username = "";
-        
-        Properties prop = new Properties();
+		commands.add(new Commands(message, commands));
 
-        try{
-            prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
-            username = prop.getProperty("username").substring(0,3).toLowerCase();
-        }
-        catch (IOException e){
-            LOGGER.error("Could not load login.properties", e);
-            username = "gut";
-        }
-        
-        boolean containsUsername = message.getPlainContent().toLowerCase().contains("@"+username);
-        //LOGGER.info("containsUsername: "+containsUsername);
-        if (containsUsername == true)
-        	return;
-    	
-        List<SpecialCommand> commands = new ArrayList<>(Arrays.asList(
-            new Alive(message)
-        ));
-        
-        for(SpecialCommand command: commands){
-            if(command.validate()){
-            	boolean standbyMode = PingService.standby.get();
-            	if (standbyMode == true) {
-            		if (command.availableInStandby() == true) {
-            			command.execute(room, instance);
-            		}
-            	} else {
-            		command.execute(room, instance);
-            	}
-            }
-        }
-    }
+		for (SpecialCommand command : commands) {
+			if (command.validate()) {
+				boolean standbyMode = PingService.standby.get();
+				if (command instanceof CheckUser){
+					User user = event.getUser().get();
+					if (!user.isModerator() && !user.isRoomOwner()){
+						room.replyTo(message.getId(), "This command can only be executed by RO or moderator");
+						return;
+					}
+				}
+				if (standbyMode && command.availableInStandby()) {
+					command.execute(room, instance);
+				} else {
+					command.execute(room, instance);
+				}
+				//maybe return?, is the idea that multiple commands can match?
+			}
+		}
+	}
+
+	public void globalCommand(Room room, MessagePostedEvent event, RunnerService instance) {
+		// only ROs (and Generic Bot) should execute global commands!
+		try {
+			User user = event.getUser().get();
+			if (!user.isModerator() && !user.isRoomOwner() && user.getId() != 7481043)
+				return;
+		} catch (Throwable e) {
+			LOGGER.warn("Could not verify privileges of that user. Don't execute the command.", e);
+			return;
+		}
+
+		Message message = event.getMessage();
+		
+		LOGGER.info("Message: " + message.getContent());
+
+		int cp = Character.codePointAt(message.getPlainContent(), 0);
+
+		if (!PingService.standby.get() && (cp == 128642 || (cp >= 128644 && cp <= 128650))) {
+			room.send("[🚃](http://bit.ly/2nRi9kX)");
+			return;
+		}
+
+		// return immediately, if @gut is part of the message!
+		String username = "";
+
+		Properties prop = new Properties();
+
+		try {
+			prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
+			username = prop.getProperty("username").substring(0, 3).toLowerCase();
+		} catch (IOException e) {
+			LOGGER.error("Could not load login.properties", e);
+			username = "gut";
+		}
+
+		boolean containsUsername = message.getPlainContent().toLowerCase().contains("@" + username);
+		if (containsUsername){
+			return;
+		}
+
+		List<SpecialCommand> commands = new ArrayList<>(Arrays.asList(
+				new Alive(message)
+				));
+
+		for (SpecialCommand command : commands) {
+			if (command.validate()) {
+				boolean standbyMode = PingService.standby.get();
+				if (standbyMode && command.availableInStandby()) {
+					command.execute(room, instance);
+				} else {
+					command.execute(room, instance);
+				}
+			}
+		}
+	}
 }

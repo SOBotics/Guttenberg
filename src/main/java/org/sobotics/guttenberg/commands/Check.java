@@ -24,7 +24,8 @@ import fr.tunaki.stackoverflow.chat.Room;
 public class Check implements SpecialCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Check.class);
-
+    private static final String CMD = "check";
+    
     private final Message message;
 
     public Check(Message message) {
@@ -33,7 +34,7 @@ public class Check implements SpecialCommand {
     
     @Override
     public boolean validate() {
-        return CommandUtils.checkForCommand(message.getPlainContent(),"check");
+        return CommandUtils.checkForCommand(message.getPlainContent(), CMD);
     }
 
     @Override
@@ -101,7 +102,7 @@ public class Check implements SpecialCommand {
 
     @Override
     public String name() {
-        return "check";
+        return CMD;
     }
 
 	@Override

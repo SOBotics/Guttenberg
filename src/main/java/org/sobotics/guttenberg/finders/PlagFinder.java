@@ -156,7 +156,7 @@ public class PlagFinder {
     	for (Reason reason : reasonList.reasons(ignoringScores)) {
     		//LOGGER.info("Checking reason "+reason.description()+"\nIgnoring score: "+ignoringScores);
     		//check if the reason applies
-    		if (reason.check() == true) {
+    		if (reason.check()) {
     			//if yes, add (new) posts to the list
     			
     			//get matched posts for that reason

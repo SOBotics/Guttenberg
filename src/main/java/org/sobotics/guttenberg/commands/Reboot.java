@@ -16,6 +16,7 @@ import fr.tunaki.stackoverflow.chat.User;
  * @author owen
  */
 public class Reboot implements SpecialCommand {
+	private static final String CMD = "reboot";
     private final Message message;
     
     public Reboot(Message message) {
@@ -24,7 +25,7 @@ public class Reboot implements SpecialCommand {
     
     @Override
     public boolean validate() {
-        return CommandUtils.checkForCommand(message.getPlainContent(), "reboot");
+        return CommandUtils.checkForCommand(message.getPlainContent(), CMD);
     }
 
     @Override
@@ -61,7 +62,7 @@ public class Reboot implements SpecialCommand {
 
     @Override
     public String name() {
-        return "reboot";
+        return CMD;
     }
     
     private void softReboot(Room room, RunnerService instance) {
