@@ -61,8 +61,8 @@ public class PostUtils {
 			answerer.setUsername(JsonUtils.escapeHtmlEncoding(answererJSON.get("display_name").getAsString()));
 			answerer.setUserType(answererJSON.get("user_type").getAsString());
 			answerer.setUserId(answererJSON.get("user_id").getAsInt());
-		} catch (Exception e) {
-			LOGGER.info("Answerer: " + answererJSON, e);
+		} catch (NullPointerException e) {
+			
 		}
 
 		np.setAnswerer(answerer);
