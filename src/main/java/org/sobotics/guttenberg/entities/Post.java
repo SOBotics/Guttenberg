@@ -69,6 +69,18 @@ public class Post {
     public String getBodyMarkdown() {
         return bodyMarkdown;
     }
+    
+    /**
+     * Returns a cleaner Version of the body_markdown
+     * It removes the markdown used to create JS-snippets
+     * */
+    public String getCleanBodyMarkdown() {
+    	String md = this.getBodyMarkdown();
+    	
+    	md.replaceAll("<!-- begin snippet:.*-->|<!-- language:.*-->|<!-- end snippet.*-->", "");
+    	
+    	return md;
+    }
 
     public void setBodyMarkdown(String bodyMarkdown) {
         this.bodyMarkdown = bodyMarkdown;
