@@ -8,6 +8,12 @@ public class PrintUtils {
     public static String printDescription(){
         return " [ [Guttenberg](http://stackapps.com/q/7197/43403) ] ";
     }
+    public static String printDescription(String reportLink) {
+    	if (reportLink == null || reportLink.isEmpty())
+    		return PrintUtils.printDescription();
+    	else
+    		return " [ [Guttenberg](http://stackapps.com/q/7197/43403) | [CopyPastor]("+reportLink+") ] ";
+    }
     public static String printStackAppsPost(){
         return "[Guttenberg - A bot searching for plagiarism on Stack Overflow](http://stackapps.com/q/7197/43403)";
     }
