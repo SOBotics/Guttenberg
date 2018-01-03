@@ -1,6 +1,8 @@
 package org.sobotics.guttenberg.entities;
 
 import java.io.FileInputStream;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -89,7 +91,14 @@ public class PostMatch implements Comparable<PostMatch>{
 		int lengthOne = this.original.getBodyMarkdown().length();
 		int lengthTwo = this.target.getBodyMarkdown().length();
 		
-		return lengthOne >= minimumLength && lengthTwo >= minimumLength;
+		
+		//#114: The original post should be at least 5 minutes older than the target
+		Instant targetCreation = this.target.getAnswerCreationDate();
+		Instant originalCreation = this.original.getAnswerCreationDate();
+		long minutes = ChronoUnit.MINUTES.between(originalCreation, targetCreation);
+		boolean minimumTimeSpanChecked = minutes >= 5;
+		
+		return lengthOne >= minimumLength && lengthTwo >= minimumLength && minimumTimeSpanChecked;
 	}
 
 	@Override
