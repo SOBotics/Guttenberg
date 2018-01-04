@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  */
 public class ApiUtils {
 
-    private static final String filter = "!)skMacgeg0jC3lQ5SFj5";
+    private static final String filter = "!-*f(6sFKmjUL";
 
 
     public static JsonObject getRelatedQuestionsById(Integer questionId, String site, String apiKey) throws IOException{
