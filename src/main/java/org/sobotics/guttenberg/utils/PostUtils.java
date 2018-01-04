@@ -39,6 +39,7 @@ public class PostUtils {
 		np.setQuestionID(answer.get("question_id").getAsInt());
 		np.setBody(answer.get("body").getAsString());
 		np.setBodyMarkdown(JsonUtils.escapeHtmlEncoding(answer.get("body_markdown").getAsString()));
+		np.setUnescapedBodyMarkdown(answer.get("body_markdown").getAsString());
 
 		JsonArray jsonTags = new JsonArray();
 
@@ -207,7 +208,7 @@ public class PostUtils {
 	
 	public static String storeReport(Post target, Post original) throws IOException {
 		Properties prop = Guttenberg.getLoginProperties();
-	
+		
 		String url = prop.getProperty("copypastor_url", "http://guttenberg.sobotics.org:5000")+"/posts/create";
 		JsonObject output = JsonUtils.post(url,
 		                "url_one","//stackoverflow.com/a/"+target.getAnswerID()+"/4687348",
@@ -218,8 +219,8 @@ public class PostUtils {
 		                "title_two", "Original Post",
 		                "date_one",""+target.getAnswerCreationDate().getEpochSecond(),
 		                "date_two",""+original.getAnswerCreationDate().getEpochSecond(),
-		                "body_one",target.getBodyMarkdown(),
-		                "body_two",original.getBodyMarkdown());
+		                "body_one",target.getUnescapedBodyMarkdown(),
+		                "body_two",original.getUnescapedBodyMarkdown());
 		
 		return prop.getProperty("copypastor_url", "http://guttenberg.sobotics.org:5000") + "/posts/" + output.get("post_id").getAsString();
 	}
