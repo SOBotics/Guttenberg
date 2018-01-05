@@ -18,6 +18,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import fr.tunaki.stackoverflow.chat.ChatHost;
 import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
 import fr.tunaki.stackoverflow.chat.event.PingMessageEvent;
@@ -256,10 +257,10 @@ public class PostUtils {
 		
 		try {
 			if (CommandUtils.checkForCommand(pingMsg.getContent(), "k") || CommandUtils.checkForCommand(pingMsg.getContent(), "tp")) {
-				PostUtils.storeFeedback(ping, reportId, "tp");
+				PostUtils.storeFeedback(room, ping, reportId, "tp");
 			}
 			if (CommandUtils.checkForCommand(pingMsg.getContent(), "f") || CommandUtils.checkForCommand(pingMsg.getContent(), "fp")) {
-				PostUtils.storeFeedback(ping, reportId, "fp");
+				PostUtils.storeFeedback(room, ping, reportId, "fp");
 			}
 		} catch (IOException e) {
 			LOGGER.error("Could not save feedback!", e);
@@ -303,7 +304,7 @@ public class PostUtils {
 	 * @param reportId The ID of the CopyPastor-Report
 	 * @param feedback tp or fp
 	 * */
-	public static void storeFeedback(PingMessageEvent ping, int reportId, String feedback) throws IOException {
+	public static void storeFeedback(Room room, PingMessageEvent ping, int reportId, String feedback) throws IOException {
 		Properties prop = Guttenberg.getLoginProperties();
 		
 		String url = prop.getProperty("copypastor_url", "http://guttenberg.sobotics.org:5000")+"/feedback/create";
@@ -311,7 +312,7 @@ public class PostUtils {
 						"post_id", ""+reportId,
 						"feedback_type", feedback,
 						"username", ping.getUserName(),
-						"link", "https://chat.stackoverflow.com/users/"+ping.getUserId()
+						"link", "https://chat." + PostUtils.getChatHostAsString(room.getHost()) + "/users/"+ping.getUserId()
 		                );
 		
 		String status = output.get("status").getAsString();
@@ -326,4 +327,21 @@ public class PostUtils {
 			LOGGER.error(statusMsg);
 		} // if
 	} // storeFeedback
+	
+	/**
+	 * Ugly workaround to get <code>ChatHost.getName()</code>, which is not public
+	 * https://github.com/Tunaki/chatexchange/issues/5
+	 * */
+	public static String getChatHostAsString(ChatHost host) {
+		switch (host) {
+			case STACK_OVERFLOW:
+				return "stackoverflow.com";
+			case STACK_EXCHANGE:
+				return "stackexchange.com";
+			case META_STACK_EXCHANGE:
+				return "meta.stackexchange.com";
+			default:
+				return "stackoverflow.com"; 
+		}
+	}
 } // class

@@ -21,10 +21,12 @@ public class Feedback implements SpecialCommand {
 	
     private Message message;
     private PingMessageEvent event;
+    private Room room;
 
-    public Feedback(Message message, PingMessageEvent ping) {
+    public Feedback(Message message, PingMessageEvent ping, Room room) {
         this.message = message;
         this.event = ping;
+        this.room = room;
     }
 
     @Override
@@ -64,13 +66,13 @@ public class Feedback implements SpecialCommand {
         try {
 			if (type.equalsIgnoreCase("tp") || type.equalsIgnoreCase("k")) {
 				if (!isSELink) {
-					PostUtils.storeFeedback(this.event, reportId, "tp");
+					PostUtils.storeFeedback(this.room, this.event, reportId, "tp");
 				}
 			}
 			
 			if (type.equalsIgnoreCase("fp") || type.equalsIgnoreCase("f")) {
 				if (!isSELink) {
-					PostUtils.storeFeedback(this.event, reportId, "fp");
+					PostUtils.storeFeedback(this.room, this.event, reportId, "fp");
 				}
 			}
 		} catch (IOException e) {
