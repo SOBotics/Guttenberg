@@ -5,6 +5,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -139,8 +141,10 @@ public class PostUtils {
 		if (!event.getMessage().getUser().isRoomOwner() && !event.getMessage().getUser().isModerator()) {
 			return;
 		}
-
-		// check if message is a report
+		
+		PostUtils.checkPingForFeedback(room, event);
+		
+		// check if message is a report before editing it
 		boolean isReport = true;
 		if (!parentMessage.getPlainContent().startsWith("[ [")) {
 			if (parentMessage.getPlainContent().startsWith("---")) {
@@ -224,4 +228,102 @@ public class PostUtils {
 		
 		return prop.getProperty("copypastor_url", "http://guttenberg.sobotics.org:5000") + "/posts/" + output.get("post_id").getAsString();
 	}
-}
+	
+	/**
+	 * Sends the feedback to CopyPastor
+	 * */
+	public static void checkPingForFeedback(Room room, PingMessageEvent ping) {
+		LOGGER.info("Checking message for feedback");
+		int reportId = -1;
+		Message reportMsg = null;
+		Message pingMsg = ping.getMessage();
+		long parentMsg = ping.getParentMessageId();
+		
+		if (parentMsg == -1) {
+			//this wasn't a reply
+			return;
+		}
+		
+		reportMsg = room.getMessage(parentMsg);
+		
+		if (reportMsg != null) {
+			reportId = PostUtils.getReportIdFromChatMessage(reportMsg);
+		}
+		
+		if (reportId == -1)
+			return;
+		
+		
+		try {
+			if (CommandUtils.checkForCommand(pingMsg.getContent(), "k") || CommandUtils.checkForCommand(pingMsg.getContent(), "tp")) {
+				PostUtils.storeFeedback(ping, reportId, "tp");
+			}
+			if (CommandUtils.checkForCommand(pingMsg.getContent(), "f") || CommandUtils.checkForCommand(pingMsg.getContent(), "fp")) {
+				PostUtils.storeFeedback(ping, reportId, "fp");
+			}
+		} catch (IOException e) {
+			LOGGER.error("Could not save feedback!", e);
+		} // try-catch
+	} // checkPingForFeedback
+	
+	/**
+	 * Returns the CopyPastor report ID
+	 * -1, if the message wasn't a report
+	 * */
+	public static int getReportIdFromChatMessage(Message message) {
+		Properties prop = Guttenberg.getLoginProperties();
+		boolean isMyMessage = message.getUser().getName().equalsIgnoreCase(prop.getProperty("username", "Guttenberg"));
+		String plain = message.getPlainContent();
+		
+		try {
+			Pattern pattern = Pattern.compile("\\[ \\[Guttenberg\\].*\\[CopyPastor]\\(.*\\/posts\\/(?<reportId>\\d*)\\)");
+			Matcher matcher = pattern.matcher(plain);
+			
+			if (isMyMessage && matcher.find() ) {
+				String reportId = matcher.group("reportId");
+				try {
+					return Integer.parseInt(reportId);
+				}
+				catch (NumberFormatException e) {
+					LOGGER.warn(e.getMessage());
+					return -1;
+				} // try-catch
+			} else {
+				return -1;
+			} // else-if
+		} catch (Exception e) {
+			LOGGER.error("FATAL ERROR! RegEx-Pattern might be broken!", e);
+			return -1;
+		} // try-catch
+	} // getReportIdFromChatMessage
+	
+	/**
+	 * Sends the feedback to CopyPastor
+	 * @param ping The PingMessageEvent that contains the feedback
+	 * @param reportId The ID of the CopyPastor-Report
+	 * @param feedback tp or fp
+	 * */
+	public static void storeFeedback(PingMessageEvent ping, int reportId, String feedback) throws IOException {
+		Properties prop = Guttenberg.getLoginProperties();
+		
+		String url = prop.getProperty("copypastor_url", "http://guttenberg.sobotics.org:5000")+"/feedback/create";
+		JsonObject output = JsonUtils.post(url,
+						"post_id", ""+reportId,
+						"feedback_type", feedback,
+						"username", ping.getUserName(),
+						"link", "https://chat.stackoverflow.com/users/"+ping.getUserId()
+		                );
+		
+		String status = output.get("status").getAsString();
+		if (!status.equalsIgnoreCase("success")) {
+			String statusMsg = output.get("message").getAsString();
+			if (ping.getMessage().getUser().isRoomOwner()) {
+				ping.getRoom().replyTo(ping.getMessage().getId(), statusMsg);
+			} else {
+				ping.getRoom().replyTo(ping.getMessage().getId(), "Your feedback could not be saved.");
+			}
+			
+			LOGGER.error(statusMsg);
+		} // if
+	} // storeFeedback
+} // class
