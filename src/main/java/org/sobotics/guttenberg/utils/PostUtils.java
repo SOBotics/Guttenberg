@@ -315,7 +315,7 @@ public class PostUtils {
 		                );
 		
 		String status = output.get("status").getAsString();
-		if (!status.equalsIgnoreCase("success") && ping != null) {
+		if (!status.equalsIgnoreCase("success")) {
 			String statusMsg = output.get("message").getAsString();
 			if (ping.getMessage().getUser().isRoomOwner()) {
 				ping.getRoom().replyTo(ping.getMessage().getId(), statusMsg);

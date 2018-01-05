@@ -10,6 +10,7 @@ import org.sobotics.guttenberg.utils.PostUtils;
 
 import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
+import fr.tunaki.stackoverflow.chat.event.PingMessageEvent;
 
 /**
  * Created by bhargav.h on 29-Nov-16.
@@ -19,9 +20,11 @@ public class Feedback implements SpecialCommand {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Feedback.class);
 	
     private Message message;
+    private PingMessageEvent event;
 
-    public Feedback(Message message) {
+    public Feedback(Message message, PingMessageEvent ping) {
         this.message = message;
+        this.event = ping;
     }
 
     @Override
@@ -60,14 +63,14 @@ public class Feedback implements SpecialCommand {
         
         try {
 			if (type.equalsIgnoreCase("tp") || type.equalsIgnoreCase("k")) {
-				if (isSELink) {
-					PostUtils.storeFeedback(null, reportId, "tp");
+				if (!isSELink) {
+					PostUtils.storeFeedback(this.event, reportId, "tp");
 				}
 			}
 			
 			if (type.equalsIgnoreCase("fp") || type.equalsIgnoreCase("f")) {
-				if (isSELink) {
-					PostUtils.storeFeedback(null, reportId, "fp");
+				if (!isSELink) {
+					PostUtils.storeFeedback(this.event, reportId, "fp");
 				}
 			}
 		} catch (IOException e) {
