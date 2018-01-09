@@ -1,8 +1,12 @@
 package org.sobotics.guttenberg.utils;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +18,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import fr.tunaki.stackoverflow.chat.ChatHost;
 import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
 import fr.tunaki.stackoverflow.chat.event.PingMessageEvent;
@@ -37,6 +42,7 @@ public class PostUtils {
 		np.setQuestionID(answer.get("question_id").getAsInt());
 		np.setBody(answer.get("body").getAsString());
 		np.setBodyMarkdown(JsonUtils.escapeHtmlEncoding(answer.get("body_markdown").getAsString()));
+		np.setUnescapedBodyMarkdown(answer.get("body_markdown").getAsString());
 
 		JsonArray jsonTags = new JsonArray();
 
@@ -61,8 +67,8 @@ public class PostUtils {
 			answerer.setUsername(JsonUtils.escapeHtmlEncoding(answererJSON.get("display_name").getAsString()));
 			answerer.setUserType(answererJSON.get("user_type").getAsString());
 			answerer.setUserId(answererJSON.get("user_id").getAsInt());
-		} catch (Exception e) {
-			LOGGER.info("Answerer: " + answererJSON, e);
+		} catch (NullPointerException e) {
+			
 		}
 
 		np.setAnswerer(answerer);
@@ -136,8 +142,10 @@ public class PostUtils {
 		if (!event.getMessage().getUser().isRoomOwner() && !event.getMessage().getUser().isModerator()) {
 			return;
 		}
-
-		// check if message is a report
+		
+		PostUtils.checkPingForFeedback(room, event);
+		
+		// check if message is a report before editing it
 		boolean isReport = true;
 		if (!parentMessage.getPlainContent().startsWith("[ [")) {
 			if (parentMessage.getPlainContent().startsWith("---")) {
@@ -201,4 +209,141 @@ public class PostUtils {
 		}
 
 	}
-}
+	
+	
+	public static String storeReport(Post target, Post original) throws IOException {
+		Properties prop = Guttenberg.getLoginProperties();
+		
+		String url = prop.getProperty("copypastor_url", "http://guttenberg.sobotics.org:5000")+"/posts/create";
+		JsonObject output = JsonUtils.post(url,
+						"key", prop.getProperty("copypastor_key", "no_key"),
+		                "url_one","//stackoverflow.com/a/"+target.getAnswerID()+"/4687348",
+		                "url_two","//stackoverflow.com/a/"+original.getAnswerID()+"/4687348",
+		                //"title_one",original.getTitle(),
+		                //"title_two",target.getTitle(),
+		                "title_one","Possible Plagiarism",
+		                "title_two", "Original Post",
+		                "date_one",""+target.getAnswerCreationDate().getEpochSecond(),
+		                "date_two",""+original.getAnswerCreationDate().getEpochSecond(),
+		                "body_one",target.getUnescapedBodyMarkdown(),
+		                "body_two",original.getUnescapedBodyMarkdown());
+		
+		return prop.getProperty("copypastor_url", "http://guttenberg.sobotics.org:5000") + "/posts/" + output.get("post_id").getAsString();
+	}
+	
+	/**
+	 * Sends the feedback to CopyPastor
+	 * */
+	public static void checkPingForFeedback(Room room, PingMessageEvent ping) {
+		LOGGER.info("Checking message for feedback");
+		int reportId = -1;
+		Message reportMsg = null;
+		Message pingMsg = ping.getMessage();
+		long parentMsg = ping.getParentMessageId();
+		
+		if (parentMsg == -1) {
+			//this wasn't a reply
+			return;
+		}
+		
+		reportMsg = room.getMessage(parentMsg);
+		
+		if (reportMsg != null) {
+			reportId = PostUtils.getReportIdFromChatMessage(reportMsg);
+		}
+		
+		if (reportId == -1)
+			return;
+		
+		
+		try {
+			if (CommandUtils.checkForCommand(pingMsg.getContent(), "k") || CommandUtils.checkForCommand(pingMsg.getContent(), "tp")) {
+				PostUtils.storeFeedback(room, ping, reportId, "tp");
+			}
+			if (CommandUtils.checkForCommand(pingMsg.getContent(), "f") || CommandUtils.checkForCommand(pingMsg.getContent(), "fp")) {
+				PostUtils.storeFeedback(room, ping, reportId, "fp");
+			}
+		} catch (IOException e) {
+			LOGGER.error("Could not save feedback!", e);
+		} // try-catch
+	} // checkPingForFeedback
+	
+	/**
+	 * Returns the CopyPastor report ID
+	 * -1, if the message wasn't a report
+	 * */
+	public static int getReportIdFromChatMessage(Message message) {
+		Properties prop = Guttenberg.getLoginProperties();
+		boolean isMyMessage = message.getUser().getName().equalsIgnoreCase(prop.getProperty("username", "Guttenberg"));
+		String plain = message.getPlainContent();
+		
+		try {
+			Pattern pattern = Pattern.compile("\\[ \\[Guttenberg\\].*\\[CopyPastor]\\(.*\\/posts\\/(?<reportId>\\d*)\\)");
+			Matcher matcher = pattern.matcher(plain);
+			
+			if (isMyMessage && matcher.find() ) {
+				String reportId = matcher.group("reportId");
+				try {
+					return Integer.parseInt(reportId);
+				}
+				catch (NumberFormatException e) {
+					LOGGER.warn(e.getMessage());
+					return -1;
+				} // try-catch
+			} else {
+				return -1;
+			} // else-if
+		} catch (Exception e) {
+			LOGGER.error("FATAL ERROR! RegEx-Pattern might be broken!", e);
+			return -1;
+		} // try-catch
+	} // getReportIdFromChatMessage
+	
+	/**
+	 * Sends the feedback to CopyPastor
+	 * @param ping The PingMessageEvent that contains the feedback
+	 * @param reportId The ID of the CopyPastor-Report
+	 * @param feedback tp or fp
+	 * */
+	public static void storeFeedback(Room room, PingMessageEvent ping, int reportId, String feedback) throws IOException {
+		Properties prop = Guttenberg.getLoginProperties();
+		
+		String url = prop.getProperty("copypastor_url", "http://guttenberg.sobotics.org:5000")+"/feedback/create";
+		JsonObject output = JsonUtils.post(url,
+						"key", prop.getProperty("copypastor_key", "no_key"),
+						"post_id", ""+reportId,
+						"feedback_type", feedback,
+						"username", ping.getUserName(),
+						"link", "https://chat." + PostUtils.getChatHostAsString(room.getHost()) + "/users/"+ping.getUserId()
+		                );
+		
+		String status = output.get("status").getAsString();
+		if (!status.equalsIgnoreCase("success")) {
+			String statusMsg = output.get("message").getAsString();
+			if (ping.getMessage().getUser().isRoomOwner()) {
+				ping.getRoom().replyTo(ping.getMessage().getId(), statusMsg);
+			} else {
+				ping.getRoom().replyTo(ping.getMessage().getId(), "Your feedback could not be saved.");
+			}
+			
+			LOGGER.error(statusMsg);
+		} // if
+	} // storeFeedback
+	
+	/**
+	 * Ugly workaround to get <code>ChatHost.getName()</code>, which is not public
+	 * https://github.com/Tunaki/chatexchange/issues/5
+	 * */
+	public static String getChatHostAsString(ChatHost host) {
+		switch (host) {
+			case STACK_OVERFLOW:
+				return "stackoverflow.com";
+			case STACK_EXCHANGE:
+				return "stackexchange.com";
+			case META_STACK_EXCHANGE:
+				return "meta.stackexchange.com";
+			default:
+				return "stackoverflow.com"; 
+		}
+	}
+} // class

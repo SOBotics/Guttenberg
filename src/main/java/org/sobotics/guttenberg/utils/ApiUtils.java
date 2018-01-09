@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  */
 public class ApiUtils {
 
-    private static final String filter = "!)skMacgeg0jC3lQ5SFj5";
+    private static final String filter = "!-*f(6sFKmjUL";
 
 
     public static JsonObject getRelatedQuestionsById(Integer questionId, String site, String apiKey) throws IOException{
@@ -37,7 +37,7 @@ public class ApiUtils {
     
     public static JsonObject getAnswersToQuestionsByIdString(String questionIds, Integer page, String site, String apiKey) throws IOException{
         String questionIdUrl = "https://api.stackexchange.com/2.2/questions/"+questionIds+"/answers";
-        return JsonUtils.get(questionIdUrl,"site",site,"key",apiKey,"filter","!Ldk(uYF4KB0HRtH2EOppQ5","pagesize","100");
+        return JsonUtils.get(questionIdUrl,"site",site,"key",apiKey,"filter","!Ldk(uYF4KB0HRtH2EOppQ5","pagesize","100", "sort", "votes");
     }
     
     public static JsonObject getQuestionDetailsByIds(List<Integer> questionIdList, String site, String apiKey) throws IOException {
