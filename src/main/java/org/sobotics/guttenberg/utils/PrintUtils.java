@@ -1,5 +1,7 @@
 package org.sobotics.guttenberg.utils;
 
+import java.util.regex.Pattern;
+
 /**
  * Created by bhargav.h on 11-Sep-16.
  */
@@ -13,6 +15,18 @@ public class PrintUtils {
     		return PrintUtils.printDescription();
     	else
     		return " [ [Guttenberg](http://stackapps.com/q/7197/43403) | [CopyPastor]("+reportLink+") ] ";
+    }
+    /**
+     * The pattern used to find out, if one of Guttenberg's messages is a report
+     * */
+    public static String reportIdRegExPatternString() {
+    	return "\\[ \\[Guttenberg\\].*\\[CopyPastor]\\(.*\\/posts\\/(?'reportId'\\d*)\\)";
+    }
+    /**
+     * The pattern used to find out, if one of Guttenberg's messages is a report
+     * */
+    public static Pattern reportIdRegExPattern() {
+    	return Pattern.compile(PrintUtils.reportIdRegExPatternString());
     }
     public static String printStackAppsPost(){
         return "[Guttenberg - A bot searching for plagiarism on Stack Overflow](http://stackapps.com/q/7197/43403)";

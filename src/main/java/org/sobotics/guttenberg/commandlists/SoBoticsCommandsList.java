@@ -1,6 +1,8 @@
 package org.sobotics.guttenberg.commandlists;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +15,7 @@ import org.sobotics.redunda.PingService;
 import org.sobotics.guttenberg.commands.*;
 import org.sobotics.guttenberg.services.RunnerService;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.FileUtils;
 
 import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
@@ -39,9 +42,10 @@ public class SoBoticsCommandsList {
 				new CheckInternet(message),
 				new CheckUser(message),
 				new Check(message), 
-				new ClearHelp(message), 
-				new OptIn(message),
-				new OptOut(message), 
+				new ClearHelp(message),
+				new Feedback(message, event, room),
+				//new OptIn(message),
+				//new OptOut(message), 
 				new Quota(message), 
 				new Say(message), 
 				new Status(message), 
@@ -92,6 +96,25 @@ public class SoBoticsCommandsList {
 			room.send("[🚃](http://bit.ly/2nRi9kX)");
 			return;
 		}
+		
+		
+		//we hate fun
+		try {
+			String lowercaseMsg = message.getPlainContent().toLowerCase();
+			if (lowercaseMsg.contains("cat")) {
+				File file = new File("./data/catgifs.txt");
+				String img = FileUtils.randomLine(file);
+				if (img != null && !img.isEmpty())
+					room.send(img);
+			}
+			if (lowercaseMsg.contains("trump")) {
+				File file = new File("./data/drumpf.txt");
+				String img = FileUtils.randomLine(file);
+				if (img != null && !img.isEmpty())
+					room.send(img);
+			}
+		} catch (Throwable ignore) {}
+		
 
 		// return immediately, if @gut is part of the message!
 		String username = "";

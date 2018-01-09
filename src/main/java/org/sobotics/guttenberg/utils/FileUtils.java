@@ -1,5 +1,7 @@
 package org.sobotics.guttenberg.utils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -7,6 +9,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+import java.util.Scanner;
 
 /**
  * Created by bhargav.h on 30-Sep-16.
@@ -99,5 +103,26 @@ public class FileUtils {
 
     public static void createNewFile(String filename, String data) throws IOException{
         Files.write(Paths.get(filename), Arrays.asList(data), StandardOpenOption.CREATE_NEW,StandardOpenOption.WRITE);
+    }
+    
+    /**
+     * Returns a random line of a file
+     * @author <a href="https://stackoverflow.com/users/27198/itay-maman">Itay Maman</a>
+     * @source <a href="https://stackoverflow.com/a/2218067/4687348">Stack Overflow</a>
+     * */
+    public static String randomLine(File f) throws FileNotFoundException
+    {
+       String result = null;
+       Random rand = new Random();
+       int n = 0;
+       for(Scanner sc = new Scanner(f); sc.hasNext(); )
+       {
+          ++n;
+          String line = sc.nextLine();
+          if(rand.nextInt(n) == 0)
+             result = line;         
+       }
+
+       return result;      
     }
 }
