@@ -17,6 +17,10 @@ public class Post {
     private Integer questionID;
     private String body;
     private String bodyMarkdown;
+    /**
+     * Unescaped markdown. That's required to post it to SOBotics/CopyPastor
+     * */
+    private String unescapedBodyMarkdown;
     private SOUser answerer;
     private List<String> tags;
     
@@ -146,4 +150,12 @@ public class Post {
     	plain.replaceAll("<!--.*-->", "");
     	this.plaintext = plain;
     }
+
+	public String getUnescapedBodyMarkdown() {
+		return unescapedBodyMarkdown;
+	}
+
+	public void setUnescapedBodyMarkdown(String unescapedBodyMarkdown) {
+		this.unescapedBodyMarkdown = unescapedBodyMarkdown;
+	}
 }
