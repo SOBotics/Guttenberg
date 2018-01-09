@@ -216,6 +216,7 @@ public class PostUtils {
 		
 		String url = prop.getProperty("copypastor_url", "http://guttenberg.sobotics.org:5000")+"/posts/create";
 		JsonObject output = JsonUtils.post(url,
+						"key", prop.getProperty("copypastor_key", "no_key"),
 		                "url_one","//stackoverflow.com/a/"+target.getAnswerID()+"/4687348",
 		                "url_two","//stackoverflow.com/a/"+original.getAnswerID()+"/4687348",
 		                //"title_one",original.getTitle(),
@@ -309,6 +310,7 @@ public class PostUtils {
 		
 		String url = prop.getProperty("copypastor_url", "http://guttenberg.sobotics.org:5000")+"/feedback/create";
 		JsonObject output = JsonUtils.post(url,
+						"key", prop.getProperty("copypastor_key", "no_key"),
 						"post_id", ""+reportId,
 						"feedback_type", feedback,
 						"username", ping.getUserName(),
