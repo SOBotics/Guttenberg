@@ -98,6 +98,10 @@ public class PostMatch implements Comparable<PostMatch>{
 		long minutes = ChronoUnit.MINUTES.between(originalCreation, targetCreation);
 		boolean minimumTimeSpanChecked = minutes >= 5;
 		
+		//#130: Time-span for reposts: 0 minutes
+		if (this.target.getAnswerID() == this.original.getAnswerID())
+			minimumTimeSpanChecked = minutes >= 0;
+		
 		return lengthOne >= minimumLength && lengthTwo >= minimumLength && minimumTimeSpanChecked;
 	}
 
