@@ -2,7 +2,6 @@ package org.sobotics.guttenberg.commandlists;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,8 +31,10 @@ public class SoBoticsCommandsList {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SoBoticsCommandsList.class);
 
 	public void mention(Room room, PingMessageEvent event, boolean isReply, RunnerService instance) {
-		if(CheckUtils.checkIfUserIsBlacklisted(event.getUserId(), room.getHost().getBaseUrl()))
+		if(CheckUtils.checkIfUserIsBlacklisted(event.getUserId(), room.getHost().getBaseUrl())) {
+			LOGGER.info("Blacklisted user " + event.getUserName() + " replied to the bot.");
 			return;
+		}
 		
 		Message message = event.getMessage();
 		LOGGER.info("Mention: " + message.getContent());
