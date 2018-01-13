@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.sobotics.redunda.PingService;
 import org.sobotics.guttenberg.commands.*;
 import org.sobotics.guttenberg.services.RunnerService;
+import org.sobotics.guttenberg.utils.CheckUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.FileUtils;
 
@@ -31,10 +32,9 @@ public class SoBoticsCommandsList {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SoBoticsCommandsList.class);
 
 	public void mention(Room room, PingMessageEvent event, boolean isReply, RunnerService instance) {
-		/*
-		 * if(CheckUtils.checkIfUserIsBlacklisted(event.getUserId())) return;
-		 */
-
+		if(CheckUtils.checkIfUserIsBlacklisted(event.getUserId(), room.getHost().getBaseUrl()))
+			return;
+		
 		Message message = event.getMessage();
 		LOGGER.info("Mention: " + message.getContent());
 		List<SpecialCommand> commands = new ArrayList<>(Arrays.asList(
