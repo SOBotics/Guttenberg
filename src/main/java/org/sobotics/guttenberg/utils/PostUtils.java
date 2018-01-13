@@ -137,11 +137,6 @@ public class PostUtils {
 		 * if (CheckUtils.checkIfUserIsBlacklisted(event.getUserId())){
 		 * System.out.println("Blacklisted user"); return; }
 		 */
-
-		// only privileged users can send feedback
-		if (!event.getMessage().getUser().isRoomOwner() && !event.getMessage().getUser().isModerator()) {
-			return;
-		}
 		
 		PostUtils.checkPingForFeedback(room, event);
 		
