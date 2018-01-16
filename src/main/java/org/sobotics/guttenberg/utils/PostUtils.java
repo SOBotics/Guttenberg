@@ -309,7 +309,7 @@ public class PostUtils {
 						"post_id", ""+reportId,
 						"feedback_type", feedback,
 						"username", ping.getUserName(),
-						"link", "https://chat." + PostUtils.getChatHostAsString(room.getHost()) + "/users/"+ping.getUserId()
+						"link", ping.getMessage().getUser().getProfileLink()
 		                );
 		
 		String status = output.get("status").getAsString();
@@ -328,7 +328,9 @@ public class PostUtils {
 	/**
 	 * Ugly workaround to get <code>ChatHost.getName()</code>, which is not public
 	 * https://github.com/Tunaki/chatexchange/issues/5
+	 * @Deprecated in 1.0; <code>ChatHost.getBaseUrl()</code> now returns the chat-URL
 	 * */
+	@Deprecated
 	public static String getChatHostAsString(ChatHost host) {
 		switch (host) {
 			case STACK_OVERFLOW:
