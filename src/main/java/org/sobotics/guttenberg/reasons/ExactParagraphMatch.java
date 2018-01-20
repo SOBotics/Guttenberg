@@ -46,10 +46,10 @@ public class ExactParagraphMatch implements Reason {
 		JaroWinkler jw = new JaroWinkler();
 		boolean matched = false;
 		
-		List<String> targetCodePs = PostUtils.getCodeParagraphs(this.target.getBodyMarkdown());
+		List<String> targetCodePs = PostUtils.getCodeParagraphs(this.target.getCleanBodyMarkdown());
 		//System.out.println(targetCodePs);
 		for (Post original : this.originals) {
-			List<String> originalCodePs = PostUtils.getCodeParagraphs(original.getBodyMarkdown());
+			List<String> originalCodePs = PostUtils.getCodeParagraphs(original.getCleanBodyMarkdown());
 			
 			//Loop through targetCodePs
 			for (String targetCode : targetCodePs) {
