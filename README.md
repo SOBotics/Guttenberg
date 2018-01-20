@@ -9,7 +9,7 @@ Guttenberg is a bot that searches for plagiarism or duplicated answers on Stack 
 
 Every 60 seconds, Guttenberg fetches the most recent answers (the "targets") on Stack Overflow. For each of these answers, possibly related posts (for example answers to related questions) are collected. All those posts will be checked for different characteristics (such as the [Jaro-Winkler distance](https://en.wikipedia.org/wiki/Jaro–Winkler_distance) of the posts). If at least one of the characteristics meets the requirements, a message like this will be posted in chat:
 
-![sample chat message](http://i.stack.imgur.com/hB7Hz.png)
+![sample chat message](https://i.imgur.com/a35TxnN.png)
 
 
 ## What to do with the reports
