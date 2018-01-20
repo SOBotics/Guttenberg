@@ -12,6 +12,11 @@ Every 60 seconds, Guttenberg fetches the most recent answers (the "targets") on 
 ![sample chat message](http://i.stack.imgur.com/hB7Hz.png)
 
 
+## What to do with the reports
+
+In [this file](feedback.md), we collected information on how we react to Guttenberg's reports such as comments we leave or if and how we flag.
+
+
 ## Accuracy
 
 We have no statistics about the accuracy yet.
