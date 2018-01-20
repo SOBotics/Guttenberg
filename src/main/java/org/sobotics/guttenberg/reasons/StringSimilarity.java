@@ -39,7 +39,7 @@ public class StringSimilarity implements Reason {
 	}
 	
 	public static double similarityOf(Post targetPost, Post originalPost) {
-		String targetBodyMarkdown = targetPost.getBodyMarkdown();
+		String targetBodyMarkdown = targetPost.getCleanBodyMarkdown();
         String targetCodeOnly = targetPost.getCodeOnly();
         String targetPlaintext = targetPost.getPlaintext();
         String targetQuotes = targetPost.getQuotes();
@@ -67,7 +67,7 @@ public class StringSimilarity implements Reason {
         
         JaroWinkler jw = new JaroWinkler();
         
-        String originalBodyMarkdown = originalPost.getBodyMarkdown();
+        String originalBodyMarkdown = originalPost.getCleanBodyMarkdown();
         String originalCodeOnly = originalPost.getCodeOnly();
         String originalPlaintext = originalPost.getPlaintext();
         String originalQuotes = originalPost.getQuotes();

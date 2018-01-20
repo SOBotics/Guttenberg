@@ -86,8 +86,8 @@ public class PostMatch implements Comparable<PostMatch>{
         	LOGGER.warn("Could not load quantifiers from general.properties. Using hardcoded", e);
         }
         
-		int lengthOne = this.original.getBodyMarkdown().length();
-		int lengthTwo = this.target.getBodyMarkdown().length();
+		int lengthOne = this.original.getCleanBodyMarkdown().length();
+		int lengthTwo = this.target.getCleanBodyMarkdown().length();
 		
 		return lengthOne >= minimumLength && lengthTwo >= minimumLength;
 	}
