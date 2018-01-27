@@ -16,7 +16,7 @@
 > This post is plagiarized from an other answer [link to the other answer], as can be seen here [link to CopyPastor] #plagiarism
 
 ### Repost
-We only flag reposts, if the user posted the same answer again, the score is below 1.0 and after we added a [comment](#auto-comments).
+We leave a comment on reposts, but only flag them if the Guttenberg report score is < 1.0. (when the score is 1.0, an automatic flag has already been raised)
 > The answer is a repost of their other answer [link to the other answer], but as there are slight differences as seen here [link to CopyPastor], no auto flag would be raised.
 
 ## Auto-comment
