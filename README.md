@@ -19,7 +19,7 @@ In [this file](feedback.md), we collected information on how we react to Guttenb
 
 ## Accuracy
 
-We are aleady collecting data with [CopyPastor](https://github.com/SOBotics/CopyPastor) to provide statisctics, but since there are not so many posts to report, it will take a while until we have enough data.
+We are aleady collecting data with [CopyPastor](https://github.com/SOBotics/CopyPastor) to provide statisctics, but since there are not that many posts to report, it will take a while until we have enough data.
 
 
   [1]: http://chat.stackoverflow.com/rooms/111347/sobotics
