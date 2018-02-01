@@ -224,7 +224,7 @@ public class PostUtils {
 			originalUserLink = "https://stackoverflow.com/users/" + original.getAnswerer().getUserId() + "/";
 		}
 		
-		String url = prop.getProperty("copypastor_url", "http://guttenberg.sobotics.org:5000")+"/posts/create";
+		String url = prop.getProperty("copypastor_url", "http://localhost:5000")+"/posts/create";
 		JsonObject output = JsonUtils.post(url,
 						"key", prop.getProperty("copypastor_key", "no_key"),
 		                "url_one","//stackoverflow.com/a/"+target.getAnswerID()+"/4687348",
@@ -242,7 +242,7 @@ public class PostUtils {
 		                "user_url_one", targetUserLink,
 		                "user_url_two", originalUserLink);
 		
-		return prop.getProperty("copypastor_url", "http://guttenberg.sobotics.org:5000") + "/posts/" + output.get("post_id").getAsString();
+		return prop.getProperty("copypastor_url", "http://localhost:5000") + "/posts/" + output.get("post_id").getAsString();
 	}
 	
 	/**
@@ -322,7 +322,7 @@ public class PostUtils {
 	public static void storeFeedback(Room room, PingMessageEvent ping, int reportId, String feedback) throws IOException {
 		Properties prop = Guttenberg.getLoginProperties();
 		
-		String url = prop.getProperty("copypastor_url", "http://guttenberg.sobotics.org:5000")+"/feedback/create";
+		String url = prop.getProperty("copypastor_url", "http://localhost:5000")+"/feedback/create";
 		JsonObject output = JsonUtils.post(url,
 						"key", prop.getProperty("copypastor_key", "no_key"),
 						"post_id", ""+reportId,
