@@ -209,6 +209,21 @@ public class PostUtils {
 	public static String storeReport(Post target, Post original) throws IOException {
 		Properties prop = Guttenberg.getLoginProperties();
 		
+		String targetUsername = "Unregistered User";
+		String targetUserLink = "https://www.youtube.com/watch?v=DLzxrzFCyOs";
+		String originalUsername = "Unregistered User";
+		String originalUserLink = "https://www.youtube.com/watch?v=DLzxrzFCyOs";
+		
+		if (target.getAnswerer() != null) {
+			targetUsername = target.getAnswerer().getUsername();
+			targetUserLink = "https://stackoverflow.com/users/" + target.getAnswerer().getUserId() + "/";
+		}
+		
+		if (original.getAnswerer() != null) {
+			originalUsername = original.getAnswerer().getUsername();
+			originalUserLink = "https://stackoverflow.com/users/" + original.getAnswerer().getUserId() + "/";
+		}
+		
 		String url = prop.getProperty("copypastor_url", "http://guttenberg.sobotics.org:5000")+"/posts/create";
 		JsonObject output = JsonUtils.post(url,
 						"key", prop.getProperty("copypastor_key", "no_key"),
@@ -221,7 +236,11 @@ public class PostUtils {
 		                "date_one",""+target.getAnswerCreationDate().getEpochSecond(),
 		                "date_two",""+original.getAnswerCreationDate().getEpochSecond(),
 		                "body_one",target.getUnescapedBodyMarkdown(),
-		                "body_two",original.getUnescapedBodyMarkdown());
+		                "body_two",original.getUnescapedBodyMarkdown(),
+		                "username_one", targetUsername,
+		                "username_two", originalUsername,
+		                "user_url_one", targetUserLink,
+		                "user_url_two", originalUserLink);
 		
 		return prop.getProperty("copypastor_url", "http://guttenberg.sobotics.org:5000") + "/posts/" + output.get("post_id").getAsString();
 	}
