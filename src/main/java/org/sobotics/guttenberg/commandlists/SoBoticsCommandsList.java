@@ -37,7 +37,7 @@ public class SoBoticsCommandsList {
 		}
 		
 		Message message = event.getMessage();
-		LOGGER.info("Mention: " + message.getContent());
+		LOGGER.info("Mention by " + event.getUserId() + ": " + message.getContent());
 		List<SpecialCommand> commands = new ArrayList<>(Arrays.asList(
 				new Alive(message),
 				new CheckInternet(message),

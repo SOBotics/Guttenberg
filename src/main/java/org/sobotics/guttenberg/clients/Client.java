@@ -80,6 +80,7 @@ public class Client {
         DataService redundaData = redunda.buildDataService();
         redundaData.trackFile(FilePathUtils.optedUsersFile);
         redundaData.trackFile(FilePathUtils.generalPropertiesFile);
+        redundaData.trackFile(FilePathUtils.blacklistedUsersFile);
         
         if (productionInstance.equals("false")) {
         	redunda.setDebugging(true);
