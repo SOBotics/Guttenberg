@@ -133,10 +133,11 @@ public class PostUtils {
 		Message parentMessage = room.getMessage(event.getParentMessageId());
 		long parentMessageId = parentMessage.getId();
 		System.out.println(message.getContent());
-		/*
-		 * if (CheckUtils.checkIfUserIsBlacklisted(event.getUserId())){
-		 * System.out.println("Blacklisted user"); return; }
-		 */
+		
+		if(CheckUtils.checkIfUserIsBlacklisted(event.getUserId(), room.getHost().getBaseUrl())) {
+			LOGGER.info("Blacklisted user " + event.getUserName() + " replied to the bot.");
+			return;
+		}
 		
 		PostUtils.checkPingForFeedback(room, event);
 		
@@ -209,7 +210,22 @@ public class PostUtils {
 	public static String storeReport(Post target, Post original) throws IOException {
 		Properties prop = Guttenberg.getLoginProperties();
 		
-		String url = prop.getProperty("copypastor_url", "http://guttenberg.sobotics.org:5000")+"/posts/create";
+		String targetUsername = "";
+		String targetUserLink = "";
+		String originalUsername = "";
+		String originalUserLink = "";
+		
+		if (target.getAnswerer() != null) {
+			targetUsername = target.getAnswerer().getUsername();
+			targetUserLink = "https://stackoverflow.com/users/" + target.getAnswerer().getUserId() + "/";
+		}
+		
+		if (original.getAnswerer() != null) {
+			originalUsername = original.getAnswerer().getUsername();
+			originalUserLink = "https://stackoverflow.com/users/" + original.getAnswerer().getUserId() + "/";
+		}
+		
+		String url = prop.getProperty("copypastor_url", "http://localhost:5000")+"/posts/create";
 		JsonObject output = JsonUtils.post(url,
 						"key", prop.getProperty("copypastor_key", "no_key"),
 		                "url_one","//stackoverflow.com/a/"+target.getAnswerID(),
@@ -219,9 +235,13 @@ public class PostUtils {
 		                "date_one",""+target.getAnswerCreationDate().getEpochSecond(),
 		                "date_two",""+original.getAnswerCreationDate().getEpochSecond(),
 		                "body_one",target.getUnescapedBodyMarkdown(),
-		                "body_two",original.getUnescapedBodyMarkdown());
+		                "body_two",original.getUnescapedBodyMarkdown(),
+		                "username_one", targetUsername,
+		                "username_two", originalUsername,
+		                "user_url_one", targetUserLink,
+		                "user_url_two", originalUserLink);
 		
-		return prop.getProperty("copypastor_url", "http://guttenberg.sobotics.org:5000") + "/posts/" + output.get("post_id").getAsString();
+		return prop.getProperty("copypastor_url", "http://localhost:5000") + "/posts/" + output.get("post_id").getAsString();
 	}
 	
 	/**
@@ -301,13 +321,13 @@ public class PostUtils {
 	public static void storeFeedback(Room room, PingMessageEvent ping, int reportId, String feedback) throws IOException {
 		Properties prop = Guttenberg.getLoginProperties();
 		
-		String url = prop.getProperty("copypastor_url", "http://guttenberg.sobotics.org:5000")+"/feedback/create";
+		String url = prop.getProperty("copypastor_url", "http://localhost:5000")+"/feedback/create";
 		JsonObject output = JsonUtils.post(url,
 						"key", prop.getProperty("copypastor_key", "no_key"),
 						"post_id", ""+reportId,
 						"feedback_type", feedback,
 						"username", ping.getUserName(),
-						"link", "https://chat." + PostUtils.getChatHostAsString(room.getHost()) + "/users/"+ping.getUserId()
+						"link", ping.getMessage().getUser().getProfileLink()
 		                );
 		
 		String status = output.get("status").getAsString();
@@ -326,7 +346,9 @@ public class PostUtils {
 	/**
 	 * Ugly workaround to get <code>ChatHost.getName()</code>, which is not public
 	 * https://github.com/Tunaki/chatexchange/issues/5
+	 * @Deprecated in 1.0; <code>ChatHost.getBaseUrl()</code> now returns the chat-URL
 	 * */
+	@Deprecated
 	public static String getChatHostAsString(ChatHost host) {
 		switch (host) {
 			case STACK_OVERFLOW:
