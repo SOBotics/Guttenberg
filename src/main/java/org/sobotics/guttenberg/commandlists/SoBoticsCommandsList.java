@@ -2,7 +2,6 @@ package org.sobotics.guttenberg.commandlists;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.sobotics.redunda.PingService;
 import org.sobotics.guttenberg.commands.*;
 import org.sobotics.guttenberg.services.RunnerService;
+import org.sobotics.guttenberg.utils.CheckUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.FileUtils;
 
@@ -31,12 +31,13 @@ public class SoBoticsCommandsList {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SoBoticsCommandsList.class);
 
 	public void mention(Room room, PingMessageEvent event, boolean isReply, RunnerService instance) {
-		/*
-		 * if(CheckUtils.checkIfUserIsBlacklisted(event.getUserId())) return;
-		 */
-
+		if(CheckUtils.checkIfUserIsBlacklisted(event.getUserId(), room.getHost().getBaseUrl())) {
+			LOGGER.info("Blacklisted user " + event.getUserName() + " replied to the bot.");
+			return;
+		}
+		
 		Message message = event.getMessage();
-		LOGGER.info("Mention: " + message.getContent());
+		LOGGER.info("Mention by " + event.getUserId() + ": " + message.getContent());
 		List<SpecialCommand> commands = new ArrayList<>(Arrays.asList(
 				new Alive(message),
 				new CheckInternet(message),

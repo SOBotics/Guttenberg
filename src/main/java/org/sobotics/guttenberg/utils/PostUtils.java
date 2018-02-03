@@ -133,10 +133,11 @@ public class PostUtils {
 		Message parentMessage = room.getMessage(event.getParentMessageId());
 		long parentMessageId = parentMessage.getId();
 		System.out.println(message.getContent());
-		/*
-		 * if (CheckUtils.checkIfUserIsBlacklisted(event.getUserId())){
-		 * System.out.println("Blacklisted user"); return; }
-		 */
+		
+		if(CheckUtils.checkIfUserIsBlacklisted(event.getUserId(), room.getHost().getBaseUrl())) {
+			LOGGER.info("Blacklisted user " + event.getUserName() + " replied to the bot.");
+			return;
+		}
 		
 		PostUtils.checkPingForFeedback(room, event);
 		
