@@ -209,10 +209,10 @@ public class PostUtils {
 	public static String storeReport(Post target, Post original) throws IOException {
 		Properties prop = Guttenberg.getLoginProperties();
 		
-		String targetUsername = "Unregistered User";
-		String targetUserLink = "https://www.youtube.com/watch?v=DLzxrzFCyOs";
-		String originalUsername = "Unregistered User";
-		String originalUserLink = "https://www.youtube.com/watch?v=DLzxrzFCyOs";
+		String targetUsername = "";
+		String targetUserLink = "";
+		String originalUsername = "";
+		String originalUserLink = "";
 		
 		if (target.getAnswerer() != null) {
 			targetUsername = target.getAnswerer().getUsername();
