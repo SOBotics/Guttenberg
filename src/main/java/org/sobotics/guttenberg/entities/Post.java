@@ -81,7 +81,8 @@ public class Post {
     public String getCleanBodyMarkdown() {
     	String md = this.getBodyMarkdown();
     	
-    	md.replaceAll("<!-- begin snippet:.*-->|<!-- language:.*-->|<!-- end snippet.*-->", "");
+    	//#150: Snippets still match
+    	md = md.replaceAll("<!-- begin snippet:.*-->|<!-- language:.*-->|<!-- end snippet.*-->", "");
     	
     	return md;
     }
