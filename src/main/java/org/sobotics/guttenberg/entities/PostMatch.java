@@ -23,6 +23,7 @@ public class PostMatch implements Comparable<PostMatch>{
 	private Post original;
 	private List<String> reasons = new ArrayList<String>();
 	private double totalScore = 0;
+	private String copyPastorReasonString = "";
 	
 	public PostMatch(Post targetPost, Post originalPost) {
 		this.target = targetPost;
@@ -37,16 +38,6 @@ public class PostMatch implements Comparable<PostMatch>{
 		return this.original;
 	}
 	
-	@Deprecated
-	public void addReason(Reason reason) {
-		if (!reasons.contains(reason.description())) {
-			//add reason
-			this.reasons.add(reason.description());
-			//add score
-			this.totalScore += reason.score();
-		}
-	}
-	
 	public void addReason(String reason, double score) {
 		if (!reasons.contains(reason)) {
 			//add reason
@@ -56,8 +47,19 @@ public class PostMatch implements Comparable<PostMatch>{
 		}
 	}
 	
+	public void addReasonToCopyPastorString(String reason, double score) {
+		if (!reasons.contains(reason)) {
+			double roundedScore = Math.round(score*100.0)/100.0;
+			this.copyPastorReasonString += "," + reason + ":" + roundedScore;
+		}
+	}
+	
 	public List<String> getReasonStrings() {
 		return this.reasons;
+	}
+	
+	public String getCopyPastorReasonString() {
+		return this.copyPastorReasonString;
 	}
 	
 	public double getTotalScore() {

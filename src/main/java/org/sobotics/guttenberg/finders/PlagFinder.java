@@ -178,6 +178,8 @@ public class PlagFinder {
     						alreadyExists = true;
     						existingMatch.addReason(reason.description(i), scores.get(n));
     						
+    						existingMatch.addReasonToCopyPastorString(reason.description(i, false), scores.get(n));
+    						
     						matches.set(i, existingMatch);
     					}
     					
