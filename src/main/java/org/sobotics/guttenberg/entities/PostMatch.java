@@ -50,7 +50,11 @@ public class PostMatch implements Comparable<PostMatch>{
 	public void addReasonToCopyPastorString(String reason, double score) {
 		if (!reasons.contains(reason)) {
 			double roundedScore = Math.round(score*100.0)/100.0;
-			this.copyPastorReasonString += "," + reason + ":" + roundedScore;
+			
+			if (copyPastorReasonString.length() > 0)
+				this.copyPastorReasonString += ",";
+			
+			this.copyPastorReasonString += reason + ":" + roundedScore;
 		}
 	}
 	
