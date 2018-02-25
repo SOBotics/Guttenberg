@@ -9,7 +9,6 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sobotics.guttenberg.reasons.Reason;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 
 /**
@@ -105,8 +104,8 @@ public class PostMatch implements Comparable<PostMatch>{
 		boolean minimumTimeSpanChecked = minutes >= 5;
 		
 		//#130: Time-span for reposts: 0 minutes
-		if (this.target.getAnswerID() == this.original.getAnswerID())
-			minimumTimeSpanChecked = minutes >= 0;
+		if (this.isRepost())
+			minimumTimeSpanChecked = targetCreation.getEpochSecond() > originalCreation.getEpochSecond();
 		
 		return lengthOne >= minimumLength && lengthTwo >= minimumLength && minimumTimeSpanChecked;
 	}
