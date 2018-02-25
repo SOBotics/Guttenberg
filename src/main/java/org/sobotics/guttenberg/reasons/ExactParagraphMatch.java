@@ -27,6 +27,8 @@ public class ExactParagraphMatch implements Reason {
 	private List<Double> scoreList = new ArrayList<Double>();
 	private double score = -1;
 	
+	public static final String LABEL = "Exact paragraph match";
+	
 	public ExactParagraphMatch(Post target, List<Post> originalPosts) {
 		this.target = target;
 		this.originals = originalPosts;
@@ -74,15 +76,20 @@ public class ExactParagraphMatch implements Reason {
 		
 		return matched;
 	}
-
-	@Override
-	public String description() {
-		return "Exact paragraph match";
-	}
 	
 	@Override
 	public String description(int index) {
-		return "Exact paragraph match";
+		return LABEL;
+	}
+	
+	@Override
+	public String description(int index, boolean includingScore) {
+		if (includingScore) {
+			double roundedScore = Math.round(this.scoreList.get(index)*100.0)/100.0;
+			return score() >= 0 ? LABEL + " "+roundedScore : LABEL;
+		} else {
+			return LABEL;
+		}
 	}
 
 	@Override

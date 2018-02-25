@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.entities.Post;
+import org.sobotics.guttenberg.entities.PostMatch;
 import org.sobotics.guttenberg.entities.SOUser;
 
 import com.google.gson.JsonArray;
@@ -206,7 +207,51 @@ public class PostUtils {
 
 	}
 	
+	public static String storeReport(PostMatch match) throws IOException {
+		Properties prop = Guttenberg.getLoginProperties();
+		
+		String targetUsername = "";
+		String targetUserLink = "";
+		String originalUsername = "";
+		String originalUserLink = "";
+		
+		Post target = match.getTarget();
+		Post original = match.getOriginal();
+		
+		
+		
+		if (target.getAnswerer() != null) {
+			targetUsername = target.getAnswerer().getUsername();
+			targetUserLink = "https://stackoverflow.com/users/" + target.getAnswerer().getUserId() + "/";
+		}
+		
+		if (original.getAnswerer() != null) {
+			originalUsername = original.getAnswerer().getUsername();
+			originalUserLink = "https://stackoverflow.com/users/" + original.getAnswerer().getUserId() + "/";
+		}
+		
+		String url = prop.getProperty("copypastor_url", "http://localhost:5000")+"/posts/create";
+		JsonObject output = JsonUtils.post(url,
+						"key", prop.getProperty("copypastor_key", "no_key"),
+		                "url_one","//stackoverflow.com/a/"+target.getAnswerID(),
+		                "url_two","//stackoverflow.com/a/"+original.getAnswerID(),
+		                "title_one","Possible Plagiarism",
+		                "title_two", "Original Post",
+		                "date_one",""+target.getAnswerCreationDate().getEpochSecond(),
+		                "date_two",""+original.getAnswerCreationDate().getEpochSecond(),
+		                "body_one",target.getUnescapedBodyMarkdown(),
+		                "body_two",original.getUnescapedBodyMarkdown(),
+		                "username_one", targetUsername,
+		                "username_two", originalUsername,
+		                "user_url_one", targetUserLink,
+		                "user_url_two", originalUserLink,
+		                "score", ""+match.getTotalScore(),
+		                "reasons", match.getCopyPastorReasonString());
+		
+		return prop.getProperty("copypastor_url", "http://localhost:5000") + "/posts/" + output.get("post_id").getAsString();
+	}
 	
+	@Deprecated
 	public static String storeReport(Post target, Post original) throws IOException {
 		Properties prop = Guttenberg.getLoginProperties();
 		
