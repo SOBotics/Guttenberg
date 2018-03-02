@@ -18,19 +18,21 @@ public interface Reason {
 	/**
 	 * The description of the reason
 	 * 
-	 * @return a short description of the reason like "String similarity"
-	 * */
-	@Deprecated
-	public String description();
-	
-	/**
-	 * The description of the reason
-	 * 
 	 * @parameter index The index in the `matchedPosts()`-array
 	 * 
 	 * @return a short description of the reason like "String similarity"
 	 * */
 	public String description(int index);
+	
+	/**
+	 * The description of the reason
+	 * 
+	 * @parameter index The index in the `matchedPosts()`-array
+	 * @parameter includingScore if false, the score won't be included in the description
+	 * 
+	 * @return a short description of the reason like "String similarity"
+	 * */
+	String description(int index, boolean includingScore);
 	
 	/**
 	 * The score that specific reason reached. This has no influence on whether a post is reported or not.

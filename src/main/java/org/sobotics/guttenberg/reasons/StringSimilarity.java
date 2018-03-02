@@ -27,6 +27,8 @@ public class StringSimilarity implements Reason {
 	private double score = -1;
 	private boolean ignoringScore = false;
 	
+	public static final String LABEL = "String similarity";
+	
 	public StringSimilarity(Post target, List<Post> originalPosts) {
 		this.target = target;
 		this.originals = originalPosts;
@@ -136,17 +138,20 @@ public class StringSimilarity implements Reason {
 		
 		return matched;
 	}
-
-	@Override
-	public String description() {
-		double roundedScore = Math.round(this.score()*100.0)/100.0;
-		return score() >= 0 ? "String similarity "+roundedScore : "String similarity";
-	}
 	
 	@Override
 	public String description(int index) {
-		double roundedScore = Math.round(this.scoreList.get(index)*100.0)/100.0;
-		return score() >= 0 ? "String similarity "+roundedScore : "String similarity";
+		return description(index, true);
+	}
+	
+	@Override
+	public String description(int index, boolean includingScore) {
+		if (includingScore) {
+			double roundedScore = Math.round(this.scoreList.get(index)*100.0)/100.0;
+			return score() >= 0 ? LABEL + " "+roundedScore : LABEL;
+		} else {
+			return LABEL;
+		}
 	}
 
 	@Override

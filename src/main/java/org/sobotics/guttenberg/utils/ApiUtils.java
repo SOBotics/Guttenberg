@@ -21,7 +21,7 @@ public class ApiUtils {
     }
     
     public static JsonObject getLinkedQuestionsById(Integer questionId, String site, String apiKey) throws IOException{
-        String questionIdUrl = "https://api.stackexchange.com/2.2/questions/"+questionId+"/related";
+        String questionIdUrl = "https://api.stackexchange.com/2.2/questions/"+questionId+"/linked";
         return JsonUtils.get(questionIdUrl,"site",site,"key",apiKey);
     }
     

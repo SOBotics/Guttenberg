@@ -41,7 +41,7 @@ public class SoBoticsPostPrinter implements PostPrinter {
 		double roundedTotalScore = Math.round(match.getTotalScore()*100.0)/100.0;
 		
 		try {
-			reportLink = PostUtils.storeReport(match.getTarget(), match.getOriginal());
+			reportLink = PostUtils.storeReport(match);
 		}
 		catch (IOException e) {
 			LOGGER.warn(e.getMessage());
