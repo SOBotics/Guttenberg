@@ -59,19 +59,22 @@ public class SoBoticsCommandsList {
 		for (SpecialCommand command : commands) {
 			if (command.validate()) {
 				boolean standbyMode = PingService.standby.get();
-				if (command instanceof CheckUser){
-					User user = event.getUser().get();
-					if (!user.isModerator() && !user.isRoomOwner()){
-						room.replyTo(message.getId(), "This command can only be executed by RO or moderator");
-						return;
+
+				if (standbyMode == true) {
+					if (command.availableInStandby() == true) {
+						command.execute(room, instance);
 					}
-				}
-				if (standbyMode && command.availableInStandby()) {
-					command.execute(room, instance);
 				} else {
+					if (command instanceof CheckUser){
+						User user = event.getUser().get();
+						if (!user.isModerator() && !user.isRoomOwner()){
+							room.replyTo(message.getId(), "This command can only be executed by RO or moderator");
+							return;
+						}
+					}
+					// Ideally this should be implemented in the validate method of the checkuser command.
 					command.execute(room, instance);
 				}
-				//maybe return?, is the idea that multiple commands can match?
 			}
 		}
 	}
