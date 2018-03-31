@@ -41,7 +41,7 @@ public class RelatedAnswersFinder {
             idString += n++ == 0 ? id : ";"+id;
         }
         
-        System.out.println(idString);
+        LOGGER.debug("Related IDs: " + idString);
         
         if (idString.length() < 2)
         	return new ArrayList<Post>();
