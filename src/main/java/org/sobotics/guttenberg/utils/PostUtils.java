@@ -248,6 +248,8 @@ public class PostUtils {
 		                "score", ""+match.getTotalScore(),
 		                "reasons", match.getCopyPastorReasonString());
 		
+		System.out.println(match.getCopyPastorReasonString());
+		
 		return prop.getProperty("copypastor_url", "http://localhost:5000") + "/posts/" + output.get("post_id").getAsString();
 	}
 	
