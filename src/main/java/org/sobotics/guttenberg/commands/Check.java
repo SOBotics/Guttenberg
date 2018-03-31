@@ -40,11 +40,7 @@ public class Check implements SpecialCommand {
     @Override
     public void execute(Room room, RunnerService instance) {
         String word = CommandUtils.extractData(message.getPlainContent()).trim();
-        Integer returnValue = 0;
-
-        if(word.contains(" ")){
-            String parts[] = word.split(" ");
-        }
+        
         if(word.contains("/"))
         {                
             word = CommandUtils.getAnswerId(word);
@@ -65,9 +61,12 @@ public class Check implements SpecialCommand {
         try {
             JsonObject answer = ApiUtils.getAnswerDetailsById(answerId, "stackoverflow", prop.getProperty("apikey", ""));
             JsonObject target = answer.get("items").getAsJsonArray().get(0).getAsJsonObject();
+            LOGGER.trace("Checking answer: " + target.toString());
             PlagFinder finder = new PlagFinder(target);
             finder.collectData();
             List<PostMatch> matches = finder.matchesForReasons(true);
+            
+            LOGGER.trace("Found " + matches.size() + " PostMatches");
             
             if (matches.size() > 0) {
             	//sort the matches
@@ -91,7 +90,7 @@ public class Check implements SpecialCommand {
             	room.replyTo(message.getId(), "No similar posts found.");
             }
         } catch (IOException e) {
-            LOGGER.error("ERROR", e);
+            LOGGER.error("Error while executing the \"check\"-command!", e);
         }
     }
 

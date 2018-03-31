@@ -128,6 +128,7 @@ public class RunnerService implements PingServiceDelegate {
     
     @Override
 	public void standbyStatusChanged(boolean newStatus) {
+    	LOGGER.info("New standby status: " + newStatus);
 		if (newStatus == false) {
 			StatusUtils.lastExecutionFinished = Instant.now();
 			StatusUtils.lastSucceededExecutionStarted = Instant.now().minusSeconds(30);

@@ -19,14 +19,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import fr.tunaki.stackoverflow.chat.ChatHost;
 import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
 import fr.tunaki.stackoverflow.chat.event.PingMessageEvent;
 
 public class PostUtils {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Guttenberg.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PostUtils.class);
 
 	private PostUtils() {
 		super();
@@ -58,7 +57,8 @@ public class PostUtils {
 
 			np.setTags(tags);
 		} catch (Throwable e) {
-			// LOGGER.warn("No tags found");
+			//disabled, since our requests are causing a bug: https://stackapps.com/q/7213/43403
+			//LOGGER.warn("No tags found", e);
 		}
 
 		SOUser answerer = new SOUser();
@@ -69,7 +69,7 @@ public class PostUtils {
 			answerer.setUserType(answererJSON.get("user_type").getAsString());
 			answerer.setUserId(answererJSON.get("user_id").getAsInt());
 		} catch (NullPointerException e) {
-			
+			LOGGER.debug("Could not load user", e);
 		}
 
 		np.setAnswerer(answerer);
@@ -133,7 +133,7 @@ public class PostUtils {
 		Message message = event.getMessage();
 		Message parentMessage = room.getMessage(event.getParentMessageId());
 		long parentMessageId = parentMessage.getId();
-		System.out.println(message.getContent());
+		LOGGER.debug("Received reply: " + message.getContent());
 		
 		if(CheckUtils.checkIfUserIsBlacklisted(event.getUserId(), room.getHost().getBaseUrl())) {
 			LOGGER.info("Blacklisted user " + event.getUserName() + " replied to the bot.");
@@ -146,7 +146,7 @@ public class PostUtils {
 		boolean isReport = true;
 		if (!parentMessage.getPlainContent().startsWith("[ [")) {
 			if (parentMessage.getPlainContent().startsWith("---")) {
-				LOGGER.info("This post has already been handled");
+				LOGGER.debug("This post has already been handled");
 				return;
 			}
 
@@ -201,13 +201,14 @@ public class PostUtils {
 		try {
 			return Integer.parseInt(suid);
 		} catch (NumberFormatException e) {
-			LOGGER.error(suid + " can't be parsed");
+			LOGGER.error(suid + " can't be parsed", e);
 			return null;
 		}
 
 	}
 	
 	public static String storeReport(PostMatch match) throws IOException {
+		LOGGER.debug("Sending match to CopyPastor...");
 		Properties prop = Guttenberg.getLoginProperties();
 		
 		String targetUsername = "";
@@ -247,6 +248,10 @@ public class PostUtils {
 		                "user_url_two", originalUserLink,
 		                "score", ""+match.getTotalScore(),
 		                "reasons", match.getCopyPastorReasonString());
+		
+		LOGGER.debug("Sending data to CopyPastor");
+		LOGGER.debug("Score: " + match.getTotalScore());
+		LOGGER.debug("Reasons: " + match.getCopyPastorReasonString());
 		
 		return prop.getProperty("copypastor_url", "http://localhost:5000") + "/posts/" + output.get("post_id").getAsString();
 	}
@@ -293,7 +298,7 @@ public class PostUtils {
 	 * Sends the feedback to CopyPastor
 	 * */
 	public static void checkPingForFeedback(Room room, PingMessageEvent ping) {
-		LOGGER.info("Checking message for feedback");
+		LOGGER.debug("Checking message for feedback");
 		int reportId = -1;
 		Message reportMsg = null;
 		Message pingMsg = ping.getMessage();
@@ -308,6 +313,7 @@ public class PostUtils {
 		
 		if (reportMsg != null) {
 			reportId = PostUtils.getReportIdFromChatMessage(reportMsg);
+			LOGGER.trace("ReportId in message: " + reportId);
 		}
 		
 		if (reportId == -1)
@@ -364,6 +370,7 @@ public class PostUtils {
 	 * @param feedback tp or fp
 	 * */
 	public static void storeFeedback(Room room, PingMessageEvent ping, int reportId, String feedback) throws IOException {
+		LOGGER.debug("Sending feedback " + feedback + " for report " + reportId);
 		Properties prop = Guttenberg.getLoginProperties();
 		
 		String url = prop.getProperty("copypastor_url", "http://localhost:5000")+"/feedback/create";
@@ -374,6 +381,8 @@ public class PostUtils {
 						"username", ping.getUserName(),
 						"link", ping.getMessage().getUser().getProfileLink()
 		                );
+		
+		LOGGER.trace("Response form CopyPastor:\n" + output);
 		
 		String status = output.get("status").getAsString();
 		if (!status.equalsIgnoreCase("success")) {
@@ -387,23 +396,4 @@ public class PostUtils {
 			LOGGER.error(statusMsg);
 		} // if
 	} // storeFeedback
-	
-	/**
-	 * Ugly workaround to get <code>ChatHost.getName()</code>, which is not public
-	 * https://github.com/Tunaki/chatexchange/issues/5
-	 * @Deprecated in 1.0; <code>ChatHost.getBaseUrl()</code> now returns the chat-URL
-	 * */
-	@Deprecated
-	public static String getChatHostAsString(ChatHost host) {
-		switch (host) {
-			case STACK_OVERFLOW:
-				return "stackoverflow.com";
-			case STACK_EXCHANGE:
-				return "stackexchange.com";
-			case META_STACK_EXCHANGE:
-				return "meta.stackexchange.com";
-			default:
-				return "stackoverflow.com"; 
-		}
-	}
 } // class

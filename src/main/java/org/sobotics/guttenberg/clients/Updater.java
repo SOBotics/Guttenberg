@@ -34,7 +34,7 @@ public class Updater {
             LOGGER.error("Could not load properties", e);
         }
         
-        LOGGER.info("Loaded properties");
+        LOGGER.debug("Loaded properties");
         
         String versionString = guttenbergProperties.getProperty("version", "0.0.0");
         this.currentVersion = new Version(versionString);
@@ -49,24 +49,23 @@ public class Updater {
         for (File file : files) {
             if (file.isFile()) {
                 String name = file.getName();
-                //LOGGER.info("File: "+name);
+                LOGGER.debug("File: "+name);
                 Matcher matcher = pattern.matcher(name);
                 matcher.find();
-                //LOGGER.info("Init matcher");
+                LOGGER.debug("Init matcher");
                 String v = "";
                 
                 try {
                     v = matcher.group(1);
                 } catch (Exception e) {
-                    //LOGGER.error("ERROR", e);
+                    LOGGER.warn("Filename " + name + " didn't match the pattern.", e);
                 }
                 
                 
-                //LOGGER.info("Matched");
                 if (v != null && v.length() > 0) {
-
+                	LOGGER.debug("Matched");
                     Version version = new Version(v);
-                    
+                    LOGGER.debug("Found version " + version.get());
                     if (this.currentVersion.compareTo(version) == -1) {
                         //higher than current version
                         if (this.newVersion.compareTo(version) == -1) {

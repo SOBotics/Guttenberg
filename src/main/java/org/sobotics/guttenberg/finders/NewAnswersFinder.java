@@ -50,7 +50,7 @@ public class NewAnswersFinder {
             //fetched answers
             
             JsonArray items = apiResult.get("items").getAsJsonArray();
-            //System.out.println(items);
+            LOGGER.trace("New answers:\n" + items.toString());
             LOGGER.info("findRecentAnswers() done with "+items.size()+" items");
             List<Post> posts = new ArrayList<Post>();
             
