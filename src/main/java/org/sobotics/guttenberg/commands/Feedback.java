@@ -55,9 +55,9 @@ public class Feedback implements SpecialCommand {
         }
         
         try {
-        	reportId = Integer.parseInt(word);
+        	reportId = CommandUtils.getPostIdFromUrl(word);
         } catch (Exception e) {
-        	LOGGER.info("Invalid report-ID", e);
+        	LOGGER.error("Report-URL could not be parsed!", e);
         }
         
         if (reportId == -1)
