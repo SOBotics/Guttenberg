@@ -51,13 +51,13 @@ public class Guttenberg {
 	public void execute() throws Throwable {
 		boolean standbyMode = PingService.standby.get();
 		if (standbyMode == true) {
-			LOGGER.info("STANDBY - " + Instant.now());
+			LOGGER.info("STANDBY - Abort execute()");
 			return;
 		}
 		
 		Instant startTime = Instant.now();
 		Properties props = new Properties();
-		LOGGER.info("Executing at - "+startTime);
+		LOGGER.info("Starting Guttenberg.execute() ...");
 		
 		try {
 			props.load(new FileInputStream(FilePathUtils.generalPropertiesFile));
@@ -138,7 +138,7 @@ public class Guttenberg {
 		
 		StatusUtils.lastSucceededExecutionStarted = startTime;
 		StatusUtils.lastExecutionFinished = Instant.now();
-		LOGGER.info("Finished at - "+StatusUtils.lastExecutionFinished);
+		LOGGER.info("Guttenberg.execute() finished");
 	}
 
 	public static Properties getLoginProperties() {

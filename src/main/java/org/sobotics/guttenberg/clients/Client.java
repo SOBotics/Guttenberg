@@ -124,7 +124,7 @@ public class Client {
         runner.start();
         
         StatusUtils.startupDate = Instant.now();
-        LOGGER.info(StatusUtils.startupDate + " - Successfully launched Guttenberg!");
+        LOGGER.info("Successfully launched Guttenberg!");
     }
 
 }
