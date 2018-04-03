@@ -1,5 +1,7 @@
 package org.sobotics.guttenberg.commands;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.services.RunnerService;
 import org.sobotics.guttenberg.utils.CommandUtils;
 
@@ -9,6 +11,8 @@ import fr.tunaki.stackoverflow.chat.User;
 
 public class Kill implements SpecialCommand {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(Kill.class);
+	
 	private static final String CMD = "kill";
 	private final Message message;
     
@@ -26,11 +30,12 @@ public class Kill implements SpecialCommand {
 		User user = message.getUser();
     	
     	if (!user.isModerator() && !user.isRoomOwner()) {
+    		LOGGER.warn("User " + user.getName() + " tried to kill the bot!");
     		room.replyTo(message.getId(), "Sorry, but only room-owners and moderators can use this command (@FelixSFD)");
     		return;
     	}
     	
-    	System.out.println("KILLED BY "+user.getName());
+    	LOGGER.error("KILLED BY "+user.getName());
     	System.exit(0);
 	}
 

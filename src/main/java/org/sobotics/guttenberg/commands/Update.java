@@ -1,5 +1,7 @@
 package org.sobotics.guttenberg.commands;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.clients.Updater;
 import org.sobotics.guttenberg.services.RunnerService;
 import org.sobotics.guttenberg.utils.CommandUtils;
@@ -8,6 +10,8 @@ import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
 
 public class Update implements SpecialCommand {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Update.class);
+	
 	private static final String CMD = "update";
     private final Message message;
 
@@ -22,15 +26,15 @@ public class Update implements SpecialCommand {
 
     @Override
     public void execute(Room room, RunnerService instance) {
-        System.out.println("Load updater...");
+        LOGGER.info("Load updater...");
         Updater updater = new Updater();
-        System.out.println("Check for updates...");
+        LOGGER.info("Check for updates...");
         
         boolean update = false;
         try {
             update = updater.updateIfAvailable(); 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            LOGGER.error("Update failed!", e);
             room.replyTo(message.getId(), "Update failed!");
         }
         
@@ -44,7 +48,7 @@ public class Update implements SpecialCommand {
         try {
             wait(10);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.error("Error while waiting for shutdown!", e);
         }
         System.exit(0);
     }

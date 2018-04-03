@@ -41,7 +41,7 @@ public class RelatedAnswersFinder {
             idString += n++ == 0 ? id : ";"+id;
         }
         
-        System.out.println(idString);
+        LOGGER.debug("Related IDs: " + idString);
         
         if (idString.length() < 2)
         	return new ArrayList<Post>();
@@ -55,25 +55,25 @@ public class RelatedAnswersFinder {
             LOGGER.error("Could not load login.properties", e);
         }
         
-        LOGGER.info("Fetch the linked/related questions...");
+        LOGGER.debug("Fetching the linked/related questions...");
         
         try {
         	JsonObject relatedQuestions = ApiService.defaultService.getRelatedQuestionsByIds(idString);
-            LOGGER.info("Related done");
+            LOGGER.debug("Related done");
             JsonObject linkedQuestions = ApiService.defaultService.getLinkedQuestionsByIds(idString);
-            LOGGER.info("linked done");
+            LOGGER.debug("linked done");
             
             String relatedIds = "";
 
             for (JsonElement question : relatedQuestions.get("items").getAsJsonArray()) {
                 int id = question.getAsJsonObject().get("question_id").getAsInt();
-                //System.out.println("Add: "+id);
+                LOGGER.trace("Add: "+id);
                 relatedIds += id+";";
             }
             
             for (JsonElement question : linkedQuestions.get("items").getAsJsonArray()) {
                 int id = question.getAsJsonObject().get("question_id").getAsInt();
-                //System.out.println("Add: "+id);
+                LOGGER.trace("Add: "+id);
                 relatedIds += id+";";
             }
             
@@ -85,9 +85,9 @@ public class RelatedAnswersFinder {
                 int i = 1;
                 
                 while (i <= 2) {
-                	LOGGER.info("Fetch page "+i);
+                	LOGGER.debug("Fetch page "+i);
                 	JsonObject relatedAnswers = ApiService.defaultService.getAnswersToQuestionsByIdString(relatedIds, i);
-                    //System.out.println(relatedAnswers);
+                    LOGGER.trace("Related answers:\n" + relatedAnswers);
                     
                     for (JsonElement answer : relatedAnswers.get("items").getAsJsonArray()) {
                         JsonObject answerObject = answer.getAsJsonObject();
@@ -108,7 +108,7 @@ public class RelatedAnswersFinder {
                 	relatedPosts.add(post);
                 }
                                 
-                LOGGER.info("Collected "+relatedFinal.size()+" answers");
+                LOGGER.debug("Collected "+relatedFinal.size()+" answers");
                 
                 return relatedPosts;
             } else {

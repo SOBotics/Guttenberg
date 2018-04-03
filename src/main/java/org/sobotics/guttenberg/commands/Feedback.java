@@ -57,11 +57,13 @@ public class Feedback implements SpecialCommand {
         try {
         	reportId = Integer.parseInt(word);
         } catch (Exception e) {
-        	LOGGER.info("Invalid report-ID", e);
+        	LOGGER.warn("Invalid report-ID", e);
         }
         
         if (reportId == -1)
         	return;
+        
+        LOGGER.debug("Sending feedback " + type + " for report " + reportId);
         
         try {
 			if (type.equalsIgnoreCase("tp") || type.equalsIgnoreCase("k")) {

@@ -1,18 +1,12 @@
 package org.sobotics.guttenberg.printers;
 
 import java.io.IOException;
-import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sobotics.guttenberg.clients.Guttenberg;
-import org.sobotics.guttenberg.entities.Post;
 import org.sobotics.guttenberg.entities.PostMatch;
-import org.sobotics.guttenberg.utils.JsonUtils;
 import org.sobotics.guttenberg.utils.PostUtils;
 import org.sobotics.guttenberg.utils.PrintUtils;
-
-import com.google.gson.JsonObject;
 
 /**
  * Created by bhargav.h on 20-Oct-16.
@@ -36,6 +30,8 @@ public class SoBoticsPostPrinter implements PostPrinter {
 			reasonsList += reason+"; ";
 		}
 		
+		LOGGER.debug("PostPrinter reasons: " + reasonsList);
+		
 		String plagOrRepost = match.isRepost() ? "repost" : "plagiarism";
 		
 		double roundedTotalScore = Math.round(match.getTotalScore()*100.0)/100.0;
@@ -44,7 +40,7 @@ public class SoBoticsPostPrinter implements PostPrinter {
 			reportLink = PostUtils.storeReport(match);
 		}
 		catch (IOException e) {
-			LOGGER.warn(e.getMessage());
+			LOGGER.error("Error while sending the report to CopyPastor!", e);
 		}
 		
 		

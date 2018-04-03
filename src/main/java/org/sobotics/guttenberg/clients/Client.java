@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.redunda.DataService;
@@ -35,8 +37,22 @@ public class Client {
     }
     
     public static void main(String[] args) {
-        LOGGER.info("Hello, World!");
-        LOGGER.info("Load properties...");
+    	Properties loggerProperties = new Properties();
+    	try{
+    		loggerProperties.load(new FileInputStream(FilePathUtils.loggerPropertiesFile));
+    		
+    		String levelStr = loggerProperties.getProperty("level");
+    		Level newLevel = Level.toLevel(levelStr, Level.ERROR);
+    		LogManager.getRootLogger().setLevel(newLevel);
+        }
+        catch (Throwable e){
+            LOGGER.error("Could not load logger.properties! Using default log-level ERROR.", e);
+        }
+    	
+        LOGGER.info("============================");
+        LOGGER.info("=== Launching Guttenberg ===");
+        LOGGER.info("============================");
+        LOGGER.info("Loading properties...");
         
         Properties prop = new Properties();
 
@@ -52,7 +68,7 @@ public class Client {
         
         Guttenberg.setLoginProperties(prop);
         
-        LOGGER.info("Initialize chat...");
+        LOGGER.info("Initializing chat...");
         StackExchangeClient seClient = new StackExchangeClient(prop.getProperty("email"), prop.getProperty("password"));
         
         List<BotRoom> rooms = new ArrayList<>();
@@ -66,6 +82,7 @@ public class Client {
             InputStream is = Status.class.getResourceAsStream("/guttenberg.properties");
             guttenbergProperties.load(is);
             version = guttenbergProperties.getProperty("version", "0.0.0");
+            LOGGER.info("Running on version " + version);
         }
         catch (IOException e){
             LOGGER.error("Could not load properties", e);
@@ -100,14 +117,14 @@ public class Client {
         redunda.start();
         
         
-        LOGGER.info("Launch Guttenberg...");
+        LOGGER.debug("Initialize RunnerService...");
         
         RunnerService runner = new RunnerService(seClient, rooms);
         
         runner.start();
         
         StatusUtils.startupDate = Instant.now();
-        LOGGER.info(StatusUtils.startupDate + " - Successfully launched Guttenberg!");
+        LOGGER.info("Successfully launched Guttenberg!");
     }
 
 }
