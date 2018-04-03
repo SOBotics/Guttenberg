@@ -232,6 +232,12 @@ public class PostUtils {
 		}
 		
 		String url = prop.getProperty("copypastor_url", "http://localhost:5000")+"/posts/create";
+		
+		LOGGER.debug("Sending data to CopyPastor");
+		LOGGER.debug("CopyPastorURL: " + url);
+		LOGGER.debug("Score: " + match.getTotalScore());
+		LOGGER.debug("Reasons: " + match.getCopyPastorReasonString());
+		
 		JsonObject output = JsonUtils.post(url,
 						"key", prop.getProperty("copypastor_key", "no_key"),
 		                "url_one","//stackoverflow.com/a/"+target.getAnswerID(),
@@ -249,9 +255,7 @@ public class PostUtils {
 		                "score", ""+match.getTotalScore(),
 		                "reasons", match.getCopyPastorReasonString());
 		
-		LOGGER.debug("Sending data to CopyPastor");
-		LOGGER.debug("Score: " + match.getTotalScore());
-		LOGGER.debug("Reasons: " + match.getCopyPastorReasonString());
+		LOGGER.debug("Data sent to CopyPastor");
 		
 		return prop.getProperty("copypastor_url", "http://localhost:5000") + "/posts/" + output.get("post_id").getAsString();
 	}
