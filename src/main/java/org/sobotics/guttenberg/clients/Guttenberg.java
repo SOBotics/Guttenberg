@@ -44,20 +44,20 @@ public class Guttenberg {
 		try {
 			execute();
 		} catch (Throwable e) {
-			LOGGER.error("Error throws in execute()", e);
+			LOGGER.error("Error thrown in execute()", e);
 		}
 	}
 	
 	public void execute() throws Throwable {
 		boolean standbyMode = PingService.standby.get();
 		if (standbyMode == true) {
-			LOGGER.info("STANDBY - " + Instant.now());
+			LOGGER.info("STANDBY - Abort execute()");
 			return;
 		}
 		
 		Instant startTime = Instant.now();
 		Properties props = new Properties();
-		LOGGER.info("Executing at - "+startTime);
+		LOGGER.info("Starting Guttenberg.execute() ...");
 		
 		try {
 			props.load(new FileInputStream(FilePathUtils.generalPropertiesFile));
@@ -95,23 +95,23 @@ public class Guttenberg {
 			return;
 		}
 		
-		LOGGER.info("Add the answers to the PlagFinders...");
+		LOGGER.debug("Add the answers to the PlagFinders...");
 		//add relatedAnswers to the PlagFinders
 		for (PlagFinder finder : plagFinders) {
 			Integer targetId = finder.getTargetAnswerId();
-			//System.out.println("TargetID: "+targetId);
+			LOGGER.trace("Check targetID: " + targetId);
 			
 			for (Post relatedItem : relatedAnswersUnsorted) {
-				//System.out.println(relatedItem);
+				LOGGER.trace("Related item: " + relatedItem);
 				if (relatedItem.getAnswerID() != null && relatedItem.getAnswerID() != targetId) {
 					finder.relatedAnswers.add(relatedItem);
-					//System.out.println("Added answer: "+relatedItem);
+					LOGGER.trace("Added answer: " + relatedItem);
 				}
 			}
 		}
 		
-		LOGGER.info("There are "+plagFinders.size()+" PlagFinders");
-		LOGGER.info("Find the duplicates...");
+		LOGGER.debug("There are "+plagFinders.size()+" PlagFinders");
+		LOGGER.debug("Find the duplicates...");
 		//Let PlagFinders find the best match
 		List<PostMatch> allMatches = new ArrayList<PostMatch>();
 		for (PlagFinder finder : plagFinders) {
@@ -138,7 +138,7 @@ public class Guttenberg {
 		
 		StatusUtils.lastSucceededExecutionStarted = startTime;
 		StatusUtils.lastExecutionFinished = Instant.now();
-		LOGGER.info("Finished at - "+StatusUtils.lastExecutionFinished);
+		LOGGER.info("Guttenberg.execute() finished");
 	}
 
 	public static Properties getLoginProperties() {

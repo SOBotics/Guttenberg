@@ -5,6 +5,8 @@ import java.util.Properties;
 import java.io.InputStream;
 
 import org.sobotics.guttenberg.utils.CommandUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.services.RunnerService;
 
 import fr.tunaki.stackoverflow.chat.Message;
@@ -16,6 +18,9 @@ import fr.tunaki.stackoverflow.chat.User;
  * @author owen
  */
 public class Reboot implements SpecialCommand {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(Reboot.class);
+	
 	private static final String CMD = "reboot";
     private final Message message;
     
@@ -33,12 +38,13 @@ public class Reboot implements SpecialCommand {
     	User user = message.getUser();
     	
     	if (!user.isModerator() && !user.isRoomOwner()) {
+    		LOGGER.warn("User " + user.getName() + " tried to reboot the bot!");
     		room.replyTo(message.getId(), "Sorry, but only room-owners and moderators can use this command (@FelixSFD)");
     		return;
     	}
     	
     	
-        System.out.println("REBOOT COMMAND");
+        LOGGER.warn("REBOOT COMMAND executed by " + user.getName());
         String[] args = message.getPlainContent().split(" ");
         if (args.length >= 3) {
             String rebootType = args[2];
@@ -71,19 +77,22 @@ public class Reboot implements SpecialCommand {
     }
     
     private void hardReboot(Room room) {
+    	LOGGER.warn("Hard reboot...");
         try {
             Properties properties = new Properties();
             InputStream is = Status.class.getResourceAsStream("/guttenberg.properties");
             properties.load(is);
 
             String versionString = (String)properties.get("version");
+            
+            LOGGER.info("Booting version " + versionString);
 
             Runtime.getRuntime().exec("nohup java -cp guttenberg-" + versionString + ".jar org.sobotics.guttenberg.clients.Client");
             System.exit(0);
         }
         catch (IOException e) {
-            e.printStackTrace();
-            room.replyTo(message.getId(), "**Reboot failed:** '" + e.getMessage() + "'.");
+            LOGGER.error("Hard reboot failed!", e);
+            room.replyTo(message.getId(), "**Reboot failed!** (cc @FelixSFD)");
         }
     }
 

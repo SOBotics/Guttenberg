@@ -30,7 +30,7 @@ public class Alive implements SpecialCommand {
 
     @Override
     public void execute(Room room, RunnerService instance) {  
-    	LOGGER.info("Someone wants to know, if I'm alive");
+    	LOGGER.warn("Someone wants to know, if I'm alive");
         room.send("The instance "+PingService.location+ " is running.\nStandby: "+PingService.standby.toString());
     }
 
