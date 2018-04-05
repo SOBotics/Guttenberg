@@ -63,6 +63,8 @@ public class Feedback implements SpecialCommand {
         if (reportId == -1)
         	return;
         
+        LOGGER.debug("Sending feedback " + type + " for report " + reportId);
+        
         try {
 			if (type.equalsIgnoreCase("tp") || type.equalsIgnoreCase("k")) {
 				if (!isSELink) {

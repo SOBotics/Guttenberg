@@ -36,6 +36,7 @@ public class ExactParagraphMatch implements Reason {
 	
 	@Override
 	public boolean check() {
+		LOGGER.trace("Checking for " + LABEL);
 		Properties prop = new Properties();
         try {
         	prop.load(new FileInputStream(FilePathUtils.generalPropertiesFile));
@@ -49,9 +50,10 @@ public class ExactParagraphMatch implements Reason {
 		boolean matched = false;
 		
 		List<String> targetCodePs = PostUtils.getCodeParagraphs(this.target.getCleanBodyMarkdown());
-		//System.out.println(targetCodePs);
+		LOGGER.trace("Target code-only paragraphs: " + targetCodePs.size());
 		for (Post original : this.originals) {
 			List<String> originalCodePs = PostUtils.getCodeParagraphs(original.getCleanBodyMarkdown());
+			LOGGER.trace("Original code-only paragraphs: " + targetCodePs.size());
 			
 			//Loop through targetCodePs
 			for (String targetCode : targetCodePs) {
@@ -59,7 +61,7 @@ public class ExactParagraphMatch implements Reason {
 				for (String originalCode : originalCodePs) {
 					double similarity = jw.similarity(targetCode, originalCode);
 					if (similarity > 0.97 && originalCode.length() >= minimumLength && targetCode.length() >= minimumLength) {
-						System.out.println("Exact match: "+similarity+"\n"+targetCode);
+						LOGGER.debug("Exact match: "+similarity+"\n"+targetCode);
 						if (this.score < 0)
 							this.score = 0;
 						
@@ -86,7 +88,9 @@ public class ExactParagraphMatch implements Reason {
 	public String description(int index, boolean includingScore) {
 		if (includingScore) {
 			double roundedScore = Math.round(this.scoreList.get(index)*100.0)/100.0;
-			return score() >= 0 ? LABEL + " "+roundedScore : LABEL;
+			String descriptionStr = score() >= 0 ? LABEL + " "+roundedScore : LABEL;
+			LOGGER.trace("Description: " + descriptionStr);
+			return descriptionStr;
 		} else {
 			return LABEL;
 		}

@@ -41,6 +41,7 @@ public class StringSimilarity implements Reason {
 	}
 	
 	public static double similarityOf(Post targetPost, Post originalPost) {
+		LOGGER.debug("Checking StringSimilarity of " + targetPost.getAnswerID() + " and " + originalPost.getAnswerID());
 		String targetBodyMarkdown = targetPost.getCleanBodyMarkdown();
         String targetCodeOnly = targetPost.getCodeOnly();
         String targetPlaintext = targetPost.getPlaintext();
@@ -83,7 +84,7 @@ public class StringSimilarity implements Reason {
         double jwQuotes = originalQuotes != null ? ( jw.similarity(originalQuotes, targetQuotes)
         		* quantifierQuotes) : 0;
         
-        //LOGGER.info("bodyMarkdown: "+jwBodyMarkdown+"; codeOnly: "+jwCodeOnly+"; plaintext: "+jwPlaintext);
+        LOGGER.debug("bodyMarkdown: "+jwBodyMarkdown+"; codeOnly: "+jwCodeOnly+"; plaintext: "+jwPlaintext);
         
         double usedScores = (jwBodyMarkdown > 0 ? quantifierBodyMarkdown : 0)
         		+ (jwCodeOnly > 0 ? quantifierCodeOnly : 0)
@@ -94,7 +95,7 @@ public class StringSimilarity implements Reason {
         		+ (jwPlaintext > 0 ? jwPlaintext : 0)
         		+ (jwQuotes > 0 ? jwQuotes : 0)) / usedScores;
         
-        //LOGGER.info("Score: "+jaroWinklerScore);
+        LOGGER.debug("Score: "+jaroWinklerScore);
         
         if (jwBodyMarkdown > 0.9) {
         	return jwBodyMarkdown;
@@ -148,7 +149,9 @@ public class StringSimilarity implements Reason {
 	public String description(int index, boolean includingScore) {
 		if (includingScore) {
 			double roundedScore = Math.round(this.scoreList.get(index)*100.0)/100.0;
-			return score() >= 0 ? LABEL + " "+roundedScore : LABEL;
+			String descriptionStr = score() >= 0 ? LABEL + " "+roundedScore : LABEL;
+			LOGGER.trace("Description: " + descriptionStr);
+			return descriptionStr;
 		} else {
 			return LABEL;
 		}
