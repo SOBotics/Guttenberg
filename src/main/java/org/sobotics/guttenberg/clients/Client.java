@@ -75,7 +75,7 @@ public class Client {
         List<BotRoom> rooms = new ArrayList<>();
         rooms.add(new SOBoticsChatRoom());
         rooms.add(new SOBoticsWorkshopChatRoom());
-        rooms.add(new SEBoticsChatRoom());
+        //rooms.add(new SEBoticsChatRoom());
         
         //get current version
         Properties guttenbergProperties = new Properties();
