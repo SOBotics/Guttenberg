@@ -83,8 +83,34 @@ public class CommandUtils {
     	try {
     		postId = Integer.parseInt(input);
     	} catch (NumberFormatException e) {
+    		String pattern = ".*\\/posts\\/(\\d*)";
+    		Properties props = new Properties();
+    		
+    		try {
+    			props.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
+    			
+    			String cpUrl = props.getProperty("copypastor_url");
+    			
+    			if (cpUrl != null) {
+    				LOGGER.debug("CopyPastor-URL: " + cpUrl);
+    				
+    				cpUrl = Pattern.quote(cpUrl);
+    				
+    				LOGGER.debug("Escaped CopyPastor-URL for RegEx: " + cpUrl);
+    				
+    				pattern = cpUrl + "\\/posts\\/(\\d*)";
+    				
+    				LOGGER.debug("RegEx pattern: " + pattern);
+    			} else {
+    				LOGGER.warn("CopyPastor-URL is null");
+    			}
+    		} catch (IOException ioE) {
+    			LOGGER.warn("Could not load general properties", ioE);
+    		}
+    		
+    		
     		LOGGER.debug("Couldn't parse input to integer. Trying RegEx...");
-    		Pattern regex = Pattern.compile(".*\\/posts\\/(\\d*)");
+    		Pattern regex = Pattern.compile(pattern);
     		Matcher matcher = regex.matcher(input);
     		
     		if (matcher.matches()) {
