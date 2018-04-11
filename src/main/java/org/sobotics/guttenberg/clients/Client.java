@@ -16,8 +16,9 @@ import org.sobotics.redunda.DataService;
 import org.sobotics.redunda.PingService;
 import org.sobotics.guttenberg.commands.Status;
 import org.sobotics.guttenberg.roomdata.BotRoom;
+import org.sobotics.guttenberg.roomdata.SEBoticsChatRoom;
 import org.sobotics.guttenberg.roomdata.SOBoticsChatRoom;
-import org.sobotics.guttenberg.roomdata.SOGuttenbergTestingFacility;
+import org.sobotics.guttenberg.roomdata.SOBoticsWorkshopChatRoom;
 import org.sobotics.guttenberg.services.RunnerService;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
@@ -73,7 +74,8 @@ public class Client {
         
         List<BotRoom> rooms = new ArrayList<>();
         rooms.add(new SOBoticsChatRoom());
-        rooms.add(new SOGuttenbergTestingFacility());
+        rooms.add(new SOBoticsWorkshopChatRoom());
+        //rooms.add(new SEBoticsChatRoom());
         
         //get current version
         Properties guttenbergProperties = new Properties();
