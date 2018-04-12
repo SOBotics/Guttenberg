@@ -4,6 +4,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +67,65 @@ public class CommandUtils {
             }
         }
         return word;
+    }
+    
+    /**
+     * Extracts the postId from a CopyPastor-URL
+     * @param input Input string
+     * @returns Post-ID
+     * @throws NumberFormatException if ID could not be read
+     * @throws IllegalArgumentException if the ID is <= 0
+     * */
+    public static int getPostIdFromUrl(String input) throws NumberFormatException, IllegalArgumentException {
+    	int postId = -1;
+    	LOGGER.debug("Checking string for postId: " + input);
+    	
+    	try {
+    		postId = Integer.parseInt(input);
+    	} catch (NumberFormatException e) {
+    		String pattern = ".*\\/posts\\/(\\d*)";
+    		Properties props = new Properties();
+    		
+    		try {
+    			props.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
+    			
+    			String cpUrl = props.getProperty("copypastor_url");
+    			
+    			if (cpUrl != null) {
+    				LOGGER.debug("CopyPastor-URL: " + cpUrl);
+    				
+    				cpUrl = Pattern.quote(cpUrl);
+    				
+    				LOGGER.debug("Escaped CopyPastor-URL for RegEx: " + cpUrl);
+    				
+    				pattern = cpUrl + "\\/posts\\/(\\d*)";
+    				
+    				LOGGER.debug("RegEx pattern: " + pattern);
+    			} else {
+    				LOGGER.warn("CopyPastor-URL is null");
+    			}
+    		} catch (IOException ioE) {
+    			LOGGER.warn("Could not load general properties", ioE);
+    		}
+    		
+    		
+    		LOGGER.debug("Couldn't parse input to integer. Trying RegEx...");
+    		Pattern regex = Pattern.compile(pattern);
+    		Matcher matcher = regex.matcher(input);
+    		
+    		if (matcher.matches()) {
+    			postId = Integer.parseInt(matcher.group(1));
+    		} else {
+    			throw new NumberFormatException("Could not extract postId from string '" + input + "'! RegEx didn't match.");
+    		}
+    	}
+    	
+    	if (postId > 0) {
+    		LOGGER.debug("Found postId: " + postId);
+    		return postId;
+    	} else {
+    		throw new IllegalArgumentException("Invalid postId!");
+    	}
     }
 
 }

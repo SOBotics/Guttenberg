@@ -45,6 +45,7 @@ public class SoBoticsCommandsList {
 				new Check(message), 
 				new ClearHelp(message),
 				new Feedback(message, event, room),
+				new LogLevel(message),
 				//new OptIn(message),
 				//new OptOut(message), 
 				new Quota(message), 

@@ -14,7 +14,7 @@ import fr.tunaki.stackoverflow.chat.event.MessagePostedEvent;
 import fr.tunaki.stackoverflow.chat.event.MessageReplyEvent;
 import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
 
-public class SOGuttenbergTestingFacility implements BotRoom {
+public class SEBoticsChatRoom implements BotRoom {
 
 	@Override
 	public int getRoomId() {
