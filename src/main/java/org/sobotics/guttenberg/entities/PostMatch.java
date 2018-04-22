@@ -48,7 +48,8 @@ public class PostMatch implements Comparable<PostMatch>{
 	
 	public void addReasonToCopyPastorString(String reason, double score) {
 		LOGGER.trace("Adding reason \"" + reason + "\" (Score: " + score + ") to string for CopyPastor");
-		if (!reasons.contains(reason)) {
+		//#171: don't check the array. Check the String instead
+		if (!copyPastorReasonString.contains(reason)) {
 			LOGGER.trace("Reason doesn't exist in string yet");
 			double roundedScore = Math.round(score*100.0)/100.0;
 			
