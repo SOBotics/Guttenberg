@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.roomdata.BotRoom;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.FileUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
 import org.sobotics.redunda.PingService;
 import org.sobotics.redunda.PingServiceDelegate;
@@ -43,7 +44,7 @@ public class RunnerService implements PingServiceDelegate {
     public void start() {
     	Properties prop = new Properties();
     	try{
-            prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
+            prop = FileUtils.getPropertiesFromFile(FilePathUtils.loginPropertiesFile);
         }
         catch (IOException e){
             LOGGER.error("login.properties could not be loaded!", e);

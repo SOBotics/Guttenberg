@@ -10,6 +10,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.FileUtils;
 
 /**
  * Represents a plagiarized post
@@ -90,7 +91,7 @@ public class PostMatch implements Comparable<PostMatch>{
 		int minimumLength = 200;
 		Properties quantifiers = new Properties();
         try {
-        	quantifiers.load(new FileInputStream(FilePathUtils.generalPropertiesFile));
+        	quantifiers = FileUtils.getPropertiesFromFile(FilePathUtils.generalPropertiesFile);
         	minimumLength = new Integer(quantifiers.getProperty("minimumPostLength", "200"));
         } catch (Throwable e) {
         	LOGGER.warn("Could not load quantifiers from general.properties. Using hardcoded", e);

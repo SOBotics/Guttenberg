@@ -1,6 +1,7 @@
 package org.sobotics.guttenberg.utils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,13 +10,19 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 import java.util.Scanner;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by bhargav.h on 30-Sep-16.
  */
 public class FileUtils {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(FileUtils.class);
 
     public static void appendToFile(String filename, String word) throws IOException{
         Files.write(Paths.get(filename), Arrays.asList(word), StandardOpenOption.APPEND, StandardOpenOption.WRITE);
@@ -125,4 +132,32 @@ public class FileUtils {
 
        return result;      
     }
+    
+    /**
+     * Loads the properties from a file and closes the FileInputStream
+     * @param filepath Path to the .properties file
+     * @return Properties
+     * @throws IOException
+     */
+    public static Properties getPropertiesFromFile(String filepath) throws IOException {
+    	Properties prop;
+    	
+    	LOGGER.debug("Trying to load file " + filepath + " to properties...");
+    	FileInputStream fis = new FileInputStream(filepath);
+    	LOGGER.trace("FileInputStream opened");
+    	
+		try {
+			prop = new Properties();
+			prop.load(fis);
+			LOGGER.debug("Succesffully loaded");
+		} //try
+		finally {
+			if (fis != null) {
+				fis.close();
+				LOGGER.trace("Closed FileInputStream");
+			}
+		} // try-finally
+    	
+    	return prop;
+    } // getPropertiesFromFile
 }

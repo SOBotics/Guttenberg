@@ -21,6 +21,7 @@ import org.sobotics.guttenberg.roomdata.SOBoticsChatRoom;
 import org.sobotics.guttenberg.roomdata.SOBoticsWorkshopChatRoom;
 import org.sobotics.guttenberg.services.RunnerService;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.FileUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
 
 import fr.tunaki.stackoverflow.chat.StackExchangeClient;
@@ -40,7 +41,7 @@ public class Client {
     public static void main(String[] args) {
     	Properties loggerProperties = new Properties();
     	try{
-    		loggerProperties.load(new FileInputStream(FilePathUtils.loggerPropertiesFile));
+    		loggerProperties = FileUtils.getPropertiesFromFile(FilePathUtils.loggerPropertiesFile);
     		
     		String levelStr = loggerProperties.getProperty("level");
     		Level newLevel = Level.toLevel(levelStr, Level.ERROR);
@@ -58,7 +59,7 @@ public class Client {
         Properties prop = new Properties();
 
         try{
-            prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
+            prop = FileUtils.getPropertiesFromFile(FilePathUtils.loginPropertiesFile);
         }
         catch (IOException e){
             e.printStackTrace();
