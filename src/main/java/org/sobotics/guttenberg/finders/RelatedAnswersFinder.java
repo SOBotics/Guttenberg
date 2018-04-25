@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.entities.Post;
 import org.sobotics.guttenberg.services.ApiService;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.FileUtils;
 import org.sobotics.guttenberg.utils.PostUtils;
 
 import com.google.gson.JsonElement;
@@ -49,7 +50,7 @@ public class RelatedAnswersFinder {
         Properties prop = new Properties();
 
         try{
-            prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
+            prop = FileUtils.getPropertiesFromFile(FilePathUtils.loginPropertiesFile);
         }
         catch (IOException e){
             LOGGER.error("Could not load login.properties", e);

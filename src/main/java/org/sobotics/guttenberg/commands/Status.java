@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.FileUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
 import org.sobotics.redunda.PingService;
 import org.sobotics.guttenberg.services.RunnerService;
@@ -37,9 +38,10 @@ public class Status implements SpecialCommand {
         Properties prop2 = new Properties();
         
         try{
-            prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
+            prop = FileUtils.getPropertiesFromFile(FilePathUtils.loginPropertiesFile);
             InputStream is = Status.class.getResourceAsStream("/guttenberg.properties");
                prop2.load(is);
+               is.close();
         }
         catch (IOException e){
             LOGGER.error("Could not load properties", e);
