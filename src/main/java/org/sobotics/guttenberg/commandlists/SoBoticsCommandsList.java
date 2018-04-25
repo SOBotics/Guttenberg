@@ -127,7 +127,7 @@ public class SoBoticsCommandsList {
 		Properties prop = new Properties();
 
 		try {
-			prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
+			prop = FileUtils.getPropertiesFromFile(FilePathUtils.loginPropertiesFile);
 			username = prop.getProperty("username").substring(0, 3).toLowerCase();
 		} catch (IOException e) {
 			LOGGER.error("Could not load login.properties", e);

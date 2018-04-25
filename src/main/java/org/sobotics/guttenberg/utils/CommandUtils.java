@@ -23,7 +23,7 @@ public class CommandUtils {
         Properties prop = new Properties();
 
         try{
-            prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
+            prop = FileUtils.getPropertiesFromFile(FilePathUtils.loginPropertiesFile);
             username = prop.getProperty("username").substring(0,3).toLowerCase();
         }
         catch (IOException e){
@@ -87,7 +87,7 @@ public class CommandUtils {
     		Properties props = new Properties();
     		
     		try {
-    			props.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
+    			props = FileUtils.getPropertiesFromFile(FilePathUtils.loginPropertiesFile);
     			
     			String cpUrl = props.getProperty("copypastor_url");
     			

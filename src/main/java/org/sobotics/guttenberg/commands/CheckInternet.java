@@ -24,6 +24,7 @@ import org.sobotics.guttenberg.services.RunnerService;
 import org.sobotics.guttenberg.utils.ApiUtils;
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.FileUtils;
 import org.sobotics.guttenberg.utils.PostUtils;
 import org.sobotics.guttenberg.utils.PrintUtils;
 
@@ -278,7 +279,7 @@ public class CheckInternet implements SpecialCommand {
 		Properties prop = new Properties();
 
 		try {
-			prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
+			prop = FileUtils.getPropertiesFromFile(FilePathUtils.loginPropertiesFile);
 		} catch (IOException e) {
 			LOGGER.error("Could not read login.properties", e);
 			return;

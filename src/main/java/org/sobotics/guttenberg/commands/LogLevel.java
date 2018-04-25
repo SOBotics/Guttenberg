@@ -2,6 +2,7 @@ package org.sobotics.guttenberg.commands;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Properties;
 
 import org.apache.log4j.Level;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.sobotics.guttenberg.services.RunnerService;
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.FileUtils;
 import org.sobotics.redunda.PingService;
 
 import fr.tunaki.stackoverflow.chat.Message;
@@ -83,14 +85,29 @@ public class LogLevel implements SpecialCommand {
         	//the logging-level for this instance should be changed
         	Level newLevel = Level.toLevel(levelString);
         	LogManager.getRootLogger().setLevel(newLevel);
+        	FileOutputStream fOut = null;
         	
         	try {
         		Properties loggingProp = new Properties();
-        		loggingProp.load(new FileInputStream(FilePathUtils.loggerPropertiesFile));
+        		loggingProp = FileUtils.getPropertiesFromFile(FilePathUtils.loggerPropertiesFile);
         		loggingProp.setProperty("level", levelString.toLowerCase());
-        		loggingProp.store(new FileOutputStream(FilePathUtils.loggerPropertiesFile), null);
+        		
+        		fOut = new FileOutputStream(FilePathUtils.loggerPropertiesFile);
+        		
+        		loggingProp.store(fOut, null);
+        		
+        		fOut.close();
         	} catch (Exception e) {
         		LOGGER.error("Error while saving the new log-level to the logging.properties", e);
+        	}
+        	finally {
+        		if (fOut != null) {
+        			try {
+						fOut.close();
+					} catch (IOException e) {
+						LOGGER.error("Could not close FileOutputStream!", e);
+					}
+        		}
         	}
         	
         	LOGGER.info("Logging-level successfully changed to " + levelString);

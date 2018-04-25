@@ -2,6 +2,7 @@ package org.sobotics.guttenberg.commands;
 
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.FileUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
 import org.sobotics.redunda.PingService;
 
@@ -36,7 +37,7 @@ public class Quota implements SpecialCommand {
     	Properties prop = new Properties();
 
         try{
-            prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
+            prop = FileUtils.getPropertiesFromFile(FilePathUtils.loginPropertiesFile);
         }
         catch (IOException e){
             LOGGER.error("Error: ", e);

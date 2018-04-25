@@ -16,6 +16,7 @@ import org.sobotics.guttenberg.reasons.Reason;
 import org.sobotics.guttenberg.services.ApiService;
 import org.sobotics.guttenberg.utils.ApiUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.FileUtils;
 import org.sobotics.guttenberg.utils.PostUtils;
 
 import com.google.gson.JsonElement;
@@ -69,7 +70,7 @@ public class PlagFinder {
         Properties prop = new Properties();
 
         try{
-            prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
+            prop = FileUtils.getPropertiesFromFile(FilePathUtils.loginPropertiesFile);
         }
         catch (IOException e){
             LOGGER.error("Could not load login.properties", e);

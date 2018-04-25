@@ -17,6 +17,7 @@ import org.sobotics.guttenberg.finders.PlagFinder;
 import org.sobotics.guttenberg.finders.RelatedAnswersFinder;
 import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
 import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.FileUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
 
 import fr.tunaki.stackoverflow.chat.Room;
@@ -60,7 +61,7 @@ public class Guttenberg {
 		LOGGER.info("Starting Guttenberg.execute() ...");
 		
 		try {
-			props.load(new FileInputStream(FilePathUtils.generalPropertiesFile));
+			props = FileUtils.getPropertiesFromFile(FilePathUtils.generalPropertiesFile);
 		} catch (IOException e) {
 			LOGGER.warn("Could not load general properties", e);
 		}
