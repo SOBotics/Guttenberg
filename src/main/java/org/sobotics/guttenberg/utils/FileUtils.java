@@ -149,7 +149,7 @@ public class FileUtils {
 		try {
 			prop = new Properties();
 			prop.load(fis);
-			LOGGER.debug("Succesffully loaded");
+			LOGGER.trace("Succesffully loaded");
 		} //try
 		finally {
 			if (fis != null) {
