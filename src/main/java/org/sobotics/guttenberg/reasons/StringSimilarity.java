@@ -85,7 +85,7 @@ public class StringSimilarity implements Reason {
         double jwQuotes = originalQuotes != null ? ( jw.similarity(originalQuotes, targetQuotes)
         		* quantifierQuotes) : 0;
         
-        LOGGER.debug("bodyMarkdown: "+jwBodyMarkdown+"; codeOnly: "+jwCodeOnly+"; plaintext: "+jwPlaintext);
+        LOGGER.trace("bodyMarkdown: "+jwBodyMarkdown+"; codeOnly: "+jwCodeOnly+"; plaintext: "+jwPlaintext);
         
         double usedScores = (jwBodyMarkdown > 0 ? quantifierBodyMarkdown : 0)
         		+ (jwCodeOnly > 0 ? quantifierCodeOnly : 0)
@@ -96,7 +96,7 @@ public class StringSimilarity implements Reason {
         		+ (jwPlaintext > 0 ? jwPlaintext : 0)
         		+ (jwQuotes > 0 ? jwQuotes : 0)) / usedScores;
         
-        LOGGER.debug("Score: "+jaroWinklerScore);
+        LOGGER.trace("Score: "+jaroWinklerScore);
         
         if (jwBodyMarkdown > 0.9) {
         	return jwBodyMarkdown;
