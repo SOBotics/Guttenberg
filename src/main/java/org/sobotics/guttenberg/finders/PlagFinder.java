@@ -178,7 +178,7 @@ public class PlagFinder {
     					if (existingMatch.getOriginal().getAnswerID() == id) {
     						//if it exists, add the new reason
     						alreadyExists = true;
-    						LOGGER.trace("Adding reason " + reason.description(i) + " with score " + scores.get(n));
+    						LOGGER.debug("Adding reason " + reason.description(i) + " with score " + scores.get(n));
     						existingMatch.addReason(reason.description(i), scores.get(n));
     						
     						existingMatch.addReasonToCopyPastorString(reason.description(i, false), scores.get(n));
@@ -193,6 +193,8 @@ public class PlagFinder {
     				if (!alreadyExists) {
     					PostMatch newMatch = new PostMatch(this.targetAnswer, post);
     					newMatch.addReason(reason.description(i), scores.get(n));
+    					//#176: add the reason to the string for CopyPastor as well
+    					newMatch.addReasonToCopyPastorString(reason.description(i, false), scores.get(n));
     					LOGGER.trace("Adding PostMatch " + newMatch);
     					matches.add(newMatch);
     				}

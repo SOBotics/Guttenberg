@@ -47,18 +47,22 @@ public class PostMatch implements Comparable<PostMatch>{
 		}
 	}
 	
+	/**
+	 * Adds the reason to the String sent to CopyPastor
+	 * (can't be called by addReason() because this would include the score in the description)
+	 * */
 	public void addReasonToCopyPastorString(String reason, double score) {
-		LOGGER.trace("Adding reason \"" + reason + "\" (Score: " + score + ") to string for CopyPastor");
+		LOGGER.debug("Adding reason \"" + reason + "\" (Score: " + score + ") to string for CopyPastor");
 		//#171: don't check the array. Check the String instead
 		if (!copyPastorReasonString.contains(reason)) {
-			LOGGER.trace("Reason doesn't exist in string yet");
+			LOGGER.debug("Reason doesn't exist in string yet");
 			double roundedScore = Math.round(score*100.0)/100.0;
 			
 			if (copyPastorReasonString.length() > 0)
 				this.copyPastorReasonString += ",";
 			
 			this.copyPastorReasonString += reason + ":" + roundedScore;
-			LOGGER.trace("New copyPastorReasonString: " + this.copyPastorReasonString);
+			LOGGER.debug("New copyPastorReasonString: " + this.copyPastorReasonString);
 		}
 	}
 	
