@@ -21,11 +21,11 @@ import org.sobotics.guttenberg.utils.StatusUtils;
 import org.sobotics.redunda.PingService;
 import org.sobotics.redunda.PingServiceDelegate;
 
-import fr.tunaki.stackoverflow.chat.Room;
-import fr.tunaki.stackoverflow.chat.StackExchangeClient;
-import fr.tunaki.stackoverflow.chat.event.EventType;
-import fr.tunaki.stackoverflow.chat.event.MessagePostedEvent;
-import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
+import org.sobotics.chatexchange.chat.Room;
+import org.sobotics.chatexchange.chat.StackExchangeClient;
+import org.sobotics.chatexchange.chat.event.EventType;
+import org.sobotics.chatexchange.chat.event.MessagePostedEvent;
+import org.sobotics.chatexchange.chat.event.UserMentionedEvent;
 
 public class RunnerService implements PingServiceDelegate {
 	private StackExchangeClient client;

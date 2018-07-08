@@ -1,10 +1,10 @@
 package org.sobotics.guttenberg.roomdata;
 
-import fr.tunaki.stackoverflow.chat.ChatHost;
-import fr.tunaki.stackoverflow.chat.Room;
-import fr.tunaki.stackoverflow.chat.event.MessagePostedEvent;
-import fr.tunaki.stackoverflow.chat.event.MessageReplyEvent;
-import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
+import org.sobotics.chatexchange.chat.ChatHost;
+import org.sobotics.chatexchange.chat.Room;
+import org.sobotics.chatexchange.chat.event.MessagePostedEvent;
+import org.sobotics.chatexchange.chat.event.MessageReplyEvent;
+import org.sobotics.chatexchange.chat.event.UserMentionedEvent;
 
 import java.util.function.Consumer;
 

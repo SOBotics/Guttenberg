@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.sobotics.redunda.PingService;
 import org.sobotics.guttenberg.services.RunnerService;
 
-import fr.tunaki.stackoverflow.chat.Message;
-import fr.tunaki.stackoverflow.chat.Room;
+import org.sobotics.chatexchange.chat.Message;
+import org.sobotics.chatexchange.chat.Room;
 
 /**
  * Created by bhargav.h on 30-Sep-16.

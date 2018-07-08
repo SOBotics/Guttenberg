@@ -1,7 +1,7 @@
 package org.sobotics.guttenberg.utils;
 
-import fr.tunaki.stackoverflow.chat.Room;
-import fr.tunaki.stackoverflow.chat.User;
+import org.sobotics.chatexchange.chat.Room;
+import org.sobotics.chatexchange.chat.User;
 
 import java.util.ArrayList;
 import java.util.List;

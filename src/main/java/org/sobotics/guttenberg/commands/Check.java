@@ -1,6 +1,5 @@
 package org.sobotics.guttenberg.commands;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
@@ -19,8 +18,8 @@ import org.sobotics.guttenberg.utils.FileUtils;
 
 import com.google.gson.JsonObject;
 
-import fr.tunaki.stackoverflow.chat.Message;
-import fr.tunaki.stackoverflow.chat.Room;
+import org.sobotics.chatexchange.chat.Message;
+import org.sobotics.chatexchange.chat.Room;
 
 public class Check implements SpecialCommand {
 

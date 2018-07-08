@@ -17,11 +17,11 @@ import org.sobotics.guttenberg.utils.CheckUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.FileUtils;
 
-import fr.tunaki.stackoverflow.chat.Message;
-import fr.tunaki.stackoverflow.chat.Room;
-import fr.tunaki.stackoverflow.chat.User;
-import fr.tunaki.stackoverflow.chat.event.MessagePostedEvent;
-import fr.tunaki.stackoverflow.chat.event.PingMessageEvent;
+import org.sobotics.chatexchange.chat.Message;
+import org.sobotics.chatexchange.chat.Room;
+import org.sobotics.chatexchange.chat.User;
+import org.sobotics.chatexchange.chat.event.MessagePostedEvent;
+import org.sobotics.chatexchange.chat.event.PingMessageEvent;
 
 /**
  * Created by bhargav.h on 28-Oct-16.

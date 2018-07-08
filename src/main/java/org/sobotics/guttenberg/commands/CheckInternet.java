@@ -31,11 +31,11 @@ import org.sobotics.guttenberg.utils.PrintUtils;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import fr.tunaki.stackoverflow.chat.Message;
-import fr.tunaki.stackoverflow.chat.Room;
+import org.sobotics.chatexchange.chat.Message;
+import org.sobotics.chatexchange.chat.Room;
 
 /**
- * Command to search for plagarisim using internet
+ * Command to search for plagiarisim using internet
  * 
  * @author Petter Friberg
  *
