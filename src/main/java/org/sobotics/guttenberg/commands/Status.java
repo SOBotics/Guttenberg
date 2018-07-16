@@ -1,6 +1,5 @@
 package org.sobotics.guttenberg.commands;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -14,8 +13,8 @@ import org.sobotics.guttenberg.utils.StatusUtils;
 import org.sobotics.redunda.PingService;
 import org.sobotics.guttenberg.services.RunnerService;
 
-import fr.tunaki.stackoverflow.chat.Message;
-import fr.tunaki.stackoverflow.chat.Room;
+import org.sobotics.chatexchange.chat.Message;
+import org.sobotics.chatexchange.chat.Room;
 
 public class Status implements SpecialCommand {
     

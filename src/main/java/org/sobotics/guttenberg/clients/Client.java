@@ -24,7 +24,7 @@ import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.FileUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
 
-import fr.tunaki.stackoverflow.chat.StackExchangeClient;
+import org.sobotics.chatexchange.chat.StackExchangeClient;
 
 
 /**

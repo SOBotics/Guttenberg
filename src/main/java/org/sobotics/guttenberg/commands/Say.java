@@ -3,8 +3,8 @@ package org.sobotics.guttenberg.commands;
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.services.RunnerService;
 
-import fr.tunaki.stackoverflow.chat.Message;
-import fr.tunaki.stackoverflow.chat.Room;
+import org.sobotics.chatexchange.chat.Message;
+import org.sobotics.chatexchange.chat.Room;
 
 /**
  * Created by bhargav.h on 30-Sep-16.
