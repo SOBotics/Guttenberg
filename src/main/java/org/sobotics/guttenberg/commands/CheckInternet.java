@@ -1,6 +1,5 @@
 package org.sobotics.guttenberg.commands;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ import org.sobotics.chatexchange.chat.Message;
 import org.sobotics.chatexchange.chat.Room;
 
 /**
- * Command to search for plagiarisim using internet
+ * Command to search for plagiarism using internet
  * 
  * @author Petter Friberg
  *
