@@ -1,6 +1,5 @@
 package org.sobotics.guttenberg.commands;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -27,8 +26,8 @@ import org.sobotics.guttenberg.utils.PostUtils;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import fr.tunaki.stackoverflow.chat.Message;
-import fr.tunaki.stackoverflow.chat.Room;
+import org.sobotics.chatexchange.chat.Message;
+import org.sobotics.chatexchange.chat.Room;
 
 /**
  * Command to check all post of a user.

@@ -9,8 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.sobotics.redunda.PingService;
 import org.sobotics.guttenberg.utils.StatusUtils;
 
-import fr.tunaki.stackoverflow.chat.ChatHost;
-import fr.tunaki.stackoverflow.chat.Room;
+import org.sobotics.chatexchange.chat.ChatHost;
+import org.sobotics.chatexchange.chat.Room;
 
 public class SelfCheckService {
 	private ScheduledExecutorService executorService;
