@@ -54,11 +54,24 @@
 			<artifactId>google-api-services-customsearch</artifactId>
 			<version>v1-rev57-1.23.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.sotorrent</groupId>
+			<artifactId>string-similarity</artifactId>
+			<version>LATEST</version>
+		</dependency>
 	</dependencies>
 	<repositories>
 		<repository>
 			<id>Tunaki-mvn-repo</id>
 			<url>https://raw.github.com/Tunaki/chatexchange/mvn-repo/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>sotorrent</id>
+			<url>https://raw.github.com/sotorrent/releases/master/</url>
 			<snapshots>
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>
