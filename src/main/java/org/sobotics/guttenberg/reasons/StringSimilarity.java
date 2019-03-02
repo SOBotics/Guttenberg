@@ -1,16 +1,13 @@
 package org.sobotics.guttenberg.reasons;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.entities.Post;
-import org.sobotics.guttenberg.utils.FilePathUtils;
-import org.sobotics.guttenberg.utils.FileUtils;
 
 import info.debatty.java.stringsimilarity.JaroWinkler;
 
@@ -48,12 +45,7 @@ public class StringSimilarity implements Reason {
         String targetPlaintext = targetPost.getPlaintext();
         String targetQuotes = targetPost.getQuotes();
         
-        Properties quantifiers = new Properties();
-        try {
-        	quantifiers = FileUtils.getPropertiesFromFile(FilePathUtils.generalPropertiesFile);
-        } catch (IOException e) {
-        	LOGGER.warn("Could not load quantifiers from general.properties. Using hardcoded", e);
-        }
+        Properties quantifiers = Guttenberg.getGeneralProperties();
         
         double quantifierBodyMarkdown = 1;
         double quantifierCodeOnly = 1;
@@ -112,20 +104,11 @@ public class StringSimilarity implements Reason {
 	@Override
 	public boolean check() {
 		boolean matched = false;
+		Properties prop = Guttenberg.getGeneralProperties();
+		double minimumScore = new Double(prop.getProperty("minimumScore", "0.8"));
 		for (Post post : this.originals) {
 			double currentScore = StringSimilarity.similarityOf(this.target, post);
-			
-			//get the report threshold
-			Properties prop = new Properties();
-	        try {
-	        	prop = FileUtils.getPropertiesFromFile(FilePathUtils.generalPropertiesFile);
-	        } catch (IOException e) {
-	        	LOGGER.warn("Could not load general.properties. Using hardcoded value", e);
-	        }
-			
-	        double minimumScore = new Double(prop.getProperty("minimumScore", "0.8"));
-	        
-			if (currentScore >= minimumScore || this.ignoringScore == true) {
+			if (currentScore >= minimumScore || this.ignoringScore) {
 				matched = true;
 				
 				//add post to list of matched posts

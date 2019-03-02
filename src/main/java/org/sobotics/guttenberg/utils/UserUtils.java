@@ -1,11 +1,10 @@
 package org.sobotics.guttenberg.utils;
 
-import org.sobotics.chatexchange.chat.Room;
-import org.sobotics.chatexchange.chat.User;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.sobotics.chatexchange.chat.Room;
+import org.sobotics.chatexchange.chat.User;
 import org.sobotics.guttenberg.entities.OptedInUser;
 import org.sobotics.guttenberg.entities.SOUser;
 
