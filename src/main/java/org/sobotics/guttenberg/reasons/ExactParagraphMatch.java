@@ -1,16 +1,13 @@
 package org.sobotics.guttenberg.reasons;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.entities.Post;
-import org.sobotics.guttenberg.utils.FilePathUtils;
-import org.sobotics.guttenberg.utils.FileUtils;
 import org.sobotics.guttenberg.utils.PostUtils;
 
 import info.debatty.java.stringsimilarity.JaroWinkler;
@@ -38,13 +35,7 @@ public class ExactParagraphMatch implements Reason {
 	@Override
 	public boolean check() {
 		LOGGER.trace("Checking for " + LABEL);
-		Properties prop = new Properties();
-        try {
-        	prop = FileUtils.getPropertiesFromFile(FilePathUtils.generalPropertiesFile);
-        } catch (IOException e) {
-        	LOGGER.warn("Could not load general.properties. Using hardcoded value", e);
-        }
-		
+		Properties prop = Guttenberg.getGeneralProperties();
         double minimumLength = new Double(prop.getProperty("minimumExactMatchLength", "100"));
 		
 		JaroWinkler jw = new JaroWinkler();

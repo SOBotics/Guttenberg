@@ -1,6 +1,5 @@
 package org.sobotics.guttenberg.clients;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,18 +7,15 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sobotics.guttenberg.finders.NewAnswersFinder;
-import org.sobotics.redunda.PingService;
+import org.sobotics.chatexchange.chat.Room;
 import org.sobotics.guttenberg.entities.Post;
 import org.sobotics.guttenberg.entities.PostMatch;
+import org.sobotics.guttenberg.finders.NewAnswersFinder;
 import org.sobotics.guttenberg.finders.PlagFinder;
 import org.sobotics.guttenberg.finders.RelatedAnswersFinder;
 import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
-import org.sobotics.guttenberg.utils.FilePathUtils;
-import org.sobotics.guttenberg.utils.FileUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
-
-import org.sobotics.chatexchange.chat.Room;
+import org.sobotics.redunda.PingService;
 
 /**
  * Fetches and analyzes the data from the API
@@ -30,6 +26,7 @@ public class Guttenberg {
     
     private final List<Room> chatRooms;
     private static Properties loginProperties;
+    private static Properties generalProperties;
     
     public Guttenberg(List<Room> rooms) {
     	this.chatRooms = rooms;
@@ -50,20 +47,13 @@ public class Guttenberg {
 	
 	public void execute() throws Throwable {
 		boolean standbyMode = PingService.standby.get();
-		if (standbyMode == true) {
+		if (standbyMode) {
 			LOGGER.info("STANDBY - Abort execute()");
 			return;
 		}
 		
 		Instant startTime = Instant.now();
-		Properties props = new Properties();
 		LOGGER.info("Starting Guttenberg.execute() ...");
-		
-		try {
-			props = FileUtils.getPropertiesFromFile(FilePathUtils.generalPropertiesFile);
-		} catch (IOException e) {
-			LOGGER.warn("Could not load general properties", e);
-		}
 		
 		
 		//Fetch recent answers / The targets
@@ -148,9 +138,20 @@ public class Guttenberg {
 			
 		return loginProperties;
 	}
+	
+	public static Properties getGeneralProperties() {
+		if (generalProperties==null){
+			throw new NullPointerException("The general properties have not been instanced");
+		}
+			
+		return generalProperties;
+	}
 
 	public static void setLoginProperties(Properties loginProperties) {
 		Guttenberg.loginProperties = loginProperties;
 	}
     
+	public static void setGeneralProperties(Properties generalProperties) {
+		Guttenberg.generalProperties = generalProperties;
+	}
 }
