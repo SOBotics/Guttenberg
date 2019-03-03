@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors in GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,31 +26,34 @@ import org.sobotics.guttenberg.entities.PostMatch;
 import org.sobotics.guttenberg.reasonlists.ReasonList;
 import org.sobotics.guttenberg.reasonlists.SOBoticsReasonList;
 import org.sobotics.guttenberg.reasons.Reason;
+import org.sobotics.guttenberg.search.InternetSearch;
+import org.sobotics.guttenberg.search.SearchResult;
+import org.sobotics.guttenberg.search.SearchTerms;
 import org.sobotics.guttenberg.services.ApiService;
 import org.sobotics.guttenberg.utils.ApiUtils;
-import org.sobotics.guttenberg.utils.FilePathUtils;
-import org.sobotics.guttenberg.utils.FileUtils;
 import org.sobotics.guttenberg.utils.PostUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Checks an answer for plagiarism by collecting similar answers from different sources.
- */
+ * */
 public class PlagFinder {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PlagFinder.class);
-  /**
-   * A list of answers that are somehow related to targetAnswer.
-   */
-  public List<Post> relatedAnswers;
+
   /**
    * The answer to check
    */
   private Post targetAnswer;
+
+  /**
+   * A list of answers that are somehow related to targetAnswer.
+   */
+  public List<Post> relatedAnswers;
 
 
   /**
@@ -81,22 +84,96 @@ public class PlagFinder {
   }
 
 
+  /**
+   * Search on google
+   *
+   * @param st, the SearchTerms
+   * @return number of answer hits
+   * @throws IOException
+   */
+  public int addGoogleSearchData(SearchTerms st) throws IOException {
+    InternetSearch is = new InternetSearch();
+    SearchResult result = is.google(this.targetAnswer, st);
+    if (result.getItems().isEmpty()) {
+      return 0;
+    }
+    List<Post> googleAnswers = new ArrayList<>();
+    List<Integer> ids = result.getIdQuestions();
+
+    if (!ids.isEmpty()) {
+      String relatedIds = ids.stream().map(id -> String.valueOf(id)).collect(Collectors.joining(";"));
+      JsonObject ra = ApiService.defaultService.getAnswersToQuestionsByIdString(relatedIds);
+      for (JsonElement answer : ra.get("items").getAsJsonArray()) {
+        JsonObject answerObject = answer.getAsJsonObject();
+        Post answerPost = PostUtils.getPost(answerObject);
+        if (answerPost.getAnswerID().intValue() != this.targetAnswer.getAnswerID().intValue()) {
+          googleAnswers.add(answerPost);
+        }
+      }
+    }
+    //add to head
+    int totaleFound = googleAnswers.size();
+    googleAnswers.addAll(this.relatedAnswers);
+    this.relatedAnswers = googleAnswers;
+    return totaleFound;
+
+  }
+
+
+  /**
+   * Search on SE api
+   *
+   * @param query, the query to search
+   * @return number of hits
+   * @throws IOException
+   */
+  public int addSEApiSearch(String query) throws IOException {
+    JsonObject json = ApiService.defaultService.getSearcExcerpts(query);
+
+    List<Integer> answerIds = new ArrayList<>();
+    if (json.has("items")) {
+      for (JsonElement element : json.get("items").getAsJsonArray()) {
+        JsonObject object = element.getAsJsonObject();
+        if (object.has("answer_id")) {
+          int id = object.get("answer_id").getAsInt();
+          if (id != this.targetAnswer.getAnswerID().intValue()) {
+            answerIds.add(id);
+          }
+        }
+      }
+    }
+
+    List<Post> seApiAnswers = new ArrayList<>();
+    if (!answerIds.isEmpty()) {
+      JsonObject ra = ApiService.defaultService.getAnswerDetailsByIds(answerIds);
+      if (json.has("items")) {
+        for (JsonElement answer : ra.get("items").getAsJsonArray()) {
+          JsonObject answerObject = answer.getAsJsonObject();
+          seApiAnswers.add(PostUtils.getPost(answerObject));
+        }
+      }
+    }
+
+    if (seApiAnswers.size() > 50) {
+      seApiAnswers = seApiAnswers.subList(0, 49);
+    }
+
+    int totaleFound = seApiAnswers.size();
+    seApiAnswers.addAll(this.relatedAnswers);
+    this.relatedAnswers = seApiAnswers;
+    return totaleFound;
+  }
+
+
   private void fetchRelatedAnswers() {
     int targetId = this.targetAnswer.getQuestionID();
     int targetAnswerId = this.targetAnswer.getAnswerID();
     LOGGER.debug("Fetching related answers to: " + targetId);
-    Properties prop = new Properties();
+
 
     try {
-      prop = FileUtils.getPropertiesFromFile(FilePathUtils.loginPropertiesFile);
-    } catch (IOException e) {
-      LOGGER.error("Could not load login.properties", e);
-      return;
-    }
-
-    try {
-      JsonObject relatedQuestions = ApiUtils.getRelatedQuestionsById(targetId, "stackoverflow", prop.getProperty("apikey", ""));
-      JsonObject linkedQuestions = ApiUtils.getLinkedQuestionsById(targetId, "stackoverflow", prop.getProperty("apikey", ""));
+      JsonObject relatedQuestions = ApiUtils.getRelatedQuestionsById(targetId, "stackoverflow", ApiService.defaultService.getApiKey());
+      JsonObject linkedQuestions = ApiUtils.getLinkedQuestionsById(targetId, "stackoverflow", ApiService.defaultService.getApiKey());
       LOGGER.trace("Related questions: " + relatedQuestions);
       LOGGER.trace("Linked questions: " + linkedQuestions);
       String relatedIds = targetId + ";";
@@ -227,4 +304,9 @@ public class PlagFinder {
     return matches;
   }
 
+
+  public List<Post> getRelatedAnswers() {
+    return relatedAnswers;
+  }
+    
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors in GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,11 +103,6 @@ public class Post {
   }
 
 
-  public void setBodyMarkdown(String bodyMarkdown) {
-    this.bodyMarkdown = bodyMarkdown;
-  }
-
-
   /**
    * Returns a cleaner Version of the body_markdown
    * It removes the markdown used to create JS-snippets
@@ -122,6 +117,11 @@ public class Post {
   }
 
 
+  public void setBodyMarkdown(String bodyMarkdown) {
+    this.bodyMarkdown = bodyMarkdown;
+  }
+
+
   public SOUser getAnswerer() {
     return answerer;
   }
@@ -132,13 +132,13 @@ public class Post {
   }
 
 
-  public List<String> getTags() {
-    return this.tags;
+  public void setTags(List<String> newTags) {
+    this.tags = newTags;
   }
 
 
-  public void setTags(List<String> newTags) {
-    this.tags = newTags;
+  public List<String> getTags() {
+    return this.tags;
   }
 
 
@@ -185,13 +185,13 @@ public class Post {
   }
 
 
-  public double getScore() {
-    return this.score;
+  public void setScore(double newScore) {
+    this.score = newScore;
   }
 
 
-  public void setScore(double newScore) {
-    this.score = newScore;
+  public double getScore() {
+    return this.score;
   }
 
 
@@ -216,4 +216,26 @@ public class Post {
   public void setUnescapedBodyMarkdown(String unescapedBodyMarkdown) {
     this.unescapedBodyMarkdown = unescapedBodyMarkdown;
   }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof Post) {
+      return hashCode() == o.hashCode();
+    }
+    return false;
+  }
+
+
+  @Override
+  public int hashCode() {
+    if (this.answerID != null && this.answerID > 0) {
+      return ("A" + this.answerID.intValue()).hashCode();
+    }
+    if (this.questionID != null && this.questionID > 0) {
+      return ("Q" + this.questionID.intValue()).hashCode();
+    }
+    return super.hashCode();
+  }
+
 }

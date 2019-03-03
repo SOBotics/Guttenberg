@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors in GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,28 +20,28 @@ package org.sobotics.guttenberg.reasons;
 import info.debatty.java.stringsimilarity.JaroWinkler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.entities.Post;
-import org.sobotics.guttenberg.utils.FilePathUtils;
-import org.sobotics.guttenberg.utils.FileUtils;
 import org.sobotics.guttenberg.utils.PostUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 /**
  * This reason returns posts that have at least one exactly matching paragraph with the target.
- */
+ * */
 public class ExactParagraphMatch implements Reason {
 
-  public static final String LABEL = "Exact paragraph match";
   private static final Logger LOGGER = LoggerFactory.getLogger(ExactParagraphMatch.class);
+
   private Post target;
   private List<Post> originals;
   private List<Post> matchedPosts = new ArrayList<Post>();
   private List<Double> scoreList = new ArrayList<Double>();
   private double score = -1;
+
+  public static final String LABEL = "Exact paragraph match";
 
 
   public ExactParagraphMatch(Post target, List<Post> originalPosts) {
@@ -53,13 +53,7 @@ public class ExactParagraphMatch implements Reason {
   @Override
   public boolean check() {
     LOGGER.trace("Checking for " + LABEL);
-    Properties prop = new Properties();
-    try {
-      prop = FileUtils.getPropertiesFromFile(FilePathUtils.generalPropertiesFile);
-    } catch (IOException e) {
-      LOGGER.warn("Could not load general.properties. Using hardcoded value", e);
-    }
-
+    Properties prop = Guttenberg.getGeneralProperties();
     double minimumLength = new Double(prop.getProperty("minimumExactMatchLength", "100"));
 
     JaroWinkler jw = new JaroWinkler();

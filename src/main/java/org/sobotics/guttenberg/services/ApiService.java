@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors in GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ public class ApiService {
   private String site;
 
 
-  public ApiService(String site) {
+  private ApiService(String site) {
     Properties prop = new Properties();
 
     try {
@@ -117,8 +117,14 @@ public class ApiService {
   }
 
 
+
   public JsonObject getAnswerDetailsByIds(List<Integer> answerIdList) throws IOException {
-    JsonObject answerJson = ApiUtils.getAnswerDetailsByIds(answerIdList, site, apiKey);
+    return getAnswerDetailsByIds(answerIdList, "asc", "creation");
+  }
+
+
+  public JsonObject getAnswerDetailsByIds(List<Integer> answerIdList, String order, String sort) throws IOException {
+    JsonObject answerJson = ApiUtils.getAnswerDetailsByIds(answerIdList, order, sort, site, apiKey);
     JsonUtils.handleBackoff(LOGGER, answerJson);
     quota = answerJson.get("quota_remaining").getAsInt();
     return answerJson;
@@ -127,6 +133,14 @@ public class ApiService {
 
   public JsonObject getFirstPageOfAnswers(Instant fromTimestamp) throws IOException {
     JsonObject answersJson = ApiUtils.getFirstPageOfAnswers(fromTimestamp, site, apiKey);
+    JsonUtils.handleBackoff(LOGGER, answersJson);
+    quota = answersJson.get("quota_remaining").getAsInt();
+    return answersJson;
+  }
+
+
+  public JsonObject getSearcExcerpts(String search) throws IOException {
+    JsonObject answersJson = ApiUtils.getSearcExcerpts(search, site, apiKey);
     JsonUtils.handleBackoff(LOGGER, answersJson);
     quota = answersJson.get("quota_remaining").getAsInt();
     return answersJson;
@@ -151,5 +165,30 @@ public class ApiService {
 
   public int getQuota() {
     return quota;
+  }
+
+
+  public String getApiKey() {
+    return apiKey;
+  }
+
+
+  public String getAutoflagKey() {
+    return autoflagKey;
+  }
+
+
+  public String getAutoflagToken() {
+    return autoflagToken;
+  }
+
+
+  public String getUserId() {
+    return userId;
+  }
+
+
+  public String getSite() {
+    return site;
   }
 }

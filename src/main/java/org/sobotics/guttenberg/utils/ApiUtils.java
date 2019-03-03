@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors in GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,15 +82,33 @@ public class ApiUtils {
 
 
   public static JsonObject getAnswerDetailsByIds(List<Integer> answerIdList, String site, String apiKey) throws IOException {
+    return getAnswerDetailsByIds(answerIdList, "asc", "creation", site, apiKey);
+  }
+
+
+  public static synchronized JsonObject getAnswerDetailsByIds(List<Integer> answerIdList, String order, String sort, String site, String apiKey) throws IOException {
     String answerIds = answerIdList.stream().map(String::valueOf).collect(Collectors.joining(";"));
     String answerIdUrl = "https://api.stackexchange.com/2.2/answers/" + answerIds;
-    return JsonUtils.get(answerIdUrl, "order", "asc", "sort", "creation", "filter", filter, "page", "1", "pagesize", "100", "site", site, "pagesize", String.valueOf(answerIdList.size()), "key", apiKey, "sort", "creation");
+    return JsonUtils.get(answerIdUrl, "order", order, "sort", sort, "filter", filter, "page", "1", "pagesize", "100", "site", site, "key", apiKey);
+  }
+
+
+  public static JsonObject getAnswerDetailsByIdsSortVotes(List<Integer> answerIdList, String site, String apiKey) throws IOException {
+    String answerIds = answerIdList.stream().map(String::valueOf).collect(Collectors.joining(";"));
+    String answerIdUrl = "https://api.stackexchange.com/2.2/answers/" + answerIds;
+    return JsonUtils.get(answerIdUrl, "order", "desc", "sort", "votes", "filter", filter, "page", "1", "pagesize", "100", "site", site, "key", apiKey);
   }
 
 
   public static JsonObject getFirstPageOfAnswers(Instant fromTimestamp, String site, String apiKey) throws IOException {
     String answersUrl = "https://api.stackexchange.com/2.2/answers";
     return JsonUtils.get(answersUrl, "order", "asc", "sort", "creation", "filter", filter, "page", "1", "pagesize", "100", "fromdate", String.valueOf(fromTimestamp.minusSeconds(1).getEpochSecond()), "site", site, "key", apiKey, "sort", "creation");
+  }
+
+
+  public static JsonObject getSearcExcerpts(String query, String site, String apiKey) throws IOException {
+    String url = "http://api.stackexchange.com/2.2/search/excerpts";
+    return JsonUtils.get(url, "order", "desc", "sort", "relevance", "site", site, "q", query, "pagesize", "100", "page", "1", "filter", "!9Z(-wptlT", "key", apiKey);
   }
 
 

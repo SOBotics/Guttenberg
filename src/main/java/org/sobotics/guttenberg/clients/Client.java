@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors in GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ import java.util.Properties;
 
 /**
  * The main class
- */
+ * */
 public class Client {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Client.class);
@@ -71,21 +71,30 @@ public class Client {
     LOGGER.info("============================");
     LOGGER.info("Loading properties...");
 
-    Properties prop = new Properties();
+    Properties login = new Properties();
 
     try {
-      prop = FileUtils.getPropertiesFromFile(FilePathUtils.loginPropertiesFile);
+      login = FileUtils.getPropertiesFromFile(FilePathUtils.loginPropertiesFile);
     } catch (IOException e) {
-      e.printStackTrace();
       LOGGER.error("Error: ", e);
       LOGGER.error("Could not load login.properties! Shutting down...");
       return;
     }
 
-    Guttenberg.setLoginProperties(prop);
+    Guttenberg.setLoginProperties(login);
+
+    Properties general = new Properties();
+
+    try {
+      general = FileUtils.getPropertiesFromFile(FilePathUtils.generalPropertiesFile);
+    } catch (IOException e) {
+      LOGGER.error("Error loading general.properties: ", e);
+    }
+
+    Guttenberg.setGeneralProperties(general);
 
     LOGGER.info("Initializing chat...");
-    StackExchangeClient seClient = new StackExchangeClient(prop.getProperty("email"), prop.getProperty("password"));
+    StackExchangeClient seClient = new StackExchangeClient(login.getProperty("email"), login.getProperty("password"));
 
     List<BotRoom> rooms = new ArrayList<>();
     rooms.add(new SOBoticsChatRoom());
@@ -105,9 +114,8 @@ public class Client {
     }
 
     LOGGER.info("Connecting to Redunda...");
-    PingService redunda = new PingService(prop.getProperty("redunda_apikey", ""), version);
-    String productionInstance = prop.getProperty("production_instance", "false");
-
+    PingService redunda = new PingService(login.getProperty("redunda_apikey", ""), version);
+    String productionInstance = login.getProperty("production_instance", "false");
 
     //track files for synchronization
     DataService redundaData = redunda.buildDataService();
@@ -131,7 +139,6 @@ public class Client {
       LOGGER.info("Launching in standby...");
 
     redunda.start();
-
 
     LOGGER.debug("Initialize RunnerService...");
 

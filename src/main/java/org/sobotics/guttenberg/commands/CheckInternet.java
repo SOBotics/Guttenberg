@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors in GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,21 +27,18 @@ import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.entities.Post;
 import org.sobotics.guttenberg.entities.PostMatch;
 import org.sobotics.guttenberg.finders.PlagFinder;
-import org.sobotics.guttenberg.search.InternetSearch;
-import org.sobotics.guttenberg.search.SearchItem;
-import org.sobotics.guttenberg.search.SearchResult;
+import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
 import org.sobotics.guttenberg.search.SearchTerms;
-import org.sobotics.guttenberg.services.ApiService;
+import org.sobotics.guttenberg.search.UserAnswer;
+import org.sobotics.guttenberg.search.UserAnswerLine;
 import org.sobotics.guttenberg.services.RunnerService;
-import org.sobotics.guttenberg.utils.*;
+import org.sobotics.guttenberg.utils.ApiUtils;
+import org.sobotics.guttenberg.utils.CommandUtils;
+import org.sobotics.guttenberg.utils.PostUtils;
 
 import java.io.IOException;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Command to search for plagiarism using internet
@@ -60,34 +57,6 @@ public class CheckInternet implements SpecialCommand {
 
   public CheckInternet(Message message) {
     this.message = message;
-
-  }
-
-
-  /**
-   * Only for testing off chat
-   *
-   * @param args
-   * @throws Exception
-   */
-  public static void main(String[] args) throws Exception {
-    CheckInternet cu = new CheckInternet(null);
-    Properties prop = new Properties();
-
-    try {
-      prop = FileUtils.getPropertiesFromFile(FilePathUtils.loginPropertiesFile);
-    } catch (IOException e) {
-      LOGGER.error("Could not read login.properties", e);
-      return;
-    }
-
-    Guttenberg.setLoginProperties(prop);
-
-    int postId = 38717190;
-    Post post = cu.getPost(postId, prop);
-    if (post != null) {
-      cu.checkPost(post, new SearchTerms(post));
-    }
 
   }
 
@@ -128,11 +97,48 @@ public class CheckInternet implements SpecialCommand {
         room.replyTo(message.getId(), "Could not find post id: " + postId + " with api call");
         return;
       }
-      SearchTerms st = new SearchTerms(post);
-      output(room, PrintUtils.printDescription() + "*Checking post: [" + post.getAnswerID() + "](https://stackoverflow.com/a/" + post.getAnswerID() + ") Search term: " + st.getQuery() + ", exact match: " + st.getExactTerm() + "*");
-      throttleForChat();
-      SearchResult sr = checkPost(post, st);
-      output(room, post, sr);
+
+      int relatedHits;
+      int SEApiHits = 0;
+      int goggleHits = 0;
+
+      PlagFinder plagFinder = new PlagFinder(post);
+      plagFinder.collectData();
+      relatedHits = plagFinder.getRelatedAnswers().size();
+
+      UserAnswer answer = new UserAnswer(post);
+      UserAnswerLine search = answer.getSearchString(true);
+      String apiSearch = search.getSearch();
+
+      try {
+        SEApiHits = plagFinder.addSEApiSearch(apiSearch);
+      } catch (IOException e) {
+        LOGGER.error("Error executing SE Search", e);
+      }
+
+      SearchTerms st = null;
+      // Search on google if last ok and SE api hits either = 0 or too
+      // many >50 bad search)
+      st = new SearchTerms(post);
+      LOGGER.info(st.toString());
+      try {
+        goggleHits = plagFinder.addGoogleSearchData(st);
+      } catch (IOException e) {
+        LOGGER.error("Error executing Google Search", e);
+      }
+
+      List<PostMatch> matches = plagFinder.matchesForReasons(true);
+
+      String message = "[" + post.getAnswerID() + "](https://stackoverflow.com/a/" + post.getAnswerID() + ") Related/Linked: (" + relatedHits + ")";
+      message += ", SEAPI=" + apiSearch + " (" + SEApiHits + ")";
+      message += ", Google=" + st.getQuery() + " exact=" + st.getExactTerm() + " (" + goggleHits + ")";
+      sendChatMessage(room, message);
+
+      for (PostMatch postMatch : matches) {
+        if (postMatch.getTotalScore() > 0.75) {
+          outputDirectHit(room, postMatch);
+        }
+      }
 
     } catch (IOException e) {
       LOGGER.error("Error calling API", e);
@@ -142,134 +148,29 @@ public class CheckInternet implements SpecialCommand {
   }
 
 
-  /**
-   * Search internet for similar post and use gut to check'em
-   *
-   * @param room, the chat room
-   * @param post, the post
-   * @throws IOException
-   */
-  protected SearchResult checkPost(Post post, SearchTerms st) throws IOException {
-
-
-    InternetSearch is = new InternetSearch();
-    SearchResult result = is.google(post, st);
-
-    if (result.getItems().isEmpty()) {
-      return result;
-    }
-
-    List<Post> relatedAnswers = getRelatedAnswers(post, result);
-    if (!relatedAnswers.isEmpty()) {
-      PlagFinder finder = new PlagFinder(post, relatedAnswers);
-      List<PostMatch> matches = finder.matchesForReasons(true);
-      if (!matches.isEmpty()) {
-        Collections.sort(matches);
-        PostMatch bestMatch = matches.get(0);
-        result.setPostMatch(bestMatch);
-      }
-    }
-
-    return result;
-
-
-  }
-
-
-  protected void output(Room room, Post post, SearchResult result) {
-    if (result == null || result.getItems().isEmpty()) {
-      output(room, "No search results on search term");
-      return;
-    }
-
-
-    SearchItem bestSOPost = result.getFirstResult(true);
-    SearchItem bestOffSitePost = result.getFirstResult(false);
-
-    StringBuilder searchMessage = new StringBuilder(PrintUtils.printDescription());
-    if (bestSOPost != null) {
-      searchMessage.append("On site: ");
-      if (bestSOPost.isPost(post)) {
-        searchMessage.append("[Same post]");
-      } else {
-        searchMessage.append("[").append(bestSOPost.getTitle()).append("]");
-      }
-      appendLinkAndPosition(result, bestSOPost, searchMessage);
-    }
-    if (searchMessage.length() > 0 && bestOffSitePost != null) {
-      searchMessage.append(", Off-site: ");
-    }
-    if (bestOffSitePost != null) {
-      searchMessage.append("[").append(bestOffSitePost.getTitle()).append("]");
-      appendLinkAndPosition(result, bestOffSitePost, searchMessage);
-    }
-
-    PostMatch bestMatch = result.getPostMatch();
-    if (bestMatch != null) {
-      searchMessage.append(", SO Match: ");
-      searchMessage.append("[").append(bestMatch.getOriginal().getAnswerID()).append("]");
-      String originalLink = "https://stackoverflow.com/a/" + bestMatch.getOriginal().getAnswerID();
-      searchMessage.append("(").append(originalLink).append(") Score:").append(NumberFormat.getNumberInstance().format(bestMatch.getTotalScore()));
-    }
-    output(room, searchMessage.toString());
-
-  }
-
-
-  protected void throttleForChat() {
+  protected void sendChatMessage(Room room, String message) {
+    room.send(message);
     try {
-      Thread.sleep(5000);
+      Thread.sleep(3000); //Throttle some for chat.
     } catch (InterruptedException e) {
+      //Do nothing
     }
   }
 
 
-  /**
-   * Get related answers, this could probably refractor to plag finder
-   *
-   * @param post,   the original post
-   * @param result, the search result
-   * @return List of related answers.
-   * @throws IOException
-   */
-  public List<Post> getRelatedAnswers(Post post, SearchResult result) throws IOException {
-    List<Post> relatedAnswers = new ArrayList<>();
-    List<Integer> ids = result.getIdQuestions();
-
-    if (!ids.isEmpty()) {
-      String relatedIds = ids.stream().map(id -> String.valueOf(id)).collect(Collectors.joining(";"));
-      JsonObject ra = ApiService.defaultService.getAnswersToQuestionsByIdString(relatedIds);
-      for (JsonElement answer : ra.get("items").getAsJsonArray()) {
-        JsonObject answerObject = answer.getAsJsonObject();
-        Post answerPost = PostUtils.getPost(answerObject);
-        if (answerPost.getAnswerID().intValue() != post.getAnswerID().intValue()) {
-          relatedAnswers.add(answerPost);
-        }
-      }
-    }
-    return relatedAnswers;
+  protected void outputDirectHit(Room room, PostMatch postMatch) {
+    SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
+    room.send(printer.print(postMatch));
   }
 
 
-  public void appendLinkAndPosition(SearchResult result, SearchItem bestSOPost, StringBuilder searchMessage) {
-    searchMessage.append("(").append(bestSOPost.getLink()).append(") [").append(result.getItems().indexOf(bestSOPost) + 1).append("]");
-  }
 
 
-  /**
-   * Debug util to use even if not in room
-   *
-   * @param room
-   * @param message
-   */
-  public void output(Room room, String message) {
-    LOGGER.info("Sending message: " + message);
-    if (room == null) {
-      System.out.println(message);
-    } else {
-      room.send(message);
-    }
-  }
+
+
+
+
+
 
 
   /**
@@ -310,5 +211,6 @@ public class CheckInternet implements SpecialCommand {
   public boolean availableInStandby() {
     return false;
   }
+
 
 }

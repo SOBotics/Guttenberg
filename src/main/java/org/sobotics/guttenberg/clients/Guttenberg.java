@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors in GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,12 +26,9 @@ import org.sobotics.guttenberg.finders.NewAnswersFinder;
 import org.sobotics.guttenberg.finders.PlagFinder;
 import org.sobotics.guttenberg.finders.RelatedAnswersFinder;
 import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
-import org.sobotics.guttenberg.utils.FilePathUtils;
-import org.sobotics.guttenberg.utils.FileUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
 import org.sobotics.redunda.PingService;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,30 +36,18 @@ import java.util.Properties;
 
 /**
  * Fetches and analyzes the data from the API
- */
+ * */
 public class Guttenberg {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Guttenberg.class);
-  private static Properties loginProperties;
+
   private final List<Room> chatRooms;
+  private static Properties loginProperties;
+  private static Properties generalProperties;
 
 
   public Guttenberg(List<Room> rooms) {
     this.chatRooms = rooms;
-  }
-
-
-  public static Properties getLoginProperties() {
-    if (loginProperties == null) {
-      throw new NullPointerException("The login properties have not been instanced");
-    }
-
-    return loginProperties;
-  }
-
-
-  public static void setLoginProperties(Properties loginProperties) {
-    Guttenberg.loginProperties = loginProperties;
   }
 
 
@@ -82,20 +67,13 @@ public class Guttenberg {
 
   public void execute() throws Throwable {
     boolean standbyMode = PingService.standby.get();
-    if (standbyMode == true) {
+    if (standbyMode) {
       LOGGER.info("STANDBY - Abort execute()");
       return;
     }
 
     Instant startTime = Instant.now();
-    Properties props = new Properties();
     LOGGER.info("Starting Guttenberg.execute() ...");
-
-    try {
-      props = FileUtils.getPropertiesFromFile(FilePathUtils.generalPropertiesFile);
-    } catch (IOException e) {
-      LOGGER.warn("Could not load general properties", e);
-    }
 
 
     //Fetch recent answers / The targets
@@ -173,4 +151,31 @@ public class Guttenberg {
     LOGGER.info("Guttenberg.execute() finished");
   }
 
+
+  public static Properties getLoginProperties() {
+    if (loginProperties == null) {
+      throw new NullPointerException("The login properties have not been instanced");
+    }
+
+    return loginProperties;
+  }
+
+
+  public static Properties getGeneralProperties() {
+    if (generalProperties == null) {
+      throw new NullPointerException("The general properties have not been instanced");
+    }
+
+    return generalProperties;
+  }
+
+
+  public static void setLoginProperties(Properties loginProperties) {
+    Guttenberg.loginProperties = loginProperties;
+  }
+
+
+  public static void setGeneralProperties(Properties generalProperties) {
+    Guttenberg.generalProperties = generalProperties;
+  }
 }

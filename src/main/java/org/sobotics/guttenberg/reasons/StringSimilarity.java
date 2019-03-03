@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors in GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,28 +20,28 @@ package org.sobotics.guttenberg.reasons;
 import info.debatty.java.stringsimilarity.JaroWinkler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.entities.Post;
-import org.sobotics.guttenberg.utils.FilePathUtils;
-import org.sobotics.guttenberg.utils.FileUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 /**
  * Checks the similarity of two posts
- */
+ * */
 public class StringSimilarity implements Reason {
 
-  public static final String LABEL = "String similarity";
   private static final Logger LOGGER = LoggerFactory.getLogger(StringSimilarity.class);
+
   private Post target;
   private List<Post> originals;
   private List<Post> matchedPosts = new ArrayList<Post>();
   private List<Double> scoreList = new ArrayList<Double>();
   private double score = -1;
   private boolean ignoringScore = false;
+
+  public static final String LABEL = "String similarity";
 
 
   public StringSimilarity(Post target, List<Post> originalPosts) {
@@ -64,12 +64,7 @@ public class StringSimilarity implements Reason {
     String targetPlaintext = targetPost.getPlaintext();
     String targetQuotes = targetPost.getQuotes();
 
-    Properties quantifiers = new Properties();
-    try {
-      quantifiers = FileUtils.getPropertiesFromFile(FilePathUtils.generalPropertiesFile);
-    } catch (IOException e) {
-      LOGGER.warn("Could not load quantifiers from general.properties. Using hardcoded", e);
-    }
+    Properties quantifiers = Guttenberg.getGeneralProperties();
 
     double quantifierBodyMarkdown = 1;
     double quantifierCodeOnly = 1;
@@ -129,20 +124,11 @@ public class StringSimilarity implements Reason {
   @Override
   public boolean check() {
     boolean matched = false;
+    Properties prop = Guttenberg.getGeneralProperties();
+    double minimumScore = new Double(prop.getProperty("minimumScore", "0.8"));
     for (Post post : this.originals) {
       double currentScore = StringSimilarity.similarityOf(this.target, post);
-
-      //get the report threshold
-      Properties prop = new Properties();
-      try {
-        prop = FileUtils.getPropertiesFromFile(FilePathUtils.generalPropertiesFile);
-      } catch (IOException e) {
-        LOGGER.warn("Could not load general.properties. Using hardcoded value", e);
-      }
-
-      double minimumScore = new Double(prop.getProperty("minimumScore", "0.8"));
-
-      if (currentScore >= minimumScore || this.ignoringScore == true) {
+      if (currentScore >= minimumScore || this.ignoringScore) {
         matched = true;
 
         //add post to list of matched posts

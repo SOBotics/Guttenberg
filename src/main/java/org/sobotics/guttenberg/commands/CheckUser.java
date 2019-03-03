@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors in GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,31 +25,207 @@ import org.sobotics.chatexchange.chat.Message;
 import org.sobotics.chatexchange.chat.Room;
 import org.sobotics.guttenberg.clients.Guttenberg;
 import org.sobotics.guttenberg.entities.Post;
-import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
-import org.sobotics.guttenberg.search.SearchItem;
-import org.sobotics.guttenberg.search.SearchResult;
+import org.sobotics.guttenberg.entities.PostMatch;
+import org.sobotics.guttenberg.finders.PlagFinder;
 import org.sobotics.guttenberg.search.SearchTerms;
+import org.sobotics.guttenberg.search.UserAnswer;
+import org.sobotics.guttenberg.search.UserAnswerLine;
+import org.sobotics.guttenberg.services.ApiService;
 import org.sobotics.guttenberg.services.RunnerService;
 import org.sobotics.guttenberg.utils.*;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Command to check all post of a user.
- *
+ * 
  * @author Petter Friberg
+ *
  */
 
 public class CheckUser extends CheckInternet {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CheckUser.class);
   private static final String CMD = "checkuser";
+  private static final int MIN_LENGTH_FOR_VALID_API_SEARCH = 30;
 
 
   public CheckUser(Message message) {
     super(message);
 
+  }
+
+
+  @Override
+  public boolean validate() {
+    return CommandUtils.checkForCommand(message.getPlainContent(), CMD);
+  }
+
+
+  @Override
+  public void execute(Room room, RunnerService instance) {
+    String cmd = message.getPlainContent();
+
+    // Get userid
+    int index = cmd.indexOf(CMD);
+    if (index == -1) {
+      LOGGER.warn("This command should not have been invoked with: " + message.getPlainContent());
+      return;
+    }
+
+
+    Integer userId = PostUtils.getIdFromLink(cmd.substring(index, cmd.length()));
+    if (userId == null) {
+      room.replyTo(message.getId(), "Could not find user id in command please check your syntax");
+      return;
+    }
+    Properties prop = Guttenberg.getLoginProperties();
+    LOGGER.info("Executing command on user id: " + userId);
+
+    boolean log = cmd.contains("-log");
+
+    boolean googleOk = true;
+    try {
+      /**
+       * It would have been better with Long, but util method takes
+       * Integer
+       */
+      List<Integer> idAnswers = getUsersAnswers(prop, userId);
+      if (idAnswers.isEmpty()) {
+        room.send("User: " + userId + " has no answers");
+        return;
+      }
+      room.send("Check user: " + userId + " - START");
+      JsonObject answers = ApiService.defaultService.getAnswerDetailsByIds(idAnswers, "desc", "votes");
+      int nr = 1;
+      if (answers.has(ITEMS)) {
+
+        for (JsonElement element : answers.get(ITEMS).getAsJsonArray()) {
+          //notify that was are still working
+          if (nr % 25 == 0) {
+            room.send("Checked " + nr + " answer, continuing to search");
+          }
+
+          JsonObject object = element.getAsJsonObject();
+          Post post = PostUtils.getPost(object);
+          int relatedHits;
+          int SEApiHits = 0;
+          int goggleHits = 0;
+
+          PlagFinder plagFinder = new PlagFinder(post);
+          plagFinder.collectData();
+          relatedHits = plagFinder.getRelatedAnswers().size();
+
+          UserAnswer answer = new UserAnswer(post);
+          UserAnswerLine search = answer.getSearchString(true);
+          String apiSearch = search.getSearch();
+
+          try {
+            if (apiSearch.length() > MIN_LENGTH_FOR_VALID_API_SEARCH) {
+              SEApiHits = plagFinder.addSEApiSearch(apiSearch);
+            }
+          } catch (Exception e) {
+            LOGGER.error("Error executing SE Search", e);
+          }
+
+          SearchTerms st = null;
+          //Search on google if last ok and SE api hits either = 0 or too many >50 bad search)
+          if (googleOk && (SEApiHits <= 0 || SEApiHits > 50)) {
+            st = new SearchTerms(post);
+            LOGGER.info(st.toString());
+            try {
+              goggleHits = plagFinder.addGoogleSearchData(st);
+            } catch (IOException e) {
+              googleOk = false;
+              LOGGER.error("Error executing Google Search - turn off google");
+            }
+          }
+
+          List<PostMatch> matches = plagFinder.matchesForReasons(true);
+
+          if (log) {
+            String message = "[" + post.getAnswerID() + "](https://stackoverflow.com/a/" + post.getAnswerID() + ") Related/Linked: (" + relatedHits + ")";
+            if (apiSearch.length() > MIN_LENGTH_FOR_VALID_API_SEARCH) {
+              message += ", SEAPI=" + apiSearch + " (" + SEApiHits + ")";
+            }
+            if (st != null) {
+              message += ", Google=" + st.getQuery() + " exact=" + st.getExactTerm() + " (" + goggleHits + ")";
+            }
+            sendChatMessage(room, message);
+          }
+
+          for (PostMatch postMatch : matches) {
+            if (postMatch.getTotalScore() > 0.75) {
+              outputDirectHit(room, postMatch);
+            }
+          }
+
+          try {
+            Thread.sleep(200); //Throttle some for API
+          } catch (InterruptedException e) {
+            //do nothing
+          }
+          nr++;
+        }
+      }
+
+
+    } catch (IOException e) {
+      LOGGER.error("Error calling API", e);
+      room.replyTo(message.getId(), "Error executing search -  " + e.getMessage());
+    }
+    room.send("Terminated search");
+
+  }
+
+
+  /**
+   * Get all answer of a user, probably should be refractored to PostUtils.
+   *
+   * @param app,    properties
+   * @param userId, the id of user
+   * @return List of Integer
+   * @throws IOException
+   */
+
+  public List<Integer> getUsersAnswers(Properties app, long userId) throws IOException {
+
+    List<Integer> answerIds = new ArrayList<>();
+    String url = "http://api.stackexchange.com/2.2/users/" + userId + "/answers";
+
+    JsonObject json = JsonUtils.get(url, "order", "desc", "sort", "votes", "site", STACKOVERFLOW, "pagesize", "100", "page", "1", "key",
+      app.getProperty("apikey", ""));
+
+    if (json.has(ITEMS)) {
+      for (JsonElement element : json.get(ITEMS).getAsJsonArray()) {
+        JsonObject object = element.getAsJsonObject();
+        if (object.has("answer_id")) {
+          answerIds.add(object.get("answer_id").getAsInt());
+        }
+      }
+    }
+    return answerIds;
+  }
+
+
+  @Override
+  public String description() {
+    return "Checks posts of user for plagiarism: checkuser <userId>";
+  }
+
+
+  @Override
+  public String name() {
+    return CMD;
+  }
+
+
+  @Override
+  public boolean availableInStandby() {
+    return false;
   }
 
 
@@ -80,172 +256,6 @@ public class CheckUser extends CheckInternet {
       }
     }
 
-  }
-
-
-  @Override
-  public boolean validate() {
-    return CommandUtils.checkForCommand(message.getPlainContent(), CMD);
-  }
-
-
-  @Override
-  public void execute(Room room, RunnerService instance) {
-    String cmd = message.getPlainContent();
-
-    // Get userid
-    int index = cmd.indexOf(CMD);
-    if (index == -1) {
-      LOGGER.warn("This command should not have been invoked with: " + message.getPlainContent());
-      return;
-    }
-
-    Integer userId = PostUtils.getIdFromLink(cmd.substring(index, cmd.length()));
-
-    if (userId == null) {
-      room.replyTo(message.getId(), "Could not find user id in command please check your syntax");
-      return;
-    }
-
-    Properties prop = Guttenberg.getLoginProperties();
-
-    LOGGER.info("Executing command on user id: " + userId);
-    List<SearchResult> results = new ArrayList<>();
-    try {
-      /**
-       * It would have been better with Long, but util method takes
-       * Integer
-       */
-      List<Integer> idAnswers = getUsersAnswers(prop, userId);
-      if (idAnswers.isEmpty()) {
-        room.send("User: " + userId + " has no answers");
-        return;
-      }
-      room.send("Check user: " + userId + " - START");
-      JsonObject answers = ApiUtils.getAnswerDetailsByIds(idAnswers, STACKOVERFLOW, prop.getProperty("apikey", ""));
-      int nr = 1;
-      if (answers.has(ITEMS)) {
-        for (JsonElement element : answers.get(ITEMS).getAsJsonArray()) {
-          JsonObject object = element.getAsJsonObject();
-          Post post = PostUtils.getPost(object);
-          SearchTerms st = new SearchTerms(post);
-          LOGGER.info(st.toString());
-          SearchResult result = checkPost(post, st);
-          if (result != null) {
-            results.add(result);
-            if (result.getPostMatch() != null && result.getPostMatch().getTotalScore() > 0.75) {
-              outputDirectHit(room, result);
-              throttleForChat();
-            }
-          }
-          if (nr > 50) {
-            room.send("I have hit maximum number of post that I check on same user 50 (api-quota problem)");
-            break;
-          }
-          nr++;
-
-        }
-      }
-
-
-    } catch (IOException e) {
-      LOGGER.error("Error calling API", e);
-      room.replyTo(message.getId(), "Error calling search, maybe we ran out of quota");
-    }
-
-    if (!results.isEmpty()) {
-      printReport(room, results);
-    }
-
-  }
-
-
-  private void outputDirectHit(Room room, SearchResult result) {
-    SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
-    room.send(printer.print(result.getPostMatch()));
-  }
-
-
-  private void printReport(Room room, List<SearchResult> results) {
-    StringBuilder sb = new StringBuilder();
-    Formatter formatter = new Formatter(sb, Locale.US);
-    formatter.format("%6s%6s%-40s%-50s%-50s", "#", "Score", " Post", "On-Site", "Off-site");
-    sb.append("\n    ").append(new String(new char[65]).replace("\0", "-"));
-
-    int i = 1;
-    for (SearchResult sr : results) {
-      sb.append("\n");
-      SearchItem bestSOPost = sr.getFirstResult(true);
-      SearchItem bestOffSitePost = sr.getFirstResult(false);
-
-      double score = 0d;
-      String postLink = "https://stackoverflow.com/a/" + sr.getPost().getAnswerID();
-      String onsiteLink = "";
-      String offsiteLink = "";
-      if (sr.getPostMatch() != null) {
-        score = sr.getPostMatch().getTotalScore();
-        onsiteLink = "https://stackoverflow.com/a/" + sr.getPostMatch().getOriginal().getAnswerID();
-      } else {
-        if (bestSOPost != null) {
-          onsiteLink = bestSOPost.getLink();
-        }
-      }
-      if (bestOffSitePost != null) {
-        offsiteLink = bestOffSitePost.getLink();
-      }
-
-      formatter.format("%6d%6.2f%-40s%-50s%-50s", i, score, " " + postLink, onsiteLink, offsiteLink);
-      i++;
-    }
-    room.send(sb.toString());
-    formatter.close();
-  }
-
-
-  /**
-   * Get all answer of a user, probably should be refractored to PostUtils.
-   *
-   * @param app,    properties
-   * @param userId, the id of user
-   * @return List of Integer
-   * @throws IOException
-   */
-
-  public List<Integer> getUsersAnswers(Properties app, long userId) throws IOException {
-
-    List<Integer> answerIds = new ArrayList<>();
-    String url = "http://api.stackexchange.com/2.2/users/" + userId + "/answers";
-
-    JsonObject json = JsonUtils.get(url, "sort", "activity", "site", STACKOVERFLOW, "pagesize", "100", "page", "1", "order", "desc", "key",
-      app.getProperty("apikey", ""));
-
-    if (json.has(ITEMS)) {
-      for (JsonElement element : json.get(ITEMS).getAsJsonArray()) {
-        JsonObject object = element.getAsJsonObject();
-        if (object.has("answer_id")) {
-          answerIds.add(object.get("answer_id").getAsInt());
-        }
-      }
-    }
-    return answerIds;
-  }
-
-
-  @Override
-  public String description() {
-    return "Checks posts of user for plagiarism: checkuser <userId>";
-  }
-
-
-  @Override
-  public String name() {
-    return CMD;
-  }
-
-
-  @Override
-  public boolean availableInStandby() {
-    return false;
   }
 
 }

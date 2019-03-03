@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors in GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,8 +77,8 @@ public class SoBoticsCommandsList {
       if (command.validate()) {
         boolean standbyMode = PingService.standby.get();
 
-        if (standbyMode == true) {
-          if (command.availableInStandby() == true) {
+        if (standbyMode) {
+          if (command.availableInStandby()) {
             command.execute(room, instance);
           }
         } else {
@@ -90,7 +90,12 @@ public class SoBoticsCommandsList {
             }
           }
           // Ideally this should be implemented in the validate method of the checkuser command.
-          command.execute(room, instance);
+          try {
+            command.execute(room, instance);
+          } catch (Exception e) {
+            e.printStackTrace();
+            room.send("Error executing command: " + e.getMessage());
+          }
         }
       }
     }
