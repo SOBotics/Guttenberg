@@ -1,11 +1,12 @@
 package org.sobotics.guttenberg.entities;
 
-import com.google.gson.JsonObject;
+import java.time.Instant;
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.sobotics.guttenberg.utils.PostUtils;
 
-import java.time.Instant;
-import java.util.List;
+import com.google.gson.JsonObject;
 
 /**
  * Created by bhargav.h on 11-Sep-16.
@@ -171,4 +172,24 @@ public class Post {
 	public void setUnescapedBodyMarkdown(String unescapedBodyMarkdown) {
 		this.unescapedBodyMarkdown = unescapedBodyMarkdown;
 	}
+	
+	@Override
+	public boolean equals(Object o){
+		if (o instanceof Post){
+			return hashCode()==o.hashCode();
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode(){
+		if (this.answerID!=null&&this.answerID>0){
+			return ("A" +this.answerID.intValue()).hashCode();
+		}
+		if (this.questionID!=null&&this.questionID>0){
+			return ("Q" + this.questionID.intValue()).hashCode();
+		}
+		return super.hashCode();
+	}
+
 }

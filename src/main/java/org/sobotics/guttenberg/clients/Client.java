@@ -1,6 +1,5 @@
 package org.sobotics.guttenberg.clients;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
@@ -12,19 +11,17 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sobotics.redunda.DataService;
-import org.sobotics.redunda.PingService;
+import org.sobotics.chatexchange.chat.StackExchangeClient;
 import org.sobotics.guttenberg.commands.Status;
 import org.sobotics.guttenberg.roomdata.BotRoom;
-import org.sobotics.guttenberg.roomdata.SEBoticsChatRoom;
 import org.sobotics.guttenberg.roomdata.SOBoticsChatRoom;
 import org.sobotics.guttenberg.roomdata.SOBoticsWorkshopChatRoom;
 import org.sobotics.guttenberg.services.RunnerService;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.FileUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
-
-import org.sobotics.chatexchange.chat.StackExchangeClient;
+import org.sobotics.redunda.DataService;
+import org.sobotics.redunda.PingService;
 
 
 /**
@@ -56,22 +53,32 @@ public class Client {
         LOGGER.info("============================");
         LOGGER.info("Loading properties...");
         
-        Properties prop = new Properties();
+        Properties login = new Properties();
 
         try{
-            prop = FileUtils.getPropertiesFromFile(FilePathUtils.loginPropertiesFile);
+            login = FileUtils.getPropertiesFromFile(FilePathUtils.loginPropertiesFile);
         }
         catch (IOException e){
-            e.printStackTrace();
             LOGGER.error("Error: ", e);
             LOGGER.error("Could not load login.properties! Shutting down...");
             return;
         }
         
-        Guttenberg.setLoginProperties(prop);
+        Guttenberg.setLoginProperties(login);
+        
+        Properties general = new Properties();
+
+        try{
+        	general = FileUtils.getPropertiesFromFile(FilePathUtils.generalPropertiesFile);
+        }
+        catch (IOException e){
+            LOGGER.error("Error loading general.properties: ", e);
+        }
+        
+        Guttenberg.setGeneralProperties(general);
         
         LOGGER.info("Initializing chat...");
-        StackExchangeClient seClient = new StackExchangeClient(prop.getProperty("email"), prop.getProperty("password"));
+        StackExchangeClient seClient = new StackExchangeClient(login.getProperty("email"), login.getProperty("password"));
         
         List<BotRoom> rooms = new ArrayList<>();
         rooms.add(new SOBoticsChatRoom());
@@ -90,12 +97,11 @@ public class Client {
         catch (IOException e){
             LOGGER.error("Could not load properties", e);
         }
-        
+
         LOGGER.info("Connecting to Redunda...");
-        PingService redunda = new PingService(prop.getProperty("redunda_apikey", ""), version);
-        String productionInstance = prop.getProperty("production_instance", "false");
-        
-        
+        PingService redunda = new PingService(login.getProperty("redunda_apikey", ""), version);
+        String productionInstance = login.getProperty("production_instance", "false");
+                
         //track files for synchronization
         DataService redundaData = redunda.buildDataService();
         redundaData.trackFile(FilePathUtils.optedUsersFile);
@@ -118,8 +124,7 @@ public class Client {
         	LOGGER.info("Launching in standby...");
         
         redunda.start();
-        
-        
+                
         LOGGER.debug("Initialize RunnerService...");
         
         RunnerService runner = new RunnerService(seClient, rooms);

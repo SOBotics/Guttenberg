@@ -1,11 +1,11 @@
 package org.sobotics.guttenberg.utils;
 
-import com.google.gson.JsonObject;
-
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.google.gson.JsonObject;
 
 /**
  * Created by bhargav.h on 29-Sep-16.
@@ -57,9 +57,19 @@ public class ApiUtils {
     }
 
     public static JsonObject getAnswerDetailsByIds(List<Integer> answerIdList, String site, String apiKey) throws IOException{
+        return getAnswerDetailsByIds(answerIdList,"asc","creation", site, apiKey);
+    }
+    
+    public static synchronized JsonObject getAnswerDetailsByIds(List<Integer> answerIdList, String order, String sort, String site, String apiKey) throws IOException{
         String answerIds = answerIdList.stream().map(String::valueOf).collect(Collectors.joining(";"));
         String answerIdUrl = "https://api.stackexchange.com/2.2/answers/"+answerIds;
-        return JsonUtils.get(answerIdUrl,"order","asc","sort","creation","filter",filter,"page","1","pagesize","100","site",site,"pagesize",String.valueOf(answerIdList.size()),"key",apiKey,"sort","creation");
+        return JsonUtils.get(answerIdUrl,"order",order,"sort",sort,"filter",filter,"page","1","pagesize","100","site",site,"key",apiKey);
+    }
+    
+    public static JsonObject getAnswerDetailsByIdsSortVotes(List<Integer> answerIdList, String site, String apiKey) throws IOException{
+        String answerIds = answerIdList.stream().map(String::valueOf).collect(Collectors.joining(";"));
+        String answerIdUrl = "https://api.stackexchange.com/2.2/answers/"+answerIds;
+        return JsonUtils.get(answerIdUrl,"order","desc","sort","votes","filter",filter,"page","1","pagesize","100","site",site,"key",apiKey);
     }
 
     public static JsonObject getFirstPageOfAnswers(Instant fromTimestamp, String site, String apiKey) throws IOException{
@@ -67,6 +77,12 @@ public class ApiUtils {
         return JsonUtils.get(answersUrl,"order","asc","sort","creation","filter",filter,"page","1","pagesize","100","fromdate",String.valueOf(fromTimestamp.minusSeconds(1).getEpochSecond()),"site",site,"key",apiKey,"sort","creation");
     }
 
+    public static JsonObject getSearcExcerpts(String query, String site, String apiKey) throws IOException{
+    	String url = "http://api.stackexchange.com/2.2/search/excerpts";
+    	return JsonUtils.get(url, "order", "desc", "sort", "relevance", "site", site,"q",query, "pagesize", "100", "page", "1","filter","!9Z(-wptlT", "key",apiKey);
+    }
+
+    
     public static JsonObject getAnswerFlagOptions(Integer answerId, String site, String apiKey, String token) throws IOException{
         String answerIdUrl = "https://api.stackexchange.com/2.2/answers/"+answerId+"/flags/options";
         return JsonUtils.get(answerIdUrl,"site",site,"key",apiKey,"access_token",token);

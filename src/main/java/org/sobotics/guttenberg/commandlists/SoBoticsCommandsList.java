@@ -1,7 +1,6 @@
 package org.sobotics.guttenberg.commandlists;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,18 +9,30 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sobotics.redunda.PingService;
-import org.sobotics.guttenberg.commands.*;
-import org.sobotics.guttenberg.services.RunnerService;
-import org.sobotics.guttenberg.utils.CheckUtils;
-import org.sobotics.guttenberg.utils.FilePathUtils;
-import org.sobotics.guttenberg.utils.FileUtils;
-
 import org.sobotics.chatexchange.chat.Message;
 import org.sobotics.chatexchange.chat.Room;
 import org.sobotics.chatexchange.chat.User;
 import org.sobotics.chatexchange.chat.event.MessagePostedEvent;
 import org.sobotics.chatexchange.chat.event.PingMessageEvent;
+import org.sobotics.guttenberg.commands.Alive;
+import org.sobotics.guttenberg.commands.Check;
+import org.sobotics.guttenberg.commands.CheckInternet;
+import org.sobotics.guttenberg.commands.CheckUser;
+import org.sobotics.guttenberg.commands.ClearHelp;
+import org.sobotics.guttenberg.commands.Commands;
+import org.sobotics.guttenberg.commands.Feedback;
+import org.sobotics.guttenberg.commands.LogLevel;
+import org.sobotics.guttenberg.commands.Quota;
+import org.sobotics.guttenberg.commands.Reboot;
+import org.sobotics.guttenberg.commands.Say;
+import org.sobotics.guttenberg.commands.SpecialCommand;
+import org.sobotics.guttenberg.commands.Status;
+import org.sobotics.guttenberg.commands.Update;
+import org.sobotics.guttenberg.services.RunnerService;
+import org.sobotics.guttenberg.utils.CheckUtils;
+import org.sobotics.guttenberg.utils.FilePathUtils;
+import org.sobotics.guttenberg.utils.FileUtils;
+import org.sobotics.redunda.PingService;
 
 /**
  * Created by bhargav.h on 28-Oct-16.
@@ -61,8 +72,8 @@ public class SoBoticsCommandsList {
 			if (command.validate()) {
 				boolean standbyMode = PingService.standby.get();
 
-				if (standbyMode == true) {
-					if (command.availableInStandby() == true) {
+				if (standbyMode) {
+					if (command.availableInStandby()) {
 						command.execute(room, instance);
 					}
 				} else {
@@ -74,7 +85,12 @@ public class SoBoticsCommandsList {
 						}
 					}
 					// Ideally this should be implemented in the validate method of the checkuser command.
-					command.execute(room, instance);
+					try {
+						command.execute(room, instance);
+					} catch (Exception e) {
+						e.printStackTrace();
+						room.send("Error executing command: " + e.getMessage());
+					}
 				}
 			}
 		}

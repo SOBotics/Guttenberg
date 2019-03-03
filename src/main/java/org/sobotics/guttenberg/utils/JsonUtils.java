@@ -1,35 +1,42 @@
 package org.sobotics.guttenberg.utils;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
 import org.jsoup.parser.Parser;
 import org.slf4j.Logger;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Created by bhargav.h on 10-Sep-16.
  * AKA, TunaLib - All code is courtesy of Lord Tunaki
  */
 public class JsonUtils {
-    public static JsonObject get(String url, String... data) throws IOException {
-        Connection.Response response = Jsoup.connect(url).data(data).method(Connection.Method.GET).ignoreContentType(true).ignoreHttpErrors(true).execute();
+    public static synchronized JsonObject get(String url, String... data) throws IOException {
+    	Connection.Response response = Jsoup.connect(url).data(data).method(Connection.Method.GET).ignoreContentType(true).ignoreHttpErrors(true).execute();
         String json = response.body();
         if (response.statusCode() != 200) {
             throw new IOException("HTTP " + response.statusCode() + " fetching URL " + (url) + ". Body is: " + response.body());
         }
-        JsonObject root = new JsonParser().parse(json).getAsJsonObject();
+        JsonObject root;
+		try {
+			root = new JsonParser().parse(json).getAsJsonObject();
+		} catch (JsonSyntaxException e) {
+			System.out.println("Error pasrsing json: " + json);
+			throw e;
+		}
         
         if (root.has("quota_remaining"))
             StatusUtils.remainingQuota = new AtomicInteger(root.get("quota_remaining").getAsInt());
         
         return root;
     }
-    public static JsonObject post(String url, String... data) throws IOException {
+    public static synchronized JsonObject post(String url, String... data) throws IOException {
         Connection.Response response = Jsoup.connect(url).data(data).method(Connection.Method.POST).ignoreContentType(true).ignoreHttpErrors(true).execute();
         String json = response.body();
         if (response.statusCode() != 200) {
