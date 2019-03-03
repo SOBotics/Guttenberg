@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors in GitHub
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,9 +35,9 @@ public class StringSimilarity implements Reason {
   private static final Logger LOGGER = LoggerFactory.getLogger(StringSimilarity.class);
 
   private Post target;
-  private List<Post> originals;
-  private List<Post> matchedPosts = new ArrayList<Post>();
-  private List<Double> scoreList = new ArrayList<Double>();
+  private final List<Post> originals;
+  private final List<Post> matchedPosts = new ArrayList<>();
+  private final List<Double> scoreList = new ArrayList<>();
   private double score = -1;
   private boolean ignoringScore = false;
 

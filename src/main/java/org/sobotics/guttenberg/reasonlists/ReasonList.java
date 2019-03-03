@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ public interface ReasonList {
    * <p>
    * Contains only initialized objects
    */
-  public List<Reason> reasons();
+  List<Reason> reasons();
 
   /**
    * The list of reasons to be applied on this site
@@ -39,10 +39,10 @@ public interface ReasonList {
    *
    * @parameter ignoringScores If true, every reason will ignore the minimum score to mark it as "applied"
    */
-  public List<Reason> reasons(boolean ignoringScores);
+  List<Reason> reasons(boolean ignoringScores);
 
   /**
    * @return The site where this list will be applied
    */
-  public String site();
+  String site();
 }

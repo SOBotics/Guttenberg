@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,8 +27,8 @@ import java.util.List;
 
 public class SOBoticsReasonList implements ReasonList {
 
-  private Post target;
-  private List<Post> originals;
+  private final Post target;
+  private final List<Post> originals;
 
 
   public SOBoticsReasonList(Post target, List<Post> originalPosts) {
@@ -45,7 +45,7 @@ public class SOBoticsReasonList implements ReasonList {
 
   @Override
   public List<Reason> reasons(boolean ignoringScores) {
-    List<Reason> reasons = new ArrayList<Reason>();
+    List<Reason> reasons = new ArrayList<>();
 
     reasons.add(new StringSimilarity(this.target, this.originals, ignoringScores));
     reasons.add(new ExactParagraphMatch(this.target, this.originals));

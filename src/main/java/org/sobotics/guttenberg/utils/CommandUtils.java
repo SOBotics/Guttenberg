@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ public class CommandUtils {
 
 
   public static boolean checkForCommand(String message, String command) {
-    String username = "";
+    String username;
 
     Properties prop = new Properties();
 
@@ -54,7 +54,7 @@ public class CommandUtils {
 
 
   public static String extractData(String message) {
-    String parts[] = message.split(" ");
+    String[] parts = message.split(" ");
     return String.join(" ", Arrays.copyOfRange(parts, 2, parts.length));
   }
 
@@ -76,7 +76,7 @@ public class CommandUtils {
 
 
   public static String getAnswerId(String word) {
-    String parts[] = word.split("//")[1].split("/");
+    String[] parts = word.split("//")[1].split("/");
     if (parts[1].equals("a") || parts[1].equals("answers")) {
       word = parts[2];
     } else if (parts[1].equals("q") || parts[1].equals("questions")) {

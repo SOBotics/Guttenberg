@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ public class Alive implements SpecialCommand {
   @Override
   public void execute(Room room, RunnerService instance) {
     LOGGER.warn("Someone wants to know, if I'm alive");
-    room.send("The instance " + PingService.location + " is running; Standby: " + PingService.standby.toString());
+    room.send("The instance " + PingService.location + " is running; Standby: " + PingService.standby);
   }
 
 

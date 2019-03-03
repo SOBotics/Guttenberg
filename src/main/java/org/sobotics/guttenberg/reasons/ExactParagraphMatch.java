@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors in GitHub
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,8 @@ public class ExactParagraphMatch implements Reason {
 
   private Post target;
   private List<Post> originals;
-  private List<Post> matchedPosts = new ArrayList<Post>();
-  private List<Double> scoreList = new ArrayList<Double>();
+  private List<Post> matchedPosts = new ArrayList<>();
+  private List<Double> scoreList = new ArrayList<>();
   private double score = -1;
 
   public static final String LABEL = "Exact paragraph match";

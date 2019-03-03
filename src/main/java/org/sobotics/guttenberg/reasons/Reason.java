@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ public interface Reason {
    *
    * @return true if the post should be reported because of that reason
    */
-  public boolean check();
+  boolean check();
 
   /**
    * The description of the reason
@@ -38,7 +38,7 @@ public interface Reason {
    * @return a short description of the reason like "String similarity"
    * @parameter index The index in the `matchedPosts()`-array
    */
-  public String description(int index);
+  String description(int index);
 
   /**
    * The description of the reason
@@ -54,19 +54,19 @@ public interface Reason {
    *
    * @return The score a post reached for that reason
    */
-  public double score();
+  double score();
 
   /**
    * The posts that was found by that filter
    *
    * @return The Posts
    */
-  public List<Post> matchedPosts();
+  List<Post> matchedPosts();
 
   /**
    * The scores for the matched posts in the same order as `matchedPosts()`
    *
    * @return The Posts
    */
-  public List<Double> getScores();
+  List<Double> getScores();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,8 +28,8 @@ import java.util.concurrent.TimeUnit;
 
 public class UpdateService {
   private static final Logger LOGGER = LoggerFactory.getLogger(UpdateService.class);
-  private ScheduledExecutorService executorService;
-  private RunnerService instance;
+  private final ScheduledExecutorService executorService;
+  private final RunnerService instance;
 
 
   public UpdateService(RunnerService runner) {
@@ -64,7 +64,7 @@ public class UpdateService {
       try {
         wait(10);
       } catch (InterruptedException e) {
-        e.printStackTrace();
+        LOGGER.error("Error while waiting for reboot!", e);
       }
       System.exit(0);
     }

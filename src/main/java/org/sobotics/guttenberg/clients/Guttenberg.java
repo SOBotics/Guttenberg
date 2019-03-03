@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors in GitHub
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ public class Guttenberg {
 
 
   public Guttenberg(List<Room> rooms) {
-    this.chatRooms = rooms;
+    chatRooms = rooms;
   }
 
 
@@ -80,7 +80,7 @@ public class Guttenberg {
     List<Post> recentAnswers = NewAnswersFinder.findRecentAnswers();
     StatusUtils.numberOfCheckedTargets.addAndGet(recentAnswers.size());
     //Fetch their question_ids
-    List<Integer> ids = new ArrayList<Integer>();
+    List<Integer> ids = new ArrayList<>();
     for (Post answer : recentAnswers) {
       Integer id = answer.getQuestionID();
       if (!ids.contains(id))
@@ -89,7 +89,7 @@ public class Guttenberg {
 
 
     //Initialize the PlagFinders
-    List<PlagFinder> plagFinders = new ArrayList<PlagFinder>();
+    List<PlagFinder> plagFinders = new ArrayList<>();
 
     for (Post answer : recentAnswers) {
       PlagFinder plagFinder = new PlagFinder(answer);
@@ -123,7 +123,7 @@ public class Guttenberg {
     LOGGER.debug("There are " + plagFinders.size() + " PlagFinders");
     LOGGER.debug("Find the duplicates...");
     //Let PlagFinders find the best match
-    List<PostMatch> allMatches = new ArrayList<PostMatch>();
+    List<PostMatch> allMatches = new ArrayList<>();
     for (PlagFinder finder : plagFinders) {
       List<PostMatch> matchesInFinder = finder.matchesForReasons();
 
@@ -137,7 +137,7 @@ public class Guttenberg {
             SoBoticsPostPrinter printer = new SoBoticsPostPrinter();
             String message = printer.print(match);
 
-            for (Room room : this.chatRooms) {
+            for (Room room : chatRooms) {
               room.send(message);
             }
           }

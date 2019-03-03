@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -120,10 +120,10 @@ public class FileUtils {
   }
 
 
-  public static void removeFromFileLines(String filename, int lineNumbers[]) throws IOException {
+  public static void removeFromFileLines(String filename, int[] lineNumbers) throws IOException {
     List<String> lines = readFile(filename);
     List<String> newLines = new ArrayList<>();
-    Integer i;
+    int i;
 
     for (i = 0; i < lines.size(); i++) {
       if (Arrays.asList(Arrays.stream(lineNumbers).boxed().toArray(Integer[]::new)).contains(i + 1)) {
@@ -173,20 +173,13 @@ public class FileUtils {
     Properties prop;
 
     LOGGER.debug("Trying to load file " + filepath + " to properties...");
-    FileInputStream fis = new FileInputStream(filepath);
-    LOGGER.trace("FileInputStream opened");
+    try (FileInputStream fis = new FileInputStream(filepath)) {
+      LOGGER.trace("FileInputStream opened");
 
-    try {
       prop = new Properties();
       prop.load(fis);
       LOGGER.trace("Succesffully loaded");
-    } //try
-    finally {
-      if (fis != null) {
-        fis.close();
-        LOGGER.trace("Closed FileInputStream");
-      }
-    } // try-finally
+    }
 
     return prop;
   } // getPropertiesFromFile

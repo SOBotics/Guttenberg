@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors in GitHub
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,7 +93,7 @@ public class SoBoticsCommandsList {
           try {
             command.execute(room, instance);
           } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Error executing command!", e);
             room.send("Error executing command: " + e.getMessage());
           }
         }
@@ -106,7 +106,7 @@ public class SoBoticsCommandsList {
     // only ROs (and Generic Bot) should execute global commands!
     try {
       User user = event.getUser().get();
-      if (!user.isModerator() && !user.isRoomOwner() && user.getId() != 7481043)
+      if (!user.isModerator() && !user.isRoomOwner() && user.getId() != 7481043L)
         return;
     } catch (Throwable e) {
       LOGGER.warn("Could not verify privileges of that user. Don't execute the command.", e);

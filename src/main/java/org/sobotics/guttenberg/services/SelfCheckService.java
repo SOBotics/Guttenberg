@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,8 @@
 
 package org.sobotics.guttenberg.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sobotics.chatexchange.chat.ChatHost;
 import org.sobotics.chatexchange.chat.Room;
 import org.sobotics.guttenberg.utils.StatusUtils;
@@ -29,6 +31,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SelfCheckService {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SelfCheckService.class);
+
   private ScheduledExecutorService executorService;
   private RunnerService instance;
 
@@ -43,7 +47,7 @@ public class SelfCheckService {
 
   private void check() throws Throwable {
     boolean standbyMode = PingService.standby.get();
-    if (standbyMode == true) {
+    if (standbyMode) {
       return;
     }
 
@@ -83,11 +87,11 @@ public class SelfCheckService {
   }
 
 
-  public void secureCheck() {
+  private void secureCheck() {
     try {
-      this.check();
+      check();
     } catch (Throwable e) {
-      e.printStackTrace();
+      LOGGER.error("Error in SelfCheckService", e);
     }
   }
 

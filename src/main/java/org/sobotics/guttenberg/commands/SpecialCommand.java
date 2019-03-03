@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,13 +24,13 @@ import org.sobotics.guttenberg.services.RunnerService;
  * Created by bhargav.h on 30-Sep-16.
  */
 public interface SpecialCommand {
-  public boolean validate();
+  boolean validate();
 
-  public void execute(Room room, RunnerService instance);
+  void execute(Room room, RunnerService instance);
 
-  public String description();
+  String description();
 
-  public String name();
+  String name();
 
-  public boolean availableInStandby();
+  boolean availableInStandby();
 }

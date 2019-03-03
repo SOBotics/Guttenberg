@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,24 +32,24 @@ import java.util.function.Consumer;
  */
 public interface BotRoom {
 
-  public int getRoomId();
+  int getRoomId();
 
-  public ChatHost getHost();
+  ChatHost getHost();
 
   /**
    * true, if the server-version of Guttenberg will run in this room. false for development-rooms
    */
-  public boolean getIsProductionRoom();
+  boolean getIsProductionRoom();
 
-  public Consumer<UserMentionedEvent> getMention(Room room, RunnerService instance);
+  Consumer<UserMentionedEvent> getMention(Room room, RunnerService instance);
 
-  public Consumer<MessageReplyEvent> getReply(Room room);
+  Consumer<MessageReplyEvent> getReply(Room room);
 
-  public Consumer<MessagePostedEvent> getMessage(Room room, RunnerService instance);
+  Consumer<MessagePostedEvent> getMessage(Room room, RunnerService instance);
 
   //public Validator getValidator();
-  public PostPrinter getPostPrinter();
+  PostPrinter getPostPrinter();
 
-  public boolean getIsLogged();
+  boolean getIsLogged();
 
 }

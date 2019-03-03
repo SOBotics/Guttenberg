@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,22 +46,22 @@ public class RelatedAnswersFinder {
 
 
   public RelatedAnswersFinder(List<Integer> ids) {
-    this.targedIds = ids;
+    targedIds = ids;
   }
 
 
   public List<Post> fetchRelatedAnswers() {
     //The question_ids of all the new answers
-    String idString = "";
+    StringBuilder idString = new StringBuilder();
     int n = 0;
-    for (Integer id : this.targedIds) {
-      idString += n++ == 0 ? id : ";" + id;
+    for (Integer id : targedIds) {
+      idString.append(n++ == 0 ? id : ";" + id);
     }
 
     LOGGER.debug("Related IDs: " + idString);
 
     if (idString.length() < 2)
-      return new ArrayList<Post>();
+      return new ArrayList<>();
 
     Properties prop = new Properties();
 
@@ -74,35 +74,35 @@ public class RelatedAnswersFinder {
     LOGGER.debug("Fetching the linked/related questions...");
 
     try {
-      JsonObject relatedQuestions = ApiService.defaultService.getRelatedQuestionsByIds(idString);
+      JsonObject relatedQuestions = ApiService.defaultService.getRelatedQuestionsByIds(idString.toString());
       LOGGER.debug("Related done");
-      JsonObject linkedQuestions = ApiService.defaultService.getLinkedQuestionsByIds(idString);
+      JsonObject linkedQuestions = ApiService.defaultService.getLinkedQuestionsByIds(idString.toString());
       LOGGER.debug("linked done");
 
-      String relatedIds = "";
+      StringBuilder relatedIds = new StringBuilder();
 
       for (JsonElement question : relatedQuestions.get("items").getAsJsonArray()) {
         int id = question.getAsJsonObject().get("question_id").getAsInt();
         LOGGER.trace("Add: " + id);
-        relatedIds += id + ";";
+        relatedIds.append(id).append(";");
       }
 
       for (JsonElement question : linkedQuestions.get("items").getAsJsonArray()) {
         int id = question.getAsJsonObject().get("question_id").getAsInt();
         LOGGER.trace("Add: " + id);
-        relatedIds += id + ";";
+        relatedIds.append(id).append(";");
       }
 
       if (relatedIds.length() > 0) {
-        relatedIds = relatedIds.substring(0, relatedIds.length() - 1);
+        relatedIds = new StringBuilder(relatedIds.substring(0, relatedIds.length() - 1));
 
-        List<JsonObject> relatedFinal = new ArrayList<JsonObject>();
+        List<JsonObject> relatedFinal = new ArrayList<>();
 
         int i = 1;
 
         while (i <= 2) {
           LOGGER.debug("Fetch page " + i);
-          JsonObject relatedAnswers = ApiService.defaultService.getAnswersToQuestionsByIdString(relatedIds, i);
+          JsonObject relatedAnswers = ApiService.defaultService.getAnswersToQuestionsByIdString(relatedIds.toString(), i);
           LOGGER.trace("Related answers:\n" + relatedAnswers);
 
           for (JsonElement answer : relatedAnswers.get("items").getAsJsonArray()) {
@@ -112,13 +112,13 @@ public class RelatedAnswersFinder {
 
           JsonElement hasMoreElement = relatedAnswers.get("has_more");
 
-          if (hasMoreElement != null && hasMoreElement.getAsBoolean() == false)
+          if (hasMoreElement != null && !hasMoreElement.getAsBoolean())
             break;
 
           i++;
         }
 
-        List<Post> relatedPosts = new ArrayList<Post>();
+        List<Post> relatedPosts = new ArrayList<>();
         for (JsonElement item : relatedFinal) {
           Post post = PostUtils.getPost(item.getAsJsonObject());
           relatedPosts.add(post);
@@ -134,11 +134,11 @@ public class RelatedAnswersFinder {
 
     } catch (IOException e) {
       LOGGER.error("Error in RelatedAnswersFinder", e);
-      return new ArrayList<Post>();
+      return new ArrayList<>();
     }
 
 
-    return new ArrayList<Post>();
+    return new ArrayList<>();
   }
 
 

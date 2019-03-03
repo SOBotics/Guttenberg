@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,8 @@ import java.io.IOException;
 public class SoBoticsPostPrinter implements PostPrinter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SoBoticsPostPrinter.class);
+
+  @Deprecated
   public final long roomId = 111347;
 
 
@@ -38,13 +40,13 @@ public class SoBoticsPostPrinter implements PostPrinter {
   public String print(PostMatch match) {
     String message;
     String reportLink = null;
-    String reasonsList = "";
+    StringBuilder reasonsList = new StringBuilder();
 
     String targetLink = "//stackoverflow.com/a/" + match.getTarget().getAnswerID() + "/4687348";
     String originalLink = "//stackoverflow.com/a/" + match.getOriginal().getAnswerID() + "/4687348";
 
     for (String reason : match.getReasonStrings()) {
-      reasonsList += reason + "; ";
+      reasonsList.append(reason).append("; ");
     }
 
     LOGGER.debug("PostPrinter reasons: " + reasonsList);

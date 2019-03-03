@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,9 +65,9 @@ public class NewAnswersFinder {
       //fetched answers
 
       JsonArray items = apiResult.get("items").getAsJsonArray();
-      LOGGER.trace("New answers:\n" + items.toString());
+      LOGGER.trace("New answers:\n" + items);
       LOGGER.info("findRecentAnswers() done with " + items.size() + " items");
-      List<Post> posts = new ArrayList<Post>();
+      List<Post> posts = new ArrayList<>();
 
       for (JsonElement item : items) {
         Post post = PostUtils.getPost(item.getAsJsonObject());
@@ -79,7 +79,7 @@ public class NewAnswersFinder {
 
     } catch (IOException e) {
       LOGGER.error("Could not load recent answers", e);
-      return new ArrayList<Post>();
+      return new ArrayList<>();
     }
   }
 

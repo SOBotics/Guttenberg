@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors in GitHub
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,6 @@ public class Client {
 
 
   private Client() {
-    super();
   }
 
 

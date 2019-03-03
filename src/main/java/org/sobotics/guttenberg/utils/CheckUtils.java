@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ public class CheckUtils {
    */
   public static boolean checkIfUserIsBlacklisted(long userId, String host) {
     try {
-      return FileUtils.checkIfInFile(FilePathUtils.blacklistedUsersFile, host + ":" + String.valueOf(userId));
+      return FileUtils.checkIfInFile(FilePathUtils.blacklistedUsersFile, host + ":" + userId);
     } catch (IOException e) {
       LOGGER.error("Could not check if user is blacklisted! Assuming, he's not...", e);
       return false;

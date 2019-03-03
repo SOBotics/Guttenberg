@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,6 @@ public class PostUtils {
 
 
   private PostUtils() {
-    super();
   }
 
 
@@ -106,20 +105,22 @@ public class PostUtils {
     String markdown = post.getBodyMarkdown();
     String[] paragraphs = markdown.split("\\n{2,}");
 
-    String plain = "", code = "", quote = "";
+    StringBuilder plain = new StringBuilder();
+    StringBuilder code = new StringBuilder();
+    StringBuilder quote = new StringBuilder();
     for (String paragraph : paragraphs) {
       if (paragraph.trim().charAt(0) == '>') {
-        quote += paragraph + "\n";
+        quote.append(paragraph).append("\n");
       } else if (paragraph.startsWith("    ")) {
-        code += paragraph + "\n";
+        code.append(paragraph).append("\n");
       } else {
-        plain += paragraph + "\n";
+        plain.append(paragraph).append("\n");
       }
     }
 
-    result.addProperty("body_plain", plain);
-    result.addProperty("body_code", code);
-    result.addProperty("body_quote", quote);
+    result.addProperty("body_plain", plain.toString());
+    result.addProperty("body_code", code.toString());
+    result.addProperty("body_quote", quote.toString());
 
     return result;
   }
@@ -129,19 +130,19 @@ public class PostUtils {
     List<String> output = new ArrayList<String>();
 
     String[] paragraphs = markdown.split("\\n");
-    String buffer = "";
+    StringBuilder buffer = new StringBuilder();
 
     for (String paragraph : paragraphs) {
       if (paragraph.startsWith("    ")) {
         // found a codeblock -> add to buffer
-        buffer += paragraph + "\n";
+        buffer.append(paragraph).append("\n");
       } else {
         // a non-code paragraph. This resets the codeblock
         // -> write buffer to array; then clear buffer
         if (buffer.length() > 4) {
-          output.add(buffer);
+          output.add(buffer.toString());
         }
-        buffer = "";
+        buffer = new StringBuilder();
       }
     }
 
@@ -338,10 +339,8 @@ public class PostUtils {
 
     reportMsg = room.getMessage(parentMsg);
 
-    if (reportMsg != null) {
-      reportId = PostUtils.getReportIdFromChatMessage(reportMsg);
-      LOGGER.trace("ReportId in message: " + reportId);
-    }
+    reportId = PostUtils.getReportIdFromChatMessage(reportMsg);
+    LOGGER.trace("ReportId in message: " + reportId);
 
     if (reportId == -1)
       return;

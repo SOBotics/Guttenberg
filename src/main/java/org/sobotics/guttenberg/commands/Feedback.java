@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,14 +35,14 @@ public class Feedback implements SpecialCommand {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Feedback.class);
 
-  private Message message;
-  private PingMessageEvent event;
-  private Room room;
+  private final Message message;
+  private final PingMessageEvent event;
+  private final Room room;
 
 
   public Feedback(Message message, PingMessageEvent ping, Room room) {
     this.message = message;
-    this.event = ping;
+    event = ping;
     this.room = room;
   }
 
@@ -57,7 +57,7 @@ public class Feedback implements SpecialCommand {
   public void execute(Room room, RunnerService instance) {
     boolean isSELink = false;
     int reportId = -1;
-    String args[] = CommandUtils.extractData(message.getPlainContent()).trim().split(" ");
+    String[] args = CommandUtils.extractData(message.getPlainContent()).trim().split(" ");
 
     if (args.length != 2) {
       room.send("Error in arguments passed");
@@ -86,13 +86,13 @@ public class Feedback implements SpecialCommand {
     try {
       if (type.equalsIgnoreCase("tp") || type.equalsIgnoreCase("k")) {
         if (!isSELink) {
-          PostUtils.storeFeedback(this.room, this.event, reportId, "tp");
+          PostUtils.storeFeedback(this.room, event, reportId, "tp");
         }
       }
 
       if (type.equalsIgnoreCase("fp") || type.equalsIgnoreCase("f")) {
         if (!isSELink) {
-          PostUtils.storeFeedback(this.room, this.event, reportId, "fp");
+          PostUtils.storeFeedback(this.room, event, reportId, "fp");
         }
       }
     } catch (IOException e) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,9 +44,9 @@ import java.util.function.Consumer;
 
 public class RunnerService implements PingServiceDelegate {
   private static final Logger LOGGER = LoggerFactory.getLogger(RunnerService.class);
-  private StackExchangeClient client;
-  private List<BotRoom> rooms;
-  private List<Room> chatRooms;
+  private final StackExchangeClient client;
+  private final List<BotRoom> rooms;
+  private final List<Room> chatRooms;
   private ScheduledExecutorService executorService;
 
 
@@ -136,7 +136,7 @@ public class RunnerService implements PingServiceDelegate {
         try {
           Thread.sleep(1000);
         } catch (InterruptedException e) {
-          e.printStackTrace();
+          LOGGER.error("Error while waiting for reboot", e);
         }
       }
     }
@@ -151,7 +151,7 @@ public class RunnerService implements PingServiceDelegate {
   @Override
   public void standbyStatusChanged(boolean newStatus) {
     LOGGER.info("New standby status: " + newStatus);
-    if (newStatus == false) {
+    if (!newStatus) {
       StatusUtils.lastExecutionFinished = Instant.now();
       StatusUtils.lastSucceededExecutionStarted = Instant.now().minusSeconds(30);
     }

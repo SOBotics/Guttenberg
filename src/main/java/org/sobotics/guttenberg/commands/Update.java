@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ public class Update implements SpecialCommand {
       room.replyTo(message.getId(), "Update failed!");
     }
 
-    if (update == true) {
+    if (update) {
       room.replyTo(message.getId(), "Rebooting for update to version " + updater.getNewVersion().get());
       room.leave();
     } else {
@@ -65,7 +65,7 @@ public class Update implements SpecialCommand {
     }
 
     try {
-      wait(10);
+      wait(10L);
     } catch (InterruptedException e) {
       LOGGER.error("Error while waiting for shutdown!", e);
     }

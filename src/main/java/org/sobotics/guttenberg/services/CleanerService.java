@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,8 @@
 
 package org.sobotics.guttenberg.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sobotics.chatexchange.chat.Room;
 
 import java.io.File;
@@ -27,7 +29,9 @@ import java.util.concurrent.TimeUnit;
 
 public class CleanerService {
   private Room room;
-  private ScheduledExecutorService cleanerService;
+  private final ScheduledExecutorService cleanerService;
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(CleanerService.class);
 
 
   public CleanerService(Room room) {
@@ -57,15 +61,15 @@ public class CleanerService {
         try {
           file.delete();
         } catch (SecurityException e) {
-          e.printStackTrace();
+          LOGGER.error("Faild to delete logfiles!", e);
         }
       }
-    }
+    } // foreach
   }
 
 
   public void start() {
-    Runnable cleaner = () -> clean();
+    Runnable cleaner = this::clean;
     cleanerService.scheduleAtFixedRate(cleaner, 0, 4, TimeUnit.HOURS);
   }
 

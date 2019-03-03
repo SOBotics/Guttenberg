@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors in GitHub
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ public class PlagFinder {
   /**
    * The answer to check
    */
-  private Post targetAnswer;
+  private final Post targetAnswer;
 
   /**
    * A list of answers that are somehow related to targetAnswer.
@@ -60,27 +60,27 @@ public class PlagFinder {
    * Initializes the PlagFinder with an answer that should be checked for plagiarism
    */
   public PlagFinder(JsonObject jsonObject) {
-    this.targetAnswer = PostUtils.getPost(jsonObject);
-    this.relatedAnswers = new ArrayList<Post>();
+    targetAnswer = PostUtils.getPost(jsonObject);
+    relatedAnswers = new ArrayList<>();
   }
 
 
   public PlagFinder(Post post) {
-    this.targetAnswer = post;
-    this.relatedAnswers = new ArrayList<Post>();
+    targetAnswer = post;
+    relatedAnswers = new ArrayList<>();
   }
 
 
   public PlagFinder(Post target, List<Post> related) {
-    this.targetAnswer = target;
-    this.relatedAnswers = related;
+    targetAnswer = target;
+    relatedAnswers = related;
   }
 
 
   public void collectData() {
-    this.relatedAnswers = new ArrayList<Post>();
-    this.fetchRelatedAnswers();
-    LOGGER.debug("Number of related answers: " + this.relatedAnswers.size());
+    relatedAnswers = new ArrayList<>();
+    fetchRelatedAnswers();
+    LOGGER.debug("Number of related answers: " + relatedAnswers.size());
   }
 
 
@@ -93,7 +93,7 @@ public class PlagFinder {
    */
   public int addGoogleSearchData(SearchTerms st) throws IOException {
     InternetSearch is = new InternetSearch();
-    SearchResult result = is.google(this.targetAnswer, st);
+    SearchResult result = is.google(targetAnswer, st);
     if (result.getItems().isEmpty()) {
       return 0;
     }
@@ -106,15 +106,15 @@ public class PlagFinder {
       for (JsonElement answer : ra.get("items").getAsJsonArray()) {
         JsonObject answerObject = answer.getAsJsonObject();
         Post answerPost = PostUtils.getPost(answerObject);
-        if (answerPost.getAnswerID().intValue() != this.targetAnswer.getAnswerID().intValue()) {
+        if (answerPost.getAnswerID().intValue() != targetAnswer.getAnswerID().intValue()) {
           googleAnswers.add(answerPost);
         }
       }
     }
     //add to head
     int totaleFound = googleAnswers.size();
-    googleAnswers.addAll(this.relatedAnswers);
-    this.relatedAnswers = googleAnswers;
+    googleAnswers.addAll(relatedAnswers);
+    relatedAnswers = googleAnswers;
     return totaleFound;
 
   }
@@ -136,7 +136,7 @@ public class PlagFinder {
         JsonObject object = element.getAsJsonObject();
         if (object.has("answer_id")) {
           int id = object.get("answer_id").getAsInt();
-          if (id != this.targetAnswer.getAnswerID().intValue()) {
+          if (id != targetAnswer.getAnswerID()) {
             answerIds.add(id);
           }
         }
@@ -159,8 +159,8 @@ public class PlagFinder {
     }
 
     int totaleFound = seApiAnswers.size();
-    seApiAnswers.addAll(this.relatedAnswers);
-    this.relatedAnswers = seApiAnswers;
+    seApiAnswers.addAll(relatedAnswers);
+    relatedAnswers = seApiAnswers;
     return totaleFound;
   }
 

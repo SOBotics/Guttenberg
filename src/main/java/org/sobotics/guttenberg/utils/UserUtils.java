@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors in GitHub
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,9 +38,9 @@ public class UserUtils {
     try {
       List<String> lines = FileUtils.readFile(filename);
       for (String e : lines) {
-        String pieces[] = e.split(",");
+        String[] pieces = e.split(",");
         double minScore = new Double(pieces[4]);
-        if (Long.valueOf(pieces[2]).equals(Long.valueOf(roomId)) && score >= minScore) {
+        if (Long.valueOf(pieces[2]).equals(roomId) && score >= minScore) {
 
           OptedInUser optedInUser = new OptedInUser();
 
@@ -76,7 +76,7 @@ public class UserUtils {
 
 
   public static boolean checkIfUserIsInList(List<OptedInUser> users, OptedInUser checkUser) {
-    if (users.size() == 0) return false;
+    if (users.isEmpty()) return false;
     for (OptedInUser user : users) {
       if (user.getUser().getUserId() == checkUser.getUser().getUserId()) {
         return true;

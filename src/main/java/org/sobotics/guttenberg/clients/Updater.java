@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ public class Updater {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Updater.class);
 
-  private Version currentVersion;
+  private final Version currentVersion;
   private Version newVersion = new Version("0.0.0");
 
 
@@ -54,46 +54,48 @@ public class Updater {
     LOGGER.debug("Loaded properties");
 
     String versionString = guttenbergProperties.getProperty("version", "0.0.0");
-    this.currentVersion = new Version(versionString);
+    currentVersion = new Version(versionString);
 
-    LOGGER.info("Current version: " + this.currentVersion.get());
+    LOGGER.info("Current version: " + currentVersion.get());
 
     //get all files in the folder
     String regex = "guttenberg-([0-9.]*)\\.jar";
     Pattern pattern = Pattern.compile(regex);
 
     File[] files = new File("./").listFiles();
-    for (File file : files) {
-      if (file.isFile()) {
-        String name = file.getName();
-        LOGGER.debug("File: " + name);
-        Matcher matcher = pattern.matcher(name);
-        matcher.find();
-        LOGGER.debug("Init matcher");
-        String v = "";
+    if (files != null) {
+      for (File file : files) {
+        if (file.isFile()) {
+          String name = file.getName();
+          LOGGER.debug("File: " + name);
+          Matcher matcher = pattern.matcher(name);
+          matcher.find();
+          LOGGER.debug("Init matcher");
+          String v = "";
 
-        try {
-          v = matcher.group(1);
-        } catch (Exception e) {
-          LOGGER.warn("Filename " + name + " didn't match the pattern.", e);
-        }
+          try {
+            v = matcher.group(1);
+          } catch (Exception e) {
+            LOGGER.warn("Filename " + name + " didn't match the pattern.", e);
+          }
 
 
-        if (v != null && v.length() > 0) {
-          LOGGER.debug("Matched");
-          Version version = new Version(v);
-          LOGGER.debug("Found version " + version.get());
-          if (this.currentVersion.compareTo(version) == -1) {
-            //higher than current version
-            if (this.newVersion.compareTo(version) == -1) {
-              //higher than next version
-              this.newVersion = version;
+          if (v != null && !v.isEmpty()) {
+            LOGGER.debug("Matched");
+            Version version = new Version(v);
+            LOGGER.debug("Found version " + version.get());
+            if (currentVersion.compareTo(version) < 0) {
+              //higher than current version
+              if (newVersion.compareTo(version) < 0) {
+                //higher than next version
+                newVersion = version;
+              }
             }
           }
-        }
 
-      }
-    }
+        } // if
+      } // foreach files
+    } // if files
 
   }
 
@@ -105,14 +107,14 @@ public class Updater {
    * @throws Exception when update failed
    */
   public boolean updateIfAvailable() throws Exception {
-    if (this.currentVersion.compareTo(this.newVersion) == -1) {
-      LOGGER.info("New version available: " + this.newVersion.get());
+    if (currentVersion.compareTo(newVersion) < 0) {
+      LOGGER.info("New version available: " + newVersion.get());
       try {
-        Runtime.getRuntime().exec("nohup java -cp guttenberg-" + this.newVersion.get() + ".jar org.sobotics.guttenberg.clients.Client");
+        Runtime.getRuntime().exec("nohup java -cp guttenberg-" + newVersion.get() + ".jar org.sobotics.guttenberg.clients.Client");
         System.exit(0);
         return true;
       } catch (IOException e) {
-        e.printStackTrace();
+        LOGGER.error("Update failed!", e);
         throw new Exception("Update failed!");
       }
     } else {
@@ -123,12 +125,12 @@ public class Updater {
 
 
   public Version getNewVersion() {
-    return this.newVersion;
+    return newVersion;
   }
 
 
   public Version getCurrentVersion() {
-    return this.currentVersion;
+    return currentVersion;
   }
 
 }

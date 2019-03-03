@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,11 +42,11 @@ public class ClearHelp implements SpecialCommand {
 
   @Override
   public void execute(Room room, RunnerService instance) {
-    if (StatusUtils.askedForHelp == true) {
+    if (StatusUtils.askedForHelp) {
       StatusUtils.askedForHelp = false;
-      room.replyTo(this.message.getId(), "Thank you for your help! :-)");
+      room.replyTo(message.getId(), "Thank you for your help! :-)");
     } else {
-      room.replyTo(this.message.getId(), "Thanks, but I didn't ask for help.");
+      room.replyTo(message.getId(), "Thanks, but I didn't ask for help.");
     }
   }
 

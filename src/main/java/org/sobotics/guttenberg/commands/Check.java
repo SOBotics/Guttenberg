@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@ import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.FileUtils;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
@@ -77,31 +76,32 @@ public class Check implements SpecialCommand {
     try {
       JsonObject answer = ApiUtils.getAnswerDetailsById(answerId, "stackoverflow", prop.getProperty("apikey", ""));
       JsonObject target = answer.get("items").getAsJsonArray().get(0).getAsJsonObject();
-      LOGGER.trace("Checking answer: " + target.toString());
+      LOGGER.trace("Checking answer: " + target);
       PlagFinder finder = new PlagFinder(target);
       finder.collectData();
       List<PostMatch> matches = finder.matchesForReasons(true);
 
       LOGGER.trace("Found " + matches.size() + " PostMatches");
 
-      if (matches.size() > 0) {
+      if (!matches.isEmpty()) {
         //sort the matches
-        Collections.sort(matches,
-          Comparator.comparingDouble(PostMatch::getTotalScore).reversed());
+        matches.sort(Comparator.comparingDouble(PostMatch::getTotalScore).reversed());
 
 
         //prepare printing them
         int i = 0;
-        String reply = "These posts are similar to the target: ";
+        StringBuilder reply = new StringBuilder("These posts are similar to the target: ");
         for (PostMatch match : matches) {
           if (i > 5)
             break;
-          double roundedTotalScore = Math.round(match.getTotalScore() * 100.0) / 100.0;
-          reply += "[" + match.getOriginal().getAnswerID() + "](http://stackoverflow.com/a/" + match.getOriginal().getAnswerID() + ") (" + roundedTotalScore + "); ";
+          double roundedTotalScore = (double) Math.round(match.getTotalScore() * 100.0) / 100.0;
+          reply.append("[").append(match.getOriginal().getAnswerID());
+          reply.append("](http://stackoverflow.com/a/").append(match.getOriginal().getAnswerID()).append(") (");
+          reply.append(roundedTotalScore).append("); ");
           i++;
         }
 
-        room.replyTo(message.getId(), reply);
+        room.replyTo(message.getId(), reply.toString());
       } else {
         room.replyTo(message.getId(), "No similar posts found.");
       }

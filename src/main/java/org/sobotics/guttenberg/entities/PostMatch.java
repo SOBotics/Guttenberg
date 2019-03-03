@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,35 +35,35 @@ public class PostMatch implements Comparable<PostMatch> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PostMatch.class);
 
-  private Post target;
-  private Post original;
-  private List<String> reasons = new ArrayList<String>();
+  private final Post target;
+  private final Post original;
+  private final List<String> reasons = new ArrayList<>();
   private double totalScore = 0;
   private String copyPastorReasonString = "";
 
 
   public PostMatch(Post targetPost, Post originalPost) {
-    this.target = targetPost;
-    this.original = originalPost;
+    target = targetPost;
+    original = originalPost;
   }
 
 
   public Post getTarget() {
-    return this.target;
+    return target;
   }
 
 
   public Post getOriginal() {
-    return this.original;
+    return original;
   }
 
 
   public void addReason(String reason, double score) {
     if (!reasons.contains(reason)) {
       //add reason
-      this.reasons.add(reason);
+      reasons.add(reason);
       //add score
-      this.totalScore += score;
+      totalScore += score;
     }
   }
 
@@ -79,22 +79,22 @@ public class PostMatch implements Comparable<PostMatch> {
       LOGGER.debug("Reason doesn't exist in string yet");
       double roundedScore = Math.round(score * 100.0) / 100.0;
 
-      if (copyPastorReasonString.length() > 0)
-        this.copyPastorReasonString += ",";
+      if (!copyPastorReasonString.isEmpty())
+        copyPastorReasonString += ",";
 
-      this.copyPastorReasonString += reason + ":" + roundedScore;
-      LOGGER.debug("New copyPastorReasonString: " + this.copyPastorReasonString);
+      copyPastorReasonString += reason + ":" + roundedScore;
+      LOGGER.debug("New copyPastorReasonString: " + copyPastorReasonString);
     }
   }
 
 
   public List<String> getReasonStrings() {
-    return this.reasons;
+    return reasons;
   }
 
 
   public String getCopyPastorReasonString() {
-    return this.copyPastorReasonString;
+    return copyPastorReasonString;
   }
 
 
@@ -128,13 +128,13 @@ public class PostMatch implements Comparable<PostMatch> {
       LOGGER.warn("Could not load quantifiers from general.properties. Using hardcoded", e);
     }
 
-    int lengthOne = this.original.getCleanBodyMarkdown().length();
-    int lengthTwo = this.target.getCleanBodyMarkdown().length();
+    int lengthOne = original.getCleanBodyMarkdown().length();
+    int lengthTwo = target.getCleanBodyMarkdown().length();
 
 
     //#114: The original post should be at least 5 minutes older than the target
-    Instant targetCreation = this.target.getAnswerCreationDate();
-    Instant originalCreation = this.original.getAnswerCreationDate();
+    Instant targetCreation = target.getAnswerCreationDate();
+    Instant originalCreation = original.getAnswerCreationDate();
     long minutes = ChronoUnit.MINUTES.between(originalCreation, targetCreation);
     boolean minimumTimeSpanChecked = minutes >= 5;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors in GitHub
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,7 +108,7 @@ public class Post {
    * It removes the markdown used to create JS-snippets
    */
   public String getCleanBodyMarkdown() {
-    String md = this.getBodyMarkdown();
+    String md = getBodyMarkdown();
 
     //#150: Snippets still match
     md = md.replaceAll("<!-- begin snippet:.*-->|<!-- language:.*-->|<!-- end snippet.*-->", "");
@@ -143,7 +143,7 @@ public class Post {
 
 
   public String getMainTag() {
-    return this.tags.size() > 0 ? this.tags.get(0) : "";
+    return !tags.isEmpty() ? tags.get(0) : "";
   }
 
 
@@ -171,40 +171,40 @@ public class Post {
 
 
   public String getCodeOnly() {
-    return this.codeOnly != null ? this.codeOnly : "";
+    return codeOnly != null ? codeOnly : "";
   }
 
 
   public String getPlaintext() {
-    return this.plaintext != null ? this.plaintext : "";
+    return plaintext != null ? plaintext : "";
   }
 
 
   public String getQuotes() {
-    return this.quotes != null ? this.quotes : "";
+    return quotes != null ? quotes : "";
   }
 
 
   public void setScore(double newScore) {
-    this.score = newScore;
+    score = newScore;
   }
 
 
   public double getScore() {
-    return this.score;
+    return score;
   }
 
 
   public void parsePost() {
     JsonObject parts = PostUtils.separateBodyParts(this);
 
-    this.codeOnly = parts.get("body_code").getAsString();
-    this.quotes = parts.get("body_quote").getAsString();
+    codeOnly = parts.get("body_code").getAsString();
+    quotes = parts.get("body_quote").getAsString();
 
     String plain = parts.get("body_plain").getAsString();
     plain.replaceFirst("\\d*\\s*up\\s*vote\\s*\\d*\\s*down\\s*vote", "");
     plain.replaceAll("<!--.*-->", "");
-    this.plaintext = plain;
+    plaintext = plain;
   }
 
 
@@ -229,11 +229,11 @@ public class Post {
 
   @Override
   public int hashCode() {
-    if (this.answerID != null && this.answerID > 0) {
-      return ("A" + this.answerID.intValue()).hashCode();
+    if (answerID != null && answerID > 0) {
+      return ("A" + answerID).hashCode();
     }
-    if (this.questionID != null && this.questionID > 0) {
-      return ("Q" + this.questionID.intValue()).hashCode();
+    if (questionID != null && questionID > 0) {
+      return ("Q" + questionID).hashCode();
     }
     return super.hashCode();
   }

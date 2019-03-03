@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors in GitHub
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ public class ApiService {
     try {
       prop = FileUtils.getPropertiesFromFile(FilePathUtils.loginPropertiesFile);
     } catch (IOException e) {
-      e.printStackTrace();
+      LOGGER.error("Failed to load login.properties", e);
     }
 
     this.site = site;
