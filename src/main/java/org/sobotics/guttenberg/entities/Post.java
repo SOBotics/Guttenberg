@@ -1,195 +1,241 @@
+/*
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ */
+
 package org.sobotics.guttenberg.entities;
 
-import java.time.Instant;
-import java.util.List;
-
+import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.sobotics.guttenberg.utils.PostUtils;
 
-import com.google.gson.JsonObject;
+import java.time.Instant;
+import java.util.List;
 
 /**
  * Created by bhargav.h on 11-Sep-16.
  */
 public class Post {
-    private String title;
-    private Instant answerCreationDate;
-    private Integer answerID;
-    private Integer questionID;
-    private String body;
-    private String bodyMarkdown;
-    /**
-     * Unescaped markdown. That's required to post it to SOBotics/CopyPastor
-     * */
-    private String unescapedBodyMarkdown;
-    private SOUser answerer;
-    private List<String> tags;
-    
-    private String codeOnly;
-    private String plaintext;
-    private String quotes;
-    
-    private double score = 0;
+  private String title;
+  private Instant answerCreationDate;
+  private Integer answerID;
+  private Integer questionID;
+  private String body;
+  private String bodyMarkdown;
+  /**
+   * Unescaped markdown. That's required to post it to SOBotics/CopyPastor
+   */
+  private String unescapedBodyMarkdown;
+  private SOUser answerer;
+  private List<String> tags;
 
-    public String getTitle() {
-        return title;
-    }
+  private String codeOnly;
+  private String plaintext;
+  private String quotes;
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+  private double score = 0;
 
-    public Instant getAnswerCreationDate() {
-        return answerCreationDate;
-    }
 
-    public void setAnswerCreationDate(Instant answerCreationDate) {
-        this.answerCreationDate = answerCreationDate;
-    }
+  public String getTitle() {
+    return title;
+  }
 
-    public Integer getAnswerID() {
-        return answerID;
-    }
 
-    public void setAnswerID(Integer answerID) {
-        this.answerID = answerID;
-    }
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-    public Integer getQuestionID() {
-        return questionID;
-    }
 
-    public void setQuestionID(Integer questionID) {
-        this.questionID = questionID;
-    }
+  public Instant getAnswerCreationDate() {
+    return answerCreationDate;
+  }
 
-    public String getBody() {
-        return body;
-    }
 
-    public void setBody(String body) {
-        this.body = body;
-    }
+  public void setAnswerCreationDate(Instant answerCreationDate) {
+    this.answerCreationDate = answerCreationDate;
+  }
 
-    public String getBodyMarkdown() {
-        return bodyMarkdown;
-    }
-    
-    /**
-     * Returns a cleaner Version of the body_markdown
-     * It removes the markdown used to create JS-snippets
-     * */
-    public String getCleanBodyMarkdown() {
-    	String md = this.getBodyMarkdown();
-    	
-    	//#150: Snippets still match
-    	md = md.replaceAll("<!-- begin snippet:.*-->|<!-- language:.*-->|<!-- end snippet.*-->", "");
-    	
-    	return md;
-    }
 
-    public void setBodyMarkdown(String bodyMarkdown) {
-        this.bodyMarkdown = bodyMarkdown;
-    }
+  public Integer getAnswerID() {
+    return answerID;
+  }
 
-    public SOUser getAnswerer() {
-        return answerer;
-    }
 
-    public void setAnswerer(SOUser answerer) {
-        this.answerer = answerer;
-    }
-    
-    public void setTags(List<String> newTags) {
-    	this.tags = newTags;
-    }
-    
-    public List<String> getTags() {
-    	return this.tags;
-    }
-    
-    public String getMainTag() {
-    	return this.tags.size() > 0 ? this.tags.get(0) : "";
-    }
+  public void setAnswerID(Integer answerID) {
+    this.answerID = answerID;
+  }
 
-    @Override
-    public String toString() {
 
-        JsonObject json = getJson();
-        return json.toString();
-    }
+  public Integer getQuestionID() {
+    return questionID;
+  }
 
-    @NotNull
-    private JsonObject getJson() {
-        JsonObject json = new JsonObject();
 
-        json.addProperty("title" , title );
-        json.addProperty("answerCreationDate" , answerCreationDate.toString());
-        json.addProperty("answerID" , answerID);
-        json.addProperty("body" , body );
-        json.addProperty("bodyMarkdown" , bodyMarkdown);
-        json.add("answerer" , answerer.getJson());
-        return json;
+  public void setQuestionID(Integer questionID) {
+    this.questionID = questionID;
+  }
 
-    }
-    
-    public String getCodeOnly() {
-    	return this.codeOnly != null ? this.codeOnly : "";
-    }
-    
-    public String getPlaintext() {
-    	return this.plaintext != null ? this.plaintext : "";
-    }
-    
-    public String getQuotes() {
-    	return this.quotes != null ? this.quotes : "";
-    }
-    
-    public void setScore(double newScore) {
-    	this.score = newScore;
-    }
-    
-    public double getScore() {
-    	return this.score;
-    }
-    
-    public void parsePost() {
-    	JsonObject parts = PostUtils.separateBodyParts(this);
-    	
-    	this.codeOnly = parts.get("body_code").getAsString();
-    	this.quotes = parts.get("body_quote").getAsString();
-    	
-    	String plain = parts.get("body_plain").getAsString();
-    	plain.replaceFirst("\\d*\\s*up\\s*vote\\s*\\d*\\s*down\\s*vote", "");
-    	plain.replaceAll("<!--.*-->", "");
-    	this.plaintext = plain;
-    }
 
-	public String getUnescapedBodyMarkdown() {
-		return unescapedBodyMarkdown;
-	}
+  public String getBody() {
+    return body;
+  }
 
-	public void setUnescapedBodyMarkdown(String unescapedBodyMarkdown) {
-		this.unescapedBodyMarkdown = unescapedBodyMarkdown;
-	}
-	
-	@Override
-	public boolean equals(Object o){
-		if (o instanceof Post){
-			return hashCode()==o.hashCode();
-		}
-		return false;
-	}
-	
-	@Override
-	public int hashCode(){
-		if (this.answerID!=null&&this.answerID>0){
-			return ("A" +this.answerID.intValue()).hashCode();
-		}
-		if (this.questionID!=null&&this.questionID>0){
-			return ("Q" + this.questionID.intValue()).hashCode();
-		}
-		return super.hashCode();
-	}
+
+  public void setBody(String body) {
+    this.body = body;
+  }
+
+
+  public String getBodyMarkdown() {
+    return bodyMarkdown;
+  }
+
+
+  /**
+   * Returns a cleaner Version of the body_markdown
+   * It removes the markdown used to create JS-snippets
+   */
+  public String getCleanBodyMarkdown() {
+    String md = getBodyMarkdown();
+
+    //#150: Snippets still match
+    md = md.replaceAll("<!-- begin snippet:.*-->|<!-- language:.*-->|<!-- end snippet.*-->", "");
+
+    return md;
+  }
+
+
+  public void setBodyMarkdown(String bodyMarkdown) {
+    this.bodyMarkdown = bodyMarkdown;
+  }
+
+
+  public SOUser getAnswerer() {
+    return answerer;
+  }
+
+
+  public void setAnswerer(SOUser answerer) {
+    this.answerer = answerer;
+  }
+
+
+  public void setTags(List<String> newTags) {
+    this.tags = newTags;
+  }
+
+
+  public List<String> getTags() {
+    return this.tags;
+  }
+
+
+  public String getMainTag() {
+    return !tags.isEmpty() ? tags.get(0) : "";
+  }
+
+
+  @Override
+  public String toString() {
+
+    JsonObject json = getJson();
+    return json.toString();
+  }
+
+
+  @NotNull
+  private JsonObject getJson() {
+    JsonObject json = new JsonObject();
+
+    json.addProperty("title", title);
+    json.addProperty("answerCreationDate", answerCreationDate.toString());
+    json.addProperty("answerID", answerID);
+    json.addProperty("body", body);
+    json.addProperty("bodyMarkdown", bodyMarkdown);
+    json.add("answerer", answerer.getJson());
+    return json;
+
+  }
+
+
+  public String getCodeOnly() {
+    return codeOnly != null ? codeOnly : "";
+  }
+
+
+  public String getPlaintext() {
+    return plaintext != null ? plaintext : "";
+  }
+
+
+  public String getQuotes() {
+    return quotes != null ? quotes : "";
+  }
+
+
+  public void setScore(double newScore) {
+    score = newScore;
+  }
+
+
+  public double getScore() {
+    return score;
+  }
+
+
+  public void parsePost() {
+    JsonObject parts = PostUtils.separateBodyParts(this);
+
+    codeOnly = parts.get("body_code").getAsString();
+    quotes = parts.get("body_quote").getAsString();
+
+    String plain = parts.get("body_plain").getAsString();
+    plain.replaceFirst("\\d*\\s*up\\s*vote\\s*\\d*\\s*down\\s*vote", "");
+    plain.replaceAll("<!--.*-->", "");
+    plaintext = plain;
+  }
+
+
+  public String getUnescapedBodyMarkdown() {
+    return unescapedBodyMarkdown;
+  }
+
+
+  public void setUnescapedBodyMarkdown(String unescapedBodyMarkdown) {
+    this.unescapedBodyMarkdown = unescapedBodyMarkdown;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof Post) {
+      return hashCode() == o.hashCode();
+    }
+    return false;
+  }
+
+
+  @Override
+  public int hashCode() {
+    if (answerID != null && answerID > 0) {
+      return ("A" + answerID).hashCode();
+    }
+    if (questionID != null && questionID > 0) {
+      return ("Q" + questionID).hashCode();
+    }
+    return super.hashCode();
+  }
 
 }
