@@ -55,7 +55,6 @@ public class Feedback implements SpecialCommand {
 
   @Override
   public void execute(Room room, RunnerService instance) {
-    boolean isSELink = false;
     int reportId = -1;
     String[] args = CommandUtils.extractData(message.getPlainContent()).trim().split(" ");
 
@@ -66,11 +65,6 @@ public class Feedback implements SpecialCommand {
 
     String word = args[0];
     String type = args[1];
-
-    if (word.contains("/")) {
-      word = CommandUtils.getAnswerId(word);
-      isSELink = true;
-    }
 
     try {
       reportId = CommandUtils.getPostIdFromUrl(word);
@@ -85,15 +79,11 @@ public class Feedback implements SpecialCommand {
 
     try {
       if (type.equalsIgnoreCase("tp") || type.equalsIgnoreCase("k")) {
-        if (!isSELink) {
-          PostUtils.storeFeedback(this.room, event, reportId, "tp");
-        }
+        PostUtils.storeFeedback(this.room, event, reportId, "tp");
       }
 
       if (type.equalsIgnoreCase("fp") || type.equalsIgnoreCase("f")) {
-        if (!isSELink) {
-          PostUtils.storeFeedback(this.room, event, reportId, "fp");
-        }
+        PostUtils.storeFeedback(this.room, event, reportId, "fp");
       }
     } catch (IOException e) {
       LOGGER.error("Could not store feedback!", e);
@@ -103,7 +93,7 @@ public class Feedback implements SpecialCommand {
 
   @Override
   public String description() {
-    return "Provides feedback on a given report";
+    return "Provides feedback on a given report (report id or url)";
   }
 
 
