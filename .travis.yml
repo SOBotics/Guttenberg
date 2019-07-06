@@ -7,3 +7,6 @@ deploy:
   file: "target/guttenberg-$TRAVIS_TAG.jar"
   skip_cleanup: true
   draft: true
+  on:
+    branch: master
+    tags: true
