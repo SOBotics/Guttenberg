@@ -11,6 +11,8 @@ When reporting a bug, please always give us the date and time, when this bug occ
 
 Code-contributions are always welcome. To keep the project clean, please make sure to follow a few conventions.
 
+**It's highly recommended to use [IntelliJ IDEA](https://www.jetbrains.com/idea/).**
+
 ### What issues can I work on?
 
 In general, you can have a look at those issues, which don't have an user assigned.
@@ -29,6 +31,47 @@ The name of the branch should contain the number of the issue, a very short desc
 
 Each commit should start with the number of the issue followed by a `:`. Only for really small hotfixes (like typos), we don't need that. In that case, use `fixed #[issue number]`.
 If you're just fixing a typo in a .md-file and there is no issue open about that, just describe, what typo/grammar you fixed.
+
+### Code style
+
+It's recommended to use IntelliJ for developing Guttenberg, since the project already contains the neccessary settings for the code style.
+
+These are the most important guidelines:
+
+#### Indentation
+
+We are using **2 spaces** per level of indentation.
+
+#### Whitespaces
+
+Lines should not have trailing whitespaces. Empty lines should not have whitespaces at all.
+
+#### Encoding
+
+Every file should be encoded in `UTF-8`. We are using UNIX line-breaks (`\n`).
+
+#### Methods
+
+The openening brace `{` should be in the same line as the method declaration.
+
+Example:
+```
+public void test(String param, int otherParam) {
+
+}
+```
+
+For better readability, the whitespaces should be used as shown in the example above.
+
+#### if/for/while/...
+
+These statements should be followed by a whitespace before the opening brace.
+
+```
+if (a == b) {
+
+}
+```
 
 ### Naming conventions
 

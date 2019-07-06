@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run Guttenberg" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.sobotics.guttenberg.clients.Client" />
+    <module name="guttenberg" />
+    <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+      <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/pom.xml" goal="compile" />
+    </method>
+  </configuration>
+</component>
