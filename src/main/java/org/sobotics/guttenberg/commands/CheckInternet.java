@@ -143,7 +143,7 @@ public class CheckInternet implements SpecialCommand {
       sendChatMessage(room, message);
 
       for (PostMatch postMatch : matches) {
-        if (postMatch.getTotalScore() > 0.8) {
+        if (postMatch.getTotalScore() > reportThreshold) {
           outputDirectHit(room, postMatch);
         }
       }
