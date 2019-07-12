@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors in GitHub
+ * Copyright (C) 2019 SOBotics (https://sobotics.org) and contributors on GitHub
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,6 +86,14 @@ public class CheckInternet implements SpecialCommand {
     }
 
     Properties prop = Guttenberg.getLoginProperties();
+    Properties generalProp = Guttenberg.getGeneralProperties();
+    double reportThreshold;
+    try {
+      reportThreshold = Double.parseDouble(generalProp.getProperty("checkuser_minimumScore", "0.80"));
+    } catch (NumberFormatException e) {
+      reportThreshold = 0.8;
+    }
+
     Post post = null;
 
     LOGGER.info("Executing command on user id: " + postId);
@@ -135,7 +143,7 @@ public class CheckInternet implements SpecialCommand {
       sendChatMessage(room, message);
 
       for (PostMatch postMatch : matches) {
-        if (postMatch.getTotalScore() > 0.75) {
+        if (postMatch.getTotalScore() > reportThreshold) {
           outputDirectHit(room, postMatch);
         }
       }
