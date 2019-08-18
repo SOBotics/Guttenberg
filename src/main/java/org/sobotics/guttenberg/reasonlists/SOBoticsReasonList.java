@@ -21,6 +21,7 @@ import org.sobotics.guttenberg.entities.Post;
 import org.sobotics.guttenberg.reasons.ExactParagraphMatch;
 import org.sobotics.guttenberg.reasons.Reason;
 import org.sobotics.guttenberg.reasons.StringSimilarity;
+import org.sobotics.guttenberg.reasons.Winnowing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +50,7 @@ public class SOBoticsReasonList implements ReasonList {
 
     reasons.add(new StringSimilarity(this.target, this.originals, ignoringScores));
     reasons.add(new ExactParagraphMatch(this.target, this.originals));
+    reasons.add(new Winnowing(this.target, this.originals));
 
 
     return reasons;
