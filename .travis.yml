@@ -1,9 +1,12 @@
 language: java
 jdk:
  - oraclejdk8
-env:
-  global:
-    - secure: "IXm8Q0NKfM0T+fpszZ/4NI3y7ul22SxTe5q8QLomLTakYcTCMuhvBQy8RKbRl3ElWk8f0n7aG7OBKhlhuKbqQJHAfIwP/ro/m4gw06Nf2vsakVeNJHUe7G0u32RxArd3VzVvHBRt1j7jXNK9TgK9KJkdYn16/1wKr+rvgxh1Jxp1NzrnqR3HLiBrNj4Z08GLm3gRSt0CTGEr2iFbujmuHvjSOfzt3JZnfKZqojxTjTZ/a9OjrHrrHcpvFGssXu0O3+MnHP3P/AhWzZFac11rZy2tX+YgPNPxJGnSJX5XzGi34W/ONur+Lc38pJDBH9vu0j/fAe3PkuHY1drOZ0cwhlvJSMT4CS32USBbg3eJbfqyngtGeCHw97OKYJ33jkDqKoRtiyWIoxoxxJx8O1dLeJ8lzH+2i7UDYYfuhGePXZBxw/VS2u14s0B7NQ5BMM+PyI3KLNBy/Bl+2rnxyBUaLeJ9qtIE09eT78WKweZ3daLbFLj8sy6XeaFUTUSvPZSKs86zW6RnHFPRVyogxNJQxKbEV9KHWkPWIpIlxY/bohyf1n02bTcjAxhjt4zn/F6Q12Qp/jclNG1+4xWi/g7DQX003F4du49IwX6nKMEWwVn+NUaBbB/+tTenbn+ZQ7qIoruvhC71kVLGpCYNQklB34BGjIHvPyLL4B8uGDSjP58="
-    - secure: "tKxo7j+IDrYmjE6JfCQCuzeXOXzxb/GfhspzR+GK3js70CQL1T7Ybp1ZBGJqg+Em5rVMOO1liUyD0xLOpYVU1Au2N/KM+ozrGbOv30C0KHIBT090nYloO6AttY0tpnTT+WMOM62Jq30FMY27eo2UTZ6tWKhd47/OKCDWvW1CtmMq7+GhBCcGv1ERqF35cgbhMzDc9AuzDsTkavYU+zH3Y/YowyysR7vEJU4tHcNciUbAM1bz/viQwPHSn4ZucaHqRlMI0ljDOruBfpUKFHKI2WG49mxrfjCXXMr6Gl2bWOPTrWhmM1abmi/I75OfDI8vREchbYSjLNKZZ8QQk3bRk6vDD0eVWCmRa28qA7agK50jTgFLjYElT+ktIHnGfprruJyZK6Y2cE3q5xgVp6vpGdVPdHPkeVMajzoVfxYn3LmOmCaXiAZRnnpgi3hD7qvuHpZIFPDz2qYjjOs6KhaGKRzpK938V9vrqWplJRysyLDMP3L08kKgfNIqfJvmXdwZfjGbbm5IdW69ubwQWlSeBN6aFd05fRXZkS8GM3P/EVunHJHA8BK6ydWHbeME1zrXaSnGrc54kdrYaD1Ub3P6uS+V7YGQfcHBIZ2DjczSBtDp9L/QH+8rwbv9NOEs/Ha8vUP6NSK3pu5Wtv4XCGOOBClk/uup2jdHNIICZzOzWfE="
-after_success:
-  "curl --ftp-create-dirs -T target/guttenberg-$TRAVIS_TAG.jar -u $UPLOAD_USER:$UPLOAD_PW ftp://sobotics.org"
+deploy:
+  provider: releases
+  api_key: "$oauth_token"
+  file: "target/guttenberg-$TRAVIS_TAG.jar"
+  skip_cleanup: true
+  draft: true
+  on:
+    branch: master
+    tags: true
