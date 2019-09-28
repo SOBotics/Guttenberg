@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/SOBotics/Guttenberg.svg?branch=master)](https://travis-ci.org/SOBotics/Guttenberg)
+[![Actions Status](https://github.com/SOBotics/Guttenberg/workflows/Build%20Guttenberg/badge.svg)](https://github.com/SOBotics/Guttenberg/actions)
 
 ## What is Guttenberg?
 
