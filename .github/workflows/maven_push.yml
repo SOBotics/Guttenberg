@@ -1,4 +1,4 @@
-name: Build Guttenberg
+name: Build
 
 on: [push]
 
