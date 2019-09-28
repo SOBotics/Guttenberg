@@ -158,7 +158,7 @@ public class UserAnswer {
       return cite;
     }
 
-    if (content != null && content.length() > 100) {
+    if (content != null && content.length() > 100 && content.indexOf(' ', 90)>0) {
       return new UserAnswerLine(LineType.TEXT, content.substring(0, content.indexOf(' ', 90)));
     }
     return new UserAnswerLine(LineType.TEXT, content);

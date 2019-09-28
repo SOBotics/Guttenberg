@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/SOBotics/Guttenberg.svg?branch=master)](https://travis-ci.org/SOBotics/Guttenberg)
+[![Actions Status](https://github.com/SOBotics/Guttenberg/workflows/Build%20Guttenberg/badge.svg)](https://github.com/SOBotics/Guttenberg/actions)
 
 ## What is Guttenberg?
 
@@ -19,7 +19,7 @@ In [this file](feedback.md), we collected information on how we react to Guttenb
 
 ## Accuracy
 
-We are already collecting data with [CopyPastor](https://github.com/SOBotics/CopyPastor) to provide statisctics, but since there are not that many posts to report, it will take a while until we have enough data.
+We are already collecting data with [CopyPastor](https://github.com/SOBotics/CopyPastor) to provide statistics, but since there are not that many posts to report, it will take a while until we have enough data.
 
 
   [1]: http://chat.stackoverflow.com/rooms/111347/sobotics
