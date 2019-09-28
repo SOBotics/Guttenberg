@@ -22,7 +22,7 @@ jobs:
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: target/release/mything
+        file: target/guttenberg-${{ github.ref }}.jar
         asset_name: mything
         tag: ${{ github.ref }}
         overwrite: true
