@@ -23,5 +23,6 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: target/*.jar
+        asset_name: guttenberg.jar
         tag: ${{ github.ref }}
         overwrite: true
