@@ -30,8 +30,6 @@ import org.sobotics.guttenberg.services.RunnerService;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.FileUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
-import org.sobotics.redunda.DataService;
-import org.sobotics.redunda.PingService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -111,33 +109,6 @@ public class Client {
     } catch (IOException e) {
       LOGGER.error("Could not load properties", e);
     }
-
-    LOGGER.info("Connecting to Redunda...");
-    PingService redunda = new PingService(login.getProperty("redunda_apikey", ""), version);
-    String productionInstance = login.getProperty("production_instance", "false");
-
-    //track files for synchronization
-    DataService redundaData = redunda.buildDataService();
-    redundaData.trackFile(FilePathUtils.optedUsersFile);
-    redundaData.trackFile(FilePathUtils.generalPropertiesFile);
-    redundaData.trackFile(FilePathUtils.blacklistedUsersFile);
-
-    if (productionInstance.equals("false")) {
-      redunda.setDebugging(true);
-      LOGGER.info("Set Redunda debugging to true");
-    } else {
-      //not debugging
-      LOGGER.info("Start synchronization...");
-      redundaData.syncAndStart();
-      LOGGER.info("Synchronization finished!");
-    }
-
-    //first check manually, so that RunnerService will know the status before posting the welcome message
-    boolean isOnStandby = redunda.checkStandbyStatus();
-    if (isOnStandby)
-      LOGGER.info("Launching in standby...");
-
-    redunda.start();
 
     LOGGER.debug("Initialize RunnerService...");
 

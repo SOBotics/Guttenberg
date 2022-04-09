@@ -27,7 +27,6 @@ import org.sobotics.guttenberg.finders.PlagFinder;
 import org.sobotics.guttenberg.finders.RelatedAnswersFinder;
 import org.sobotics.guttenberg.printers.SoBoticsPostPrinter;
 import org.sobotics.guttenberg.utils.StatusUtils;
-import org.sobotics.redunda.PingService;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -66,12 +65,6 @@ public class Guttenberg {
 
 
   public void execute() throws Throwable {
-    boolean standbyMode = PingService.standby.get();
-    if (standbyMode) {
-      LOGGER.info("STANDBY - Abort execute()");
-      return;
-    }
-
     Instant startTime = Instant.now();
     LOGGER.info("Starting Guttenberg.execute() ...");
 

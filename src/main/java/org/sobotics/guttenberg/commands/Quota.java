@@ -21,12 +21,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sobotics.chatexchange.chat.Message;
 import org.sobotics.chatexchange.chat.Room;
+import org.sobotics.guttenberg.clients.Guttenberg;
+import org.sobotics.guttenberg.clients.Updater;
 import org.sobotics.guttenberg.services.RunnerService;
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.FileUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
-import org.sobotics.redunda.PingService;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -60,7 +61,7 @@ public class Quota implements SpecialCommand {
       return;
     }
 
-    room.send("The remaining quota on " + PingService.location + " is: " + StatusUtils.remainingQuota);
+    room.send("The remaining quota is: " + StatusUtils.remainingQuota);
   }
 
 

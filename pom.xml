@@ -22,7 +22,7 @@
 
 	<groupId>de.felixsfd.stackoverflow</groupId>
 	<artifactId>guttenberg</artifactId>
-    <version>1.2.7</version>
+    <version>1.2.8</version>
 
 	<dependencies>
 		<dependency>
@@ -60,11 +60,6 @@
 			<groupId>info.debatty</groupId>
 			<artifactId>java-string-similarity</artifactId>
 			<version>0.21</version>
-		</dependency>
-		<dependency>
-			<groupId>org.sobotics</groupId>
-			<artifactId>redunda-lib</artifactId>
-			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.apis</groupId>

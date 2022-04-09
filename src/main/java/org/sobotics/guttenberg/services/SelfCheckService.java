@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.sobotics.chatexchange.chat.ChatHost;
 import org.sobotics.chatexchange.chat.Room;
 import org.sobotics.guttenberg.utils.StatusUtils;
-import org.sobotics.redunda.PingService;
 
 import java.time.Instant;
 import java.util.concurrent.Executors;
@@ -46,11 +45,6 @@ public class SelfCheckService {
 
 
   private void check() throws Throwable {
-    boolean standbyMode = PingService.standby.get();
-    if (standbyMode) {
-      return;
-    }
-
     //check quota
     if (oldApiQuota.get() < StatusUtils.remainingQuota.get()) {
       //check if it's the first launch

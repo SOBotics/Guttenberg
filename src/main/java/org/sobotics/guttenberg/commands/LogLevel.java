@@ -28,7 +28,6 @@ import org.sobotics.guttenberg.services.RunnerService;
 import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.FileUtils;
-import org.sobotics.redunda.PingService;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -99,37 +98,35 @@ public class LogLevel implements SpecialCommand {
 
     LOGGER.debug("Level " + levelString + " found.");
 
-    if (instanceParam == null || instanceParam.equalsIgnoreCase(PingService.location)) {
-      //the logging-level for this instance should be changed
-      Level newLevel = Level.toLevel(levelString);
-      LogManager.getRootLogger().setLevel(newLevel);
-      FileOutputStream fOut = null;
+    //the logging-level for this instance should be changed
+    Level newLevel = Level.toLevel(levelString);
+    LogManager.getRootLogger().setLevel(newLevel);
+    FileOutputStream fOut = null;
 
-      try {
-        Properties loggingProp = new Properties();
-        loggingProp = FileUtils.getPropertiesFromFile(FilePathUtils.loggerPropertiesFile);
-        loggingProp.setProperty("level", levelString.toLowerCase());
+    try {
+      Properties loggingProp = new Properties();
+      loggingProp = FileUtils.getPropertiesFromFile(FilePathUtils.loggerPropertiesFile);
+      loggingProp.setProperty("level", levelString.toLowerCase());
 
-        fOut = new FileOutputStream(FilePathUtils.loggerPropertiesFile);
+      fOut = new FileOutputStream(FilePathUtils.loggerPropertiesFile);
 
-        loggingProp.store(fOut, null);
+      loggingProp.store(fOut, null);
 
-        fOut.close();
-      } catch (Exception e) {
-        LOGGER.error("Error while saving the new log-level to the logging.properties", e);
-      } finally {
-        if (fOut != null) {
-          try {
-            fOut.close();
-          } catch (IOException e) {
-            LOGGER.error("Could not close FileOutputStream!", e);
-          }
+      fOut.close();
+    } catch (Exception e) {
+      LOGGER.error("Error while saving the new log-level to the logging.properties", e);
+    } finally {
+      if (fOut != null) {
+        try {
+          fOut.close();
+        } catch (IOException e) {
+          LOGGER.error("Could not close FileOutputStream!", e);
         }
       }
-
-      LOGGER.info("Logging-level successfully changed to " + levelString);
-      room.send("Instance *" + PingService.location + "* is now using the logging-level **" + levelString.toUpperCase() + "**");
     }
+
+    LOGGER.info("Logging-level successfully changed to " + levelString);
+    room.send("Instance is now using the logging-level **" + levelString.toUpperCase() + "**");
   }
 
 

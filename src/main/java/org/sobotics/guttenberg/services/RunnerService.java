@@ -29,8 +29,6 @@ import org.sobotics.guttenberg.roomdata.BotRoom;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.FileUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
-import org.sobotics.redunda.PingService;
-import org.sobotics.redunda.PingServiceDelegate;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -42,7 +40,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-public class RunnerService implements PingServiceDelegate {
+public class RunnerService {
   private static final Logger LOGGER = LoggerFactory.getLogger(RunnerService.class);
   private final StackExchangeClient client;
   private final List<BotRoom> rooms;
@@ -80,10 +78,7 @@ public class RunnerService implements PingServiceDelegate {
         update.start();
 
         if (prop.getProperty("production_instance").equals("true")) {
-          //only post the welcome message, when not on standby
-          if (PingService.standby.get() == false) {
-            chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (SERVER VERSION; Instance [_" + prop.getProperty("location", "undefined") + "_](https://redunda.sobotics.org/bots/4/bot_instances))");
-          }
+          chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (SERVER VERSION; Instance [_" + prop.getProperty("location", "undefined") + "_](https://redunda.sobotics.org/bots/4/bot_instances))");
         } else {
           chatroom.send("[Guttenberg](http://stackapps.com/q/7197/43403) launched (DEVELOPMENT VERSION; Instance _" + prop.getProperty("location") + "_)");
         }
@@ -145,15 +140,5 @@ public class RunnerService implements PingServiceDelegate {
 
   public List<Room> getChatRooms() {
     return this.chatRooms;
-  }
-
-
-  @Override
-  public void standbyStatusChanged(boolean newStatus) {
-    LOGGER.info("New standby status: " + newStatus);
-    if (!newStatus) {
-      StatusUtils.lastExecutionFinished = Instant.now();
-      StatusUtils.lastSucceededExecutionStarted = Instant.now().minusSeconds(30);
-    }
   }
 }

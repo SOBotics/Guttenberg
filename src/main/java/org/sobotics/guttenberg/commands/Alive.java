@@ -23,7 +23,6 @@ import org.sobotics.chatexchange.chat.Message;
 import org.sobotics.chatexchange.chat.Room;
 import org.sobotics.guttenberg.services.RunnerService;
 import org.sobotics.guttenberg.utils.CommandUtils;
-import org.sobotics.redunda.PingService;
 
 /**
  * Created by bhargav.h on 30-Sep-16.
@@ -49,7 +48,7 @@ public class Alive implements SpecialCommand {
   @Override
   public void execute(Room room, RunnerService instance) {
     LOGGER.warn("Someone wants to know, if I'm alive");
-    room.send("The instance " + PingService.location + " is running; Standby: " + PingService.standby);
+    room.send("The instance is running");
   }
 
 

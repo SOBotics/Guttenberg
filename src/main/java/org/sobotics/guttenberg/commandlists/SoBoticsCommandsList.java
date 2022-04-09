@@ -29,7 +29,6 @@ import org.sobotics.guttenberg.services.RunnerService;
 import org.sobotics.guttenberg.utils.CheckUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.FileUtils;
-import org.sobotics.redunda.PingService;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,27 +74,19 @@ public class SoBoticsCommandsList {
 
     for (SpecialCommand command : commands) {
       if (command.validate()) {
-        boolean standbyMode = PingService.standby.get();
-
-        if (standbyMode) {
-          if (command.availableInStandby()) {
-            command.execute(room, instance);
+        if (command instanceof CheckUser) {
+          User user = event.getUser().get();
+          if (!user.isModerator() && !user.isRoomOwner()) {
+            room.replyTo(message.getId(), "This command can only be executed by RO or moderator");
+            return;
           }
-        } else {
-          if (command instanceof CheckUser) {
-            User user = event.getUser().get();
-            if (!user.isModerator() && !user.isRoomOwner()) {
-              room.replyTo(message.getId(), "This command can only be executed by RO or moderator");
-              return;
-            }
-          }
-          // Ideally this should be implemented in the validate method of the checkuser command.
-          try {
-            command.execute(room, instance);
-          } catch (Exception e) {
-            LOGGER.error("Error executing command!", e);
-            room.send("Error executing command: " + e.getMessage());
-          }
+        }
+        // Ideally this should be implemented in the validate method of the checkuser command.
+        try {
+          command.execute(room, instance);
+        } catch (Exception e) {
+          LOGGER.error("Error executing command!", e);
+          room.send("Error executing command: " + e.getMessage());
         }
       }
     }
@@ -119,7 +110,7 @@ public class SoBoticsCommandsList {
 
     int cp = Character.codePointAt(message.getPlainContent(), 0);
 
-    if (!PingService.standby.get() && (cp == 128642 || (cp >= 128644 && cp <= 128650))) {
+    if (cp == 128642 || (cp >= 128644 && cp <= 128650)) {
       room.send("[🚃](http://bit.ly/2nRi9kX)");
       return;
     }
@@ -168,12 +159,7 @@ public class SoBoticsCommandsList {
 
     for (SpecialCommand command : commands) {
       if (command.validate()) {
-        boolean standbyMode = PingService.standby.get();
-        if (standbyMode && command.availableInStandby()) {
-          command.execute(room, instance);
-        } else {
-          command.execute(room, instance);
-        }
+        command.execute(room, instance);
       }
     }
   }

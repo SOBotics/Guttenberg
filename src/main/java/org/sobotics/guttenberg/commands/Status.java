@@ -26,7 +26,6 @@ import org.sobotics.guttenberg.utils.CommandUtils;
 import org.sobotics.guttenberg.utils.FilePathUtils;
 import org.sobotics.guttenberg.utils.FileUtils;
 import org.sobotics.guttenberg.utils.StatusUtils;
-import org.sobotics.redunda.PingService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,7 +65,7 @@ public class Status implements SpecialCommand {
 
 
     StringBuilder status = new StringBuilder();
-    status.append("Location: ").append(PingService.location);
+    //status.append("Location: ").append(PingService.location);
     status.append("\nRunning since: ").append(StatusUtils.startupDate);
 
     if (room.getRoomId() == 111347) {
