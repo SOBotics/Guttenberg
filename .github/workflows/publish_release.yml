@@ -16,8 +16,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.event.release.tag_name }}
-        release_name: ${{ github.event.release.tag_name }}
+        tag_name: ${{ github.ref }}
+        release_name: ${{ github.ref }}
         draft: true
         prerelease: false
 
@@ -26,8 +26,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./target/guttenberg-${{ github.event.release.tag_name }}.jar
-        asset_name: guttenberg-${{ github.event.release.tag_name }}.jar
+        asset_path: ./target/guttenberg-${{ github.ref }}.jar
+        asset_name: guttenberg-${{ github.ref }}.jar
         asset_content_type: application/java-archive
 
     - uses: eregon/publish-release@v1
