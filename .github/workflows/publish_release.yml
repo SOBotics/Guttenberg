@@ -10,14 +10,17 @@ jobs:
     name: Publish binaries
     runs-on: ubuntu-latest
     steps:
+    - name: Get tag
+      uses: little-core-labs/get-git-tag@v3.0.1
+        id: tagName
     - name: Create Draft Release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: ${{ github.ref }}
+        tag_name: ${{ steps.tagName.outputs.tag }}
+        release_name: ${{ steps.tagName.outputs.tag }}
         draft: true
         prerelease: false
 
@@ -26,8 +29,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./target/guttenberg-${{ github.ref }}.jar
-        asset_name: guttenberg-${{ github.ref }}.jar
+        asset_path: ./target/guttenberg-${{ steps.tagName.outputs.tag }}.jar
+        asset_name: guttenberg-${{ steps.tagName.outputs.tag }}.jar
         asset_content_type: application/java-archive
 
     - uses: eregon/publish-release@v1
