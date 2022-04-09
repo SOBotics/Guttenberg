@@ -36,7 +36,6 @@
     <orderEntry type="library" name="Maven: log4j:log4j:1.2.17" level="project" />
     <orderEntry type="library" name="Maven: info.debatty:java-string-similarity:0.21" level="project" />
     <orderEntry type="library" name="Maven: net.jcip:jcip-annotations:1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.sobotics:redunda-lib:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.apis:google-api-services-customsearch:v1-rev57-1.23.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.api-client:google-api-client:1.23.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.oauth-client:google-oauth-client:1.23.0" level="project" />
