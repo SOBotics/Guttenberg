@@ -13,7 +13,7 @@
 ## Texts for the flag
 
 ### Plagiarism
-> This post is plagiarized from an other answer [link to the other answer], as can be seen here [link to CopyPastor] #plagiarism
+> This post is plagiarized from another answer [link to the other answer], as can be seen here [link to CopyPastor] #plagiarism
 
 ### Repost
 We leave a comment on reposts, but only flag them if the Guttenberg report score is < 1.0. Posts with a Guttenberg score of 1.0 are flagged automatically.
