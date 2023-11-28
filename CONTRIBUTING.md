@@ -34,7 +34,7 @@ If you're just fixing a typo in a .md file and there is no issue open about that
 
 ### Code style
 
-It's recommended to use IntelliJ for developing Guttenberg, since the project already contains the neccessary settings for the code style.
+It's recommended to use IntelliJ for developing Guttenberg, since the project already contains the necessary settings for the code style.
 
 These are the most important guidelines:
 
@@ -52,7 +52,7 @@ Every file should be encoded in `UTF-8`. We are using UNIX line-breaks (`\n`).
 
 #### Methods
 
-The openening brace `{` should be in the same line as the method declaration.
+The opening brace `{` should be in the same line as the method declaration.
 
 Example:
 ```java
@@ -94,4 +94,4 @@ When making changes to an existing function, please add a comment with the numbe
 ## Fixing grammar and typos
 
 Since most of us are not native speakers in English, there are plenty of grammar issues or typos. If you find some, please feel free to fix them and send in a pull request.
-You don't need to open an isue first if you're just editing .md files.
+You don't need to open an issue first if you're just editing .md files.
